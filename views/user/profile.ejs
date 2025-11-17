@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile - Chronora</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="./css/user/profile.css">
+  <script src="./js/user/profile.js"></script>
+
+
+</head>
+<body>
+  <div class="profile-body">
+    <aside class="sidebar">
+      <h2>Chronora</h2>
+      <div class="sidebar-menu">
+        <a href="/profile" class="active"><i class="fas fa-user"></i> My Profile</a>
+        <a href="/address"><i class="fas fa-map-marker-alt"></i> My Address</a>
+        <a href="/orders"><i class="fas fa-box"></i> My Orders</a>
+        <a href="/wishlist"><i class="fas fa-heart"></i> My Wishlist</a>
+        <a href="/wallet"><i class="fas fa-wallet"></i> My Wallet</a>
+        <a href="/coupons"><i class="fas fa-tag"></i> My Coupons</a>
+        <a href="/change-password"><i class="fas fa-lock"></i> Change Password</a>
+        <a href="/referral"><i class="fas fa-users"></i> Referral Code</a>
+        <a href="/logout" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="welcome-section">
+        <h1>Welcome <span><%= user.fullName %>!</span></h1>
+        <p>Manage your profile information and account settings here.</p>
+      </div>
+
+      <div class="profile-card">
+        <h2>Personal Information</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Full Name</span>
+            <span class="value"><%= user.fullName %></span>
+          </div>
+          <div class="info-item">
+            <span class="label">Email Address</span>
+            <span class="value"><%= user.email %></span>
+          </div>
+          <div class="info-item">
+            <span class="label">Phone Number</span>
+            <span class="value"><%= user.phone || "Not added" %></span>
+          </div>
+          <div class="info-item">
+            <span class="label">Member Since</span>
+            <span class="value"><%= new Date(user.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) %></span>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <a href="/edit-profile" class="btn-primary">Edit Profile</a>
+          <a href="/change-password" class="btn-secondary">Change Password</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+
+</body>
+</html>

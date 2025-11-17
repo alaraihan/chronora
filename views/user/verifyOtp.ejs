@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify Your Account</title>
+  <link rel="stylesheet" href="./css/user/verifyOtp.css">
+
+</head>
+<body>
+  <div class="container">
+    <h1>Verify Your Account</h1>
+    <p class="subtitle">Enter the 6-digit code sent to your email</p>
+
+    <form id="otpForm" action="/verifyOtp" method="POST">
+      <div class="code-inputs">
+        <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+        <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+        <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+        <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+        <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+        <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+      </div>
+
+      <button class="verify-btn" type="submit">Verify Account</button>
+    </form>
+
+    <div class="bottom-text">
+      <p>
+        Didn’t receive the code? 
+        <span id="resendLink" class="resend-link disabled">Resend code</span>
+      </p>
+      <p class="timer">Code expires in: <span id="countdown">01:00</span></p>
+      <p class="support">Having trouble? <a href="#">Contact Support</a></p>
+    </div>
+  </div>
+</body>
+<script src="/js/user/verifyOtp.js"></script>
+
+</html>

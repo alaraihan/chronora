@@ -1,0 +1,54 @@
+.admin-footer {
+  background: #fff;
+  border-top: 1px solid #e3e6f0;
+  padding: 20px 30px;
+  position: fixed;
+  bottom: 0;
+  left: 260px;           /* Same as sidebar width */
+  right: 0;
+  z-index: 1010;
+  font-size: 13px;
+  color: #858796;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.footer-left strong {
+  color: #4e73df;
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.footer-links a {
+  color: #858796;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #4e73df;
+  text-decoration: underline;
+}
+
+.separator {
+  margin: 0 8px;
+  color: #c7c7c7;
+}
+
+/* Responsive: When sidebar collapses (optional future feature) */
+@media (max-width: 992px) {
+  .admin-footer {
+    left: 0;
+  }
+}

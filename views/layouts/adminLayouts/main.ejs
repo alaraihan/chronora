@@ -1,0 +1,31 @@
+<!-- views/layouts/adminLayouts/main.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title || "Admin - Chronora" %></title>
+
+  <!-- admin css -->
+  <link rel="stylesheet" href="/css/admin/header.css" />
+    <link rel="stylesheet" href="/css/admin/footer.css" />
+      <link rel="stylesheet" href="/css/admin/sidebar.css" />
+
+</head>
+
+<body>
+
+  <!-- ADMIN HEADER -->
+  <%- include('../../partials/admin/header') %>
+
+  <!-- ADMIN SIDEBAR -->
+  <%- include('../../partials/admin/sidebar') %>
+
+  <main>
+    <%- body %>
+  </main>
+
+  <!-- ADMIN FOOTER -->
+  <%- include('../../partials/admin/footer') %>
+</body>
+</html>

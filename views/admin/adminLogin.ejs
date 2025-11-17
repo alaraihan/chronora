@@ -1,0 +1,73 @@
+<% layout(false) -%>   <!-- ADD THIS LINE AT THE TOP -->
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chronora - Admin Login</title>
+
+  <!-- Toastify CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <!-- Your custom CSS -->
+  <link rel="stylesheet" href="/css/admin/adminLogin.css">
+  
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="logo">Chronora</div>
+    <h2>Admin Sign In</h2>
+    <p style="color:#666; margin-bottom:20px;">Manage orders, banners, referrals & more</p>
+
+    <form method="POST" action="/admin/login" id="loginForm">
+      <div>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          placeholder="Email / Username" 
+          value="<%= typeof email !== 'undefined' ? email : '' %>" 
+          required 
+        />
+        <small id="email-error" class="error" style="display:none;"></small>
+      </div>
+
+      <div>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          placeholder="Password" 
+          required 
+        />
+        <small id="password-error" class="error" style="display:none;"></small>
+      </div>
+
+      <button type="submit">Sign In</button>
+    </form>
+
+    <p style="margin-top:20px; color:#888; font-size:14px;">Google Workspace</p>
+  </div>
+
+  <!-- Toastify JS -->
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+  <!-- Show server error as red toast -->
+  <script>
+    <% if (message) { %>
+      Toastify({
+        text: "<%= message %>",
+        duration: 5000,
+        gravity: "top",
+        position: "center",
+        backgroundColor: "#e74c3c",
+        style: { fontSize: "16px", fontWeight: "bold" }
+      }).showToast();
+    <% } %>
+  </script>
+
+  <!-- Client-side validation -->
+
+</body>
+</html>

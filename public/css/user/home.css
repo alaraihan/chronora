@@ -1,0 +1,102 @@
+:root{--bg:#2b3136;--muted:#9aa2a9;--accent:#e6b24a;--text:#eef1f2}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);line-height:1.4}
+.container{max-width:1100px;margin:0 auto;padding:20px}
+.hero-card{background:#0e1112;padding:40px;border-radius:10px;text-align:center}
+.hero-title{font-family:Georgia,serif;font-size:2.2rem;margin:0}
+.btn{display:inline-block;padding:10px 16px;border-radius:6px;text-decoration:none}
+.btn.primary{background:var(--accent);color:#111}
+.category-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:18px}
+.cat-card img{width:100%;height:160px;object-fit:cover;display:block;border-radius:8px}
+.feature{display:grid;grid-template-columns:420px 1fr;gap:24px;margin-top:40px;align-items:center}
+/* Precision section layout */
+.precision {
+  display: grid;
+  grid-template-columns: 480px 1fr; /* image column + content column */
+  align-items: center;
+  gap: 40px;
+  padding: 60px 20px;
+  background: #1a2026; /* page background for that section */
+}
+
+/* Image container */
+.precision-image {
+  /* keep the image block sized and centered in its column */
+  display: block;
+  max-width: 480px;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+}
+
+/* make the image responsive */
+.precision-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Content box — we will pull left to overlap the image */
+.precision-content {
+    margin-left: 100px;
+  max-width: 560px;
+  background: rgba(24,28,34,0.65); /* translucent card look */
+  padding: 28px;
+  border-radius: 10px;
+  color: #e7e9ea;
+  /* overlap effect: negative translate so it sits partly over the image */
+  transform: translateX(-80px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.45);
+}
+
+/* small decorative eyebrow */
+.eyebrow {
+  display:block;
+  color:#f0c95a;
+  font-weight:700;
+  font-size:0.85rem;
+  margin-bottom:8px;
+}
+
+.precision-content h2 {
+  margin: 0 0 12px;
+  font-size: 1.9rem;
+  color: #fff;
+}
+
+.precision-content p {
+  color: #bfc6c9;
+  line-height:1.6;
+  margin-bottom:18px;
+}
+
+/* button inside content */
+.precision-content .btn {
+  display:inline-block;
+  background:#e6b24a;
+  color:#111;
+  padding:10px 18px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:600;
+}
+
+/* Responsive: stack on small screens and remove overlap */
+@media (max-width: 900px) {
+  .precision {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 40px 16px;
+  }
+  .precision-content {
+    transform: none;
+    background: transparent; /* optional: remove card look on mobile */
+    padding: 14px 0 0 0;
+    box-shadow: none;
+  }
+  .precision-image { max-width: 720px; margin: 0 auto; }
+  .precision-content { max-width: 720px; margin: 0 auto; }
+}
+
+@media(max-width:768px){.feature{grid-template-columns:1fr}.category-grid{grid-template-columns:1fr}}

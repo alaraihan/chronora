@@ -1,0 +1,88 @@
+/* Full-page center */
+body{
+  height:100vh;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+.logout-page {
+     min-height: 100vh;       
+  margin: 0;               
+  display: flex ;
+  justify-content: center ;
+  align-items: center ;
+  background: #ffffff;     /* vertical center */
+}
+
+/* Logout box */
+.logout-container {
+  background: #0f0f0f;
+  padding: 40px;
+  border-radius: 12px;
+  width: 380px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 0 25px rgba(0,0,0,0.25);
+}
+
+/* Title */
+.logout-title {
+  font-size: 28px;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+/* Subtitle */
+.logout-info {
+  color: #cfcfcf;
+  margin-bottom: 25px;
+  font-size: 15px;
+}
+
+/* Form buttons layout */
+.logout-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Base button */
+.btn {
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 16px;
+  width: 90%;
+  cursor: pointer;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+}
+
+/* Confirm button → CHANGED TO WHITE */
+.btn-confirm {
+  background: #ffffff;
+  color: #000;
+  border: 1px solid #fff;
+  transition: 0.3s;
+  margin-left: 20px;
+}
+
+.btn-confirm:hover {
+  background: #dcdcdc;
+}
+
+/* Cancel button → outlined */
+.btn-cancel {
+  background: transparent;
+  color: #fff;
+  border: 1px solid #6b6b6b;
+  transition: 0.3s;
+  display: block;
+  text-decoration: none;
+    margin-left: 10px;
+
+}
+
+.btn-cancel:hover {
+  background: #2b2b2b;
+}

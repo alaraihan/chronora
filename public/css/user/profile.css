@@ -1,0 +1,101 @@
+ * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f0f1a;
+      color: white;
+      min-height: 100vh;
+    }
+    .profile-body {
+      margin-top: 100px;
+      display: flex;
+      min-height: calc(100vh - 100px);
+    }
+    .sidebar {
+      width: 280px;
+      background: #1a1a2e;
+      padding: 2rem;
+      border-right: 1px solid #333;
+    }
+    .sidebar h2 {
+      color: #9d4edd;
+      text-align: center;
+      margin-bottom: 3rem;
+      font-size: 2rem;
+    }
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem 1.2rem;
+      color: #ccc;
+      text-decoration: none;
+      border-radius: 12px;
+      margin-bottom: 0.5rem;
+      transition: 0.3s;
+    }
+    .sidebar-menu a.active, .sidebar-menu a:hover {
+      background: #9d4edd;
+      color: white;
+    }
+    .sidebar-menu a.logout { color: #e74c3c; }
+    .sidebar-menu a.logout:hover { background: #c0392b; }
+
+    .main-content {
+      flex: 1;
+      padding: 3rem;
+    }
+    .welcome-section h1 {
+      font-size: 2.8rem;
+      margin-bottom: 0.5rem;
+    }
+    .welcome-section h1 span { color: #9d4edd; }
+    .welcome-section p { color: #aaa; font-size: 1.1rem; }
+
+    .profile-card {
+      background: #16213e;
+      margin-top: 2rem;
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    }
+    .profile-card h2 {
+      color: #9d4edd;
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .info-item {
+      background: #1e2a48;
+      padding: 1.5rem;
+      border-radius: 12px;
+    }
+    .label { color: #999; font-size: 0.9rem; }
+    .value { color: white; font-weight: 600; font-size: 1.1rem; margin-top: 0.5rem; display: block; }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+    .btn-primary, .btn-secondary {
+      padding: 14px 32px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .btn-primary {
+      background: #9d4edd;
+      color: white;
+    }
+    .btn-primary:hover { background: #7c3aed; transform: translateY(-3px); }
+    .btn-secondary {
+      background: transparent;
+      color: #9d4edd;
+      border: 2px solid #9d4edd;
+    }
+    .btn-secondary:hover { background: #9d4edd; color: white; }
