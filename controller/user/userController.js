@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 
 const pageNotfound = async (req, res) => {
   try {
-    return res.render("user/pageNotfound", {layout: false, title: "Chronora-404page" });
+    return res.render("user/pageNotfound", { title: "Chronora-404page" });
   } catch (error) {
     console.log("page not found");
     res.status(404).send();

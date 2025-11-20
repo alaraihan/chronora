@@ -1,15 +1,15 @@
 .admin-sidebar {
   position: fixed;
-  top: 70px;
+  top: 0;
   left: 0;
-  width: 260px;
-  height: calc(100vh - 70px);
+  width: 180px;
+  height: 100vh;
   background: #fff;
   border-right: 1px solid #e3e6f0;
-  padding: 20px 0;
   overflow-y: auto;
-  z-index: 1020;
+  z-index: 1000;
   box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+  transition: all 0.3s;
 }
 
 .sidebar-user {

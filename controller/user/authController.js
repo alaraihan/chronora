@@ -15,7 +15,7 @@ const googleCallback=(req,res)=>{
 }
 const loadLogout=async(req,res)=>{
   try{
-    return res.render("user/logout", { layout: "layouts/userLayouts/auth", title: "Chronora-Logout"} )
+    return res.render("user/logout", { title: "Chronora-Logout",layout: 'layouts/userLayouts/auth'} )
     
   }catch(error){
     console.log("logout page is not found");
@@ -29,7 +29,7 @@ const performLogout=async(req,res)=>{
   req.session.destroy((err)=>{
     if(err){
         console.error("Session destroy error:", err);
-        return res.status(500).render("user/pageNotfound", {title: "Error - Chronora",message: "Unable to logout. Try again.",});
+        return res.status(500).render("user/pageNotfound", {title: "Error - Chronora",message: "Unable to logout. Try again.",layout: 'layouts/userLayouts/auth'});
     }
   });
   res.clearCookie("connect.sid");
@@ -42,7 +42,7 @@ console.error("performLogout error:", error);
 const loadLogin = async (req, res) => {
   try {
     const success = req.query.verified ? "Account verified — please sign in" : null;
-    return res.render("user/login", {layout: "layouts/userLayouts/auth",title: "Chronora-Login",message: null,success,
+    return res.render("user/login", {title: "Chronora-Login",message: null,success,layout: 'layouts/userLayouts/auth'
     });
   } catch (error) {
     console.log("login page not found");
@@ -52,7 +52,7 @@ const loadLogin = async (req, res) => {
 
 const loadSignUp = async (req, res) => {
   try {
-    return res.render("user/signup", { layout: "layouts/userLayouts/auth", title: "Chronora-Signup", message: null });
+    return res.render("user/signup", { title: "Chronora-Signup", message: null,layout: 'layouts/userLayouts/auth' });
   } catch (error) {
     console.log("signUp page not found");
     res.status(500).send("server error");
@@ -65,8 +65,8 @@ const loadForgotPassword = (req, res) => {
   delete req.session.resetUserId;
   res.render("user/forgetPassword", {
     title: "Chronora – Forgot Password",
-    layout: "layouts/userLayouts/auth",
     message: null,
+    layout: 'layouts/userLayouts/auth'
   });
 };
 
@@ -221,7 +221,7 @@ const resetPassword = async (req, res) => {
       return res.redirect("/forgetPassword");
     }
 
-    user.password = password; // bcrypt pre-save hook
+    user.password = password; 
     await user.save();
 
     delete req.session.resetUserId;
@@ -280,8 +280,13 @@ const login = async (req, res) => {
       });
     }
 
-    req.session.userId = findUser._id;
-    req.session.user = { id: findUser._id, fullName: findUser.fullName, email: findUser.email };
+    // store id as string to avoid CastErrors later
+    const userId = findUser._id.toString();
+
+    req.session.userId = userId; // plain string
+    // store small user object but keep id as string
+    req.session.user = { id: userId, fullName: findUser.fullName, email: findUser.email };
+
     return res.redirect("/home");
   } catch (error) {
     console.log("login error", error);
@@ -292,7 +297,6 @@ const login = async (req, res) => {
     });
   }
 };
-
 const signUp = async (req, res) => {
   try {
     const { fullName, email, password, confirm } = req.body;

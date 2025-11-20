@@ -1,15 +1,12 @@
- // === Elements ===
-    const inputs = document.querySelectorAll('.code-inputs input');
+   const inputs = document.querySelectorAll('.code-inputs input');
     const form = document.getElementById('otpForm');
     const countdownEl = document.getElementById('countdown');
     const resendLink = document.getElementById('resendLink');
     const verifyBtn = document.querySelector('.verify-btn');
 
     let timer;
-    let timeLeft = 60; // 3 minutes
-
-    // === 1. Auto-focus & Backspace Handling ===
-    inputs.forEach((input, index) => {
+    let timeLeft = 60; 
+   inputs.forEach((input, index) => {
       input.addEventListener('input', (e) => {
         const value = e.target.value;
         if (!/^\d$/.test(value)) {
@@ -28,7 +25,6 @@
       });
     });
 
-    // === 2. Countdown Timer ===
     function startTimer() {
       clearInterval(timer);
       timeLeft = 60;
@@ -51,7 +47,6 @@
       countdownEl.textContent = `${mins}:${secs}`;
     }
 
-    // === 3. Resend OTP ===
    
 resendLink.addEventListener('click', async () => {
   if (resendLink.classList.contains('disabled')) return;
@@ -66,15 +61,15 @@ resendLink.addEventListener('click', async () => {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      credentials: 'include' // This sends session cookie
+      credentials: 'include' 
     });
 
     const result = await response.json();
 
     if (result.success) {
       alert('New OTP sent! Check your email.');
-      startTimer(); // Restart 3-minute countdown
-      inputs.forEach(inp => inp.value = ''); // Clear boxes
+      startTimer(); 
+      inputs.forEach(inp => inp.value = ''); 
       inputs[0].focus();
     } else {
       alert(result.message || 'Failed to resend OTP.');
@@ -84,11 +79,11 @@ resendLink.addEventListener('click', async () => {
     alert('Network error. Please check your connection.');
   } finally {
     resendLink.textContent = 'Resend code';
-    // Keep disabled until timer expires again
+    
   }
 });
 
-    // === 4. Form Submit – Collect OTP ===
+   
     form.addEventListener('submit', (e) => {
       const otp = Array.from(inputs)
         .map(inp => inp.value)
@@ -100,7 +95,7 @@ resendLink.addEventListener('click', async () => {
         return;
       }
 
-      // Add OTP as hidden input
+    
       let hiddenInput = document.getElementById('otpValue');
       if (!hiddenInput) {
         hiddenInput = document.createElement('input');
@@ -112,5 +107,5 @@ resendLink.addEventListener('click', async () => {
       hiddenInput.value = otp;
     });
 
-    // === 5. Start timer on page load ===
+    
     startTimer();

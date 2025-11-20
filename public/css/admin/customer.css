@@ -1,0 +1,126 @@
+/* ---- PAGE WRAPPER ---- */
+.page-wrapper {
+  padding: 30px;
+  font-family: "Poppins", sans-serif;
+  color: #fff;
+  background: #0f0f1a;
+  min-height: 100vh;
+  margin-left: 200px;
+}
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* ---- SEARCH BAR ---- */
+#searchInput {
+  width: 300px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #1b1b2e;
+  color: #fff;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+#searchInput::placeholder {
+  color: #999;
+}
+
+p {
+  margin-bottom: 20px;
+  color: #ccc;
+}
+
+/* ---- TABLE ---- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #1b1b2e;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+thead {
+  background: #26263d;
+}
+
+thead th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #ddd;
+  border-bottom: 1px solid #333;
+}
+
+tbody td {
+  padding: 12px;
+  border-bottom: 1px solid #2b2b46;
+  color: #eee;
+}
+
+/* ---- STATUS COLORS ---- */
+.status {
+  font-weight: 600;
+}
+
+.status.active {
+  color: #4caf50;
+}
+
+.status.blocked {
+  color: #f44336;
+}
+
+/* ---- BLOCK / UNBLOCK BUTTON ---- */
+.block-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #ff3e3e;
+  color: white;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.block-btn:hover {
+  background: #d93232;
+}
+
+.block-btn.unblock {
+  background: #4caf50;
+}
+
+.block-btn.unblock:hover {
+  background: #3c8e41;
+}
+
+/* ---- PAGINATION ---- */
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: #ddd;
+}
+
+.pagination a {
+  padding: 6px 12px;
+  background: #26263d;
+  border-radius: 5px;
+  color: #fff;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.pagination a:hover {
+  background: #333358;
+}
+
+.pagination span {
+  font-weight: 600;
+}

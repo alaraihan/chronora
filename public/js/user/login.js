@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const eyeIcon = toggleButton.querySelector("i");
 
     toggleButton.addEventListener("click", function () {
-        // Toggle the type attribute
         if (passwordInput.type === "password") {
             passwordInput.type = "text";
             eyeIcon.classList.remove("fa-eye");

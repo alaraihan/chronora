@@ -1,7 +1,6 @@
-// Password Toggle (Show/Hide) - Works on any field with data-for attribute
 document.querySelectorAll('.toggle-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    const targetId = btn.dataset.for;           // e.g., "password" or "confirm"
+    const targetId = btn.dataset.for;         
     const input = document.getElementById(targetId);
 
     if (input.type === 'password') {
@@ -16,7 +15,6 @@ document.querySelectorAll('.toggle-btn').forEach(btn => {
   });
 });
 
-// Get all form elements
 const elements = {
   name: document.getElementById('name'),
   email: document.getElementById('email'),
@@ -25,7 +23,6 @@ const elements = {
   agree: document.getElementById('agree')
 };
 
-// Error message divs (create them in HTML with these IDs)
 const errorDivs = {
   name: document.getElementById('nameError'),
   email: document.getElementById('emailError'),
@@ -34,14 +31,12 @@ const errorDivs = {
   agree: document.getElementById('agreeError')
 };
 
-// Show or hide error
 function showError(field, show) {
   if (errorDivs[field]) {
     errorDivs[field].style.display = show ? 'block' : 'none';
   }
 }
 
-// Validation Functions
 function validateName() {
   const valid = elements.name.value.trim().length >= 2;
   showError('name', !valid);
@@ -72,25 +67,21 @@ function validateAgree() {
   return valid;
 }
 
-// Check if entire form is valid
 function isFormValid() {
   return validateName() && validateEmail() && validatePassword() && validateConfirm() && validateAgree();
 }
 
-// Form Submit
 const form = document.getElementById('signupForm');
 const successMsg = document.getElementById('successMsg');
 
 form.addEventListener('submit', function (e) {
   if (!isFormValid()) {
-    e.preventDefault(); // Stop submission
+    e.preventDefault(); 
   } else {
     successMsg.style.display = 'block';
-    // Remove this line if you want real submit: e.preventDefault();
-  }
+ }
 });
 
-// Optional: Real-time validation (nice UX)
 elements.name?.addEventListener('input', validateName);
 elements.email?.addEventListener('input', validateEmail);
 elements.password?.addEventListener('input', () => { validatePassword(); validateConfirm(); });

@@ -4,7 +4,7 @@
   padding: 20px 30px;
   position: fixed;
   bottom: 0;
-  left: 260px;           /* Same as sidebar width */
+  left: 180px;           /* Same as sidebar width */
   right: 0;
   z-index: 1010;
   font-size: 13px;
