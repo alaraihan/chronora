@@ -1,33 +1,47 @@
-<!-- views/layouts/adminLayouts/main.ejs -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title || "Admin - Chronora" %></title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title><%= title || 'Chronora' %></title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
-  <!-- admin css -->
-  <link rel="stylesheet" href="/css/admin/header.css" />
-    <link rel="stylesheet" href="/css/admin/footer.css" />
-      <link rel="stylesheet" href="/css/admin/sidebar.css" />
-<link rel="stylesheet" 
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
-      referrerpolicy="no-referrer" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+  <link rel="stylesheet" href="/css/admin/header.css">
+  <link rel="stylesheet" href="/css/admin/footer.css">
+    <link rel="stylesheet" href="/css/admin/sidebar.css">
+
+  <style>
+    :root { --header-height: 70px; }
+    body { margin: 0; padding-top: var(--header-height); background:white; color: white; font-family: 'Segoe UI', sans-serif; }
+  </style>
 </head>
-
 <body>
 
-  <!-- ADMIN HEADER -->
   <%- include('../../partials/admin/header') %>
-
-  <!-- ADMIN SIDEBAR -->
   <%- include('../../partials/admin/sidebar') %>
-
-  <main>
+  <main id="main">
     <%- body %>
   </main>
 
-  <!-- ADMIN FOOTER -->
   <%- include('../../partials/admin/footer') %>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script>
+const flash = <%- JSON.stringify(typeof flash !== "undefined" ? flash : null) %>;
+
+    if (flash) {
+      Toastify({
+        text: flash.message,
+        duration: 4000,
+        close: true,
+        gravity: "top",
+        position: "right",
+        backgroundColor: flash.type === "success" ? "#4ade80" : "#ef4444",
+        stopOnFocus: true,
+      }).showToast();
+    }
+  </script>
+  <script src="/js/main.js"></script>
 </body>
 </html>

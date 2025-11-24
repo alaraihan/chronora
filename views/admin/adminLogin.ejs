@@ -5,10 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chronora - Admin Login</title>
-
-  <!-- Toastify CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-  <!-- Your custom CSS -->
   <link rel="stylesheet" href="/css/admin/adminLogin.css">
   
 </head>
@@ -49,24 +46,8 @@
     <p style="margin-top:20px; color:#888; font-size:14px;">Google Workspace</p>
   </div>
 
-  <!-- Toastify JS -->
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-  <!-- Show server error as red toast -->
-  <script>
-    <% if (message) { %>
-      Toastify({
-        text: "<%= message %>",
-        duration: 5000,
-        gravity: "top",
-        position: "center",
-        backgroundColor: "#e74c3c",
-        style: { fontSize: "16px", fontWeight: "bold" }
-      }).showToast();
-    <% } %>
-  </script>
-
-  <!-- Client-side validation -->
 
 </body>
 </html>

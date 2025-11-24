@@ -9,7 +9,6 @@ function showToast(msg, type = "success") {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Edit
   document.querySelectorAll(".btn-edit").forEach(btn => {
     btn.onclick = () => {
       const row = btn.closest("tr");
@@ -22,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   });
 
-  // Delete/Restore
   document.querySelectorAll(".btn-delete").forEach(btn => {
     btn.onclick = () => {
       const row = btn.closest("tr");
@@ -32,20 +30,17 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   });
 
-  // ADD
   document.getElementById("addForm").onsubmit = async (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
     try {
       await axios.post("/admin/categories", fd);
       showToast("Added!");
-      setTimeout(() => location.reload(), 800);
     } catch (err) {
       showToast("Failed", "error");
     }
   };
 
-  // EDIT
   document.getElementById("editForm").onsubmit = async (e) => {
     e.preventDefault();
     const id = e.target.querySelector("[name='id']").value;
@@ -53,20 +48,19 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       await axios.patch(`/admin/categories/${id}`, fd);
       showToast("Updated!");
-      setTimeout(() => location.reload(), 800);
     } catch (err) {
       showToast("Update failed", "error");
     }
   };
-
-  // DELETE/RESTORE
   document.getElementById("deleteForm").onsubmit = async (e) => {
     e.preventDefault();
     const id = e.target.querySelector("[name='id']").value;
+    console.log(id);
     try {
-      await axios.delete(`/admin/categories/${id}`);
+      const res =  await axios.patch(`/admin/categories/delete/${id}`);
+      console.log(res);
+
       showToast("Done!");
-      setTimeout(() => location.reload(), 800);
     } catch (err) {
       showToast("Failed", "error");
     }

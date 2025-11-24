@@ -1,24 +1,15 @@
-<!-- views/admin/customers.ejs -->
-<% layout = '../layouts/adminLayouts/main' %>
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>Customers - Admin</title>
 
-  <!-- Toastify CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-
-  <!-- Your admin CSS -->
   <link rel="stylesheet" href="/css/admin/customer.css">
 </head>
 <body>
   <div class="page-wrapper">
     <h1>Customers</h1>
-
-    <!-- Search -->
-   
-<!-- Search Bar -->
 <div style="margin-bottom: 20px;">
   <input 
     id="brand-search-input"
@@ -36,8 +27,6 @@
     onclick="clearSearch()" 
     style="padding: 10px 15px; margin-left: 5px;">Clear</button>
 </div>
-
-    <!-- Table -->
     <table>
       <thead>
         <tr>
@@ -61,12 +50,10 @@
              
              <td><%=c.createdAt.toDateString()%></td>
 
-            <!-- Status -->
             <td class="status" id="status-<%= c._id %>">
               <%= c.isBlocked ? "Blocked" : "Active" %>
             </td>
 
-            <!-- Button -->
             <td>
               <button class="block-btn" data-user-id="<%= c._id %>">
                 <%= c.isBlocked ? "Unblock" : "Block" %>
@@ -76,8 +63,6 @@
         <% }) %>
       </tbody>
     </table>
-
-    <!-- Pagination (Simple) -->
     <div class="pagination">
       <% if (currentPage > 1) { %>
         <a href="?page=<%= currentPage - 1 %>">Previous</a>
@@ -90,12 +75,8 @@
       <% } %>
     </div>
   </div>
-
-  <!-- Axios and Toastify JS -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-
-  <!-- Your page logic (keeps file tiny) -->
   <script src="/js/admin/customer.js"></script>
 </body>
 </html>

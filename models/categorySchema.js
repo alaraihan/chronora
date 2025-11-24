@@ -1,4 +1,3 @@
-// models/categorySchema.js
 import mongoose from "mongoose";
 
 const categorySchema = new mongoose.Schema({
@@ -6,7 +5,6 @@ const categorySchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true
-    // REMOVED unique: true → THIS WAS KILLING YOU
   },
   description: {
     type: String,
@@ -28,7 +26,6 @@ const categorySchema = new mongoose.Schema({
   timestamps: true 
 });
 
-// Hide soft-deleted categories
 categorySchema.pre(/^find/, function(next) {
   this.where({ isDeleted: false });
   next();

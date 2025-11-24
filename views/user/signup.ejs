@@ -12,9 +12,6 @@
   <main class="card" aria-labelledby="title">
     <h1 id="title">Create an account</h1>
 
-    <% if (message) { %>
-      <p style="color:var(--error);"><%= message %></p>
-    <% } %>
 
     <form id="signupForm" novalidate method="POST" action="/signup">
       <!-- Full name -->

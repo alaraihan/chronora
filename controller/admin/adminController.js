@@ -1,12 +1,18 @@
 import Admin from "../../models/adminSchema.js";
 import User from "../../models/userSchema.js";
 import bcrypt from "bcrypt";
-import Category from "../../models/categorySchema.js";
+import sendResponse from "../../utils/response.js";  
+
+const render = (req, res, view, options = {}) => {
+  const flash = req.session.flash || null;
+  delete req.session.flash;
+  return res.render(view, { flash, ...options });
+};
+
 const loadLogin = (req, res) => {
   if (req.session.admin) return res.redirect("/admin/dashboard");
 
-  res.render("admin/adminLogin", {
-    message: null,
+  return render(req, res, "admin/adminLogin", {
     title: "Admin Login - Chronora",
     layout: "layouts/adminLayouts/auth",
   });
@@ -15,139 +21,128 @@ const loadLogin = (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const admin = await Admin.findOne({ email:req.body.email});
 
-    if (!admin) {
-      return res.render("admin/adminLogin", {
-        message: "Invalid email or password",
-        layout: "layouts/adminLayouts/auth",
-      });
+    if (!email || !password) {
+      return sendResponse(req, res, "error", "Please fill email and password", {}, "/admin/login");
     }
 
-    const match = true;
-
-    if (!match && !(await bcrypt.compare(password, admin.password))) {
-      return res.render("admin/adminLogin", {
-        message: "Invalid email or password",
-        layout: "layouts/adminLayouts/auth",
-      });
+    const admin = await Admin.findOne({ email: email.toLowerCase().trim() });
+    if (!admin || !(await bcrypt.compare(password, admin.password))) {
+      return sendResponse(req, res, "error", "Invalid email or password", {}, "/admin/login");
     }
 
+    req.session.adminId = admin._id.toString();
     req.session.admin = {
       id: admin._id.toString(),
       email: admin.email,
       name: admin.fullName || "Admin",
     };
-    req.session.save(err=>{
-      if(err) console.log("session save error: ",err);
-      return res.redirect("/admin/dashboard");
-    })
+
+    return sendResponse(req, res, "success", "Welcome back, Admin!", {}, "/admin/dashboard");
+
   } catch (err) {
-    console.error(err);
-    res.render("admin/adminLogin", {
-      message: "Server error",
-      layout: "layouts/adminLayouts/auth",
-    });
+    console.error("Admin login error:", err);
+    return sendResponse(req, res, "error", "Server error. Try again later.", {}, "/admin/login");
   }
 };
 
 const dashboard = (req, res) => {
-  if (!req.session.admin) return res.redirect("/admin/login");
+  if (!req.session.admin) {
+    return sendResponse(req, res, "error", "Please log in first", {}, "/admin/login");
+  }
 
-  res.render("admin/dashboard", {
-    admin: req.session.admin,
+  return render(req, res, "admin/dashboard", {
     title: "Dashboard - Chronora Admin",
     layout: "layouts/adminLayouts/main",
     page: "dashboard",
+    admin: req.session.admin,
   });
 };
-
-const loadlogout=(req,res)=>{
-  try{
-    if(!req.session.admin){
-    return res.redirect("/admin/login");
-    }
- res.render("admin/logout",{title: "Error - Chronora",layout:'layouts/adminLayouts/auth'})
-  }catch(error){
- console.log("logout page is not found");
-    res.status(500).render("admin/logout",{ title: "Error - Chronora",
-      message: "Something went wrong. Please try again later.",
-})
-  }
-}
 
 const logout = (req, res) => {
-  req.session.destroy((err)=>{
-    if(err){
-      console.log("session destroy error: ",err);
-      return res.status(500).render("admin/error",{
-        title:"Logout Failed",message:"Couldnt logout.pls try again later"
-      })
-    }
+  req.session.destroy((err) => {
+    if (err) console.error("Logout error:", err);
+    res.clearCookie("sid");
+    return sendResponse(req, res, "success", "Logged out successfully!", {}, "/admin/login");
   });
-
-  res.clearCookie("connect.sid");
-  res.redirect("/admin/login");
 };
+
 
 const loadCustomers = async (req, res) => {
   try {
-    const search=req.query.search||"";
+    const search = req.query.search || "";
     const page = Number(req.query.page) || 1;
-    const limit = 3;
-    const skip = (page - 1) * 3;
-    let filter={};
-   if(search){
-    filter={
-        $or: [
-          { fullName: { $regex: new RegExp(search, "i") } },
-          { email: { $regex: new RegExp(search, "i") } }
-        ]
-      };
-    }
+    const limit = 5;
+    const skip = (page - 1) * limit;
+
+    const filter = search
+      ? {
+          $or: [
+            { fullName: { $regex: search, $options: "i" } },
+            { email: { $regex: search, $options: "i" } },
+          ],
+        }
+      : {};
+
     const totalCustomers = await User.countDocuments(filter);
-    const customers = await User.find(filter).skip(skip).limit(limit).lean();
-    res.render("admin/customers", {
-      title: "Customers",
+    const customers = await User.find(filter)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return render(req, res, "admin/customers", {
+      title: "Customers - Chronora Admin",
+      layout: "layouts/adminLayouts/main",
       page: "customers",
       customers,
-            search,
+      search,
       currentPage: page,
       totalPages: Math.ceil(totalCustomers / limit),
       totalCustomers,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).send("server error");
+    console.error("Load customers error:", error);
+    return sendResponse(req, res, "error", "Failed to load customers", {}, "/admin/dashboard");
   }
 };
 
+
 const toggleBlockCustomer = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const user = await User.findById(userId);
-
+    const user = await User.findById(req.params.id);
     if (!user) {
-      return res.json({ success: false, message: "user not found" });
+      return sendResponse(req, res, "error", "User not found");
     }
 
     user.isBlocked = !user.isBlocked;
     await user.save();
-    return res.json({ success: true, isBlocked: user.isBlocked });
+
+    const msg = user.isBlocked ? "User blocked successfully" : "User unblocked successfully";
+
+    return sendResponse(req, res, "success", msg, {
+      isBlocked: user.isBlocked
+    });
+
   } catch (error) {
-    console.error(err);
-    return res.json({ success: false, message: "Something went wrong" });
+    console.error("Toggle block error:", error);
+    return sendResponse(req, res, "error", "Server error");
   }
 };
 
+const loadLoginWithLogoutMessage = (req, res) => {
+  if (req.query.logout === "success") {
+    req.session.flash = { type: "success", message: "Logged out successfully!" };
+  }
+  return loadLogin(req, res);
+};
 
 export default {
   loadLogin,
   login,
   dashboard,
-  loadlogout,
   logout,
   loadCustomers,
   toggleBlockCustomer,
- 
+  loadLoginWithLogoutMessage,
 };

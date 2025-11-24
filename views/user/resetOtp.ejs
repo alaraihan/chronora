@@ -13,11 +13,7 @@
     <h2>Verify OTP</h2>
     <p>Enter the 6-digit code sent to <span class="email"><%= email %></span></p>
 
-    <% if (message) { %>
-      <div class="alert <%= message.includes('Incorrect') || message.includes('expired') ? 'alert-danger' : 'alert-success' %>">
-        <%= message %>
-      </div>
-    <% } %>
+  
 
     <form action="/resetOtp" method="POST">
       <div class="otp-container">

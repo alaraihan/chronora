@@ -21,8 +21,8 @@ export async function sendOtp(email,otp){
             from:process.env.NODEMAILER_EMAIL,
             to:email,
             subject:"verify your account",
-            text:`your OTP is ${otp}.it expires in 3 minutes`,
-            html:`<p>your OTP is<b>${otp}</b>.it expires in 3 minutes.</p>`,
+            text:`your OTP is ${otp}.it expires in 1 minutes`,
+            html:`<p>your OTP is<b>${otp}</b>.it expires in 1 minutes.</p>`,
         });
         return info.accepted && info.accepted.length>0;
     }catch(error){

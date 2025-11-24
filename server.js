@@ -41,6 +41,44 @@ app.use(session({
   }
 }));
 
+// app.js — place after app.use(session(...))
+app.use((req, res, next) => {
+  // 1) take flash from session if present
+  const sessionMessage = req.session?.message || null;
+  const sessionSuccess = typeof req.session?.success !== 'undefined' ? req.session.success : null;
+
+  // 2) fallback to query params (useful for redirects like /login?success=Logged%20out)
+  const queryMessage = req.query?.message || null;
+  const querySuccess = req.query?.success ? true : null;
+
+  // Resolution order: session > query
+  const finalMessage = sessionMessage || queryMessage || (querySuccess ? req.query.success : null) || null;
+  const finalSuccess = (sessionSuccess !== null ? sessionSuccess : (querySuccess !== null ? true : false)) || false;
+
+  // expose to views
+  res.locals.message = finalMessage;
+  res.locals.success = finalSuccess;
+
+  // clear session flash so it's one-time
+  if (req.session) {
+    delete req.session.message;
+    delete req.session.success;
+  }
+
+  next();
+});
+
+
+
+app.use((req, res, next) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  res.setHeader("Surrogate-Control", "no-store");
+  next();
+});
+
+
 app.use((req, res, next) => {
   res.locals.session = req.session;
   next();

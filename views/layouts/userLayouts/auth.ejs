@@ -1,8 +1,31 @@
 <!doctype html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || "Chronora" %></title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
 <body>
-  <main>
-    <%- body %>
-  </main>
+
+  <%- body %>   
+
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script>
+const flash = <%- JSON.stringify(typeof flash !== "undefined" ? flash : null) %>;
+
+    if (flash) {
+      Toastify({
+        text: flash.message,
+        duration: 4000,
+        close: true,
+        gravity: "top",
+        position: "right",
+        backgroundColor: flash.type === "success" ? "#4ade80" : "#ef4444",
+        stopOnFocus: true,
+      }).showToast();
+    }
+  </script>
 </body>
 </html>

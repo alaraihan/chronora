@@ -26,9 +26,15 @@ router.post("/verifyOtp", authController.verifyOtp);
 router.post("/resendOtp", authController.resendOtp);
 
 
-router.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-router.get("/auth/google/callback",authController.googleCallback);
-
+router.get("/auth/google", 
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+router.get("/auth/google/callback",
+  passport.authenticate("google", { 
+    failureRedirect: "/login?error=Google login failed",
+    failureMessage: true 
+  }),  authController.googleCallback   
+);
 router.get("/forgetPassword", authController.loadForgotPassword);
 router.post("/forgetPassword", authController.sendResetOtp);
 
@@ -39,7 +45,6 @@ router.get("/resetPassword",authController.loadResetPassword);
 router.post("/resetPassword", authController.resetPassword);
 router.post("/resendResetOtp",authController.resendResetOtp);
 
-router.get("/profile",userController.loadProfile)
 router.get("/logout",authController.loadLogout);
 router.post("/logout", authController.performLogout);
 export default router;

@@ -1,4 +1,23 @@
+import axios from "axios";
 
+function showToast(message, type = 'success') {
+  const bgColor = {
+    success: '#28a745',
+    error: '#dc3545',
+    info: '#17a2b8',
+    warning: '#ffc107'
+  }[type] || '#333';
+
+  Toastify({
+    text: message,
+    duration: 4000,
+    close: true,
+    gravity: "top",
+    position: "right",
+    backgroundColor: bgColor,
+    stopOnFocus: true,
+  }).showToast();
+}
 document.addEventListener("DOMContentLoaded", function () {
     const passwordInput = document.getElementById("password");
     const toggleButton = document.querySelector(".toggle-pass");
@@ -18,30 +37,43 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
-const emailId=document.getElementById("email");
-  const passwordId=document.getElementById("password");
-  
-  function validateEmail(){
-    const emailValue=emailId.value.trim();
-      const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
-    if (!ok) showError("email", "Please enter a valid email");
-  else hideError("email");
-  return ok;
-  }
+form.addEventListener("submit",async function(e){
+  e.preventDefault();
 
-  function validatePassword() {
-  const ok = passwordInput.value.trim() !== "";
-  if (!ok) showError("password", "Password cannot be empty");
-  else hideError("password");
-  return ok;
+  const email=emailInput.value.trim();
+const password=passwordInput.value;
+  
+if(!email||!password){
+  showToast("please fill in all the fields",'error');
+  return;
+}
+if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showToast("Please enter a valid email", "error");
+      return;
+    }
+
+    const submitBtn = form.querySelector(".btn-login");
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Logging in...";
+
+    try{
+ const res=await axios.post("/login",{
+  email,
+  password,
+  remember: form.querySelector("#remember")?.checked || false
+ });
+ if(res.data.success){
+   showToast("Login successful!",'success');
+   setTimeout(()=>location.href='/home',1500);}
+}catch(error){
+const msg=error.response?.data?.message||'something went wrong';
+showToast(msg,'error');
+}finally{
+  submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
 }
 
-emailInput.addEventListener("input", validateEmail);
-passwordInput.addEventListener("input", validatePassword);
+});
 
 
-form.addEventListener("submit",(e)=>{
-  if(!validateEmail||!validatePassword){
-    e.preventDefault();
-  }
-})

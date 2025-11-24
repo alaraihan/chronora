@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="./css/user/login.css">
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,10 +12,6 @@
 
     <form action="/login" method="POST" class="login-form">
       <!-- Email -->
-      <% if (message) { %>
-      <p style="color:var(--error);"><%= message %></p>
-    <% } %>
-
       <div class="form-group">
         <label for="email">Email</label>
         <input type="email" id="email" name="email" placeholder="Enter your email" required />
@@ -46,11 +42,7 @@
 
       <div class="divider">or</div>
 
-      <!-- Google Login -->
-      <button type="button" class="btn-google">
-        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo" />
-        Continue with Google
-      </button>
+  
 
       <p class="signup-link">
         Don’t have an account?
@@ -63,6 +55,8 @@
 </section>
 
 </body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script src="/js/user/login.js"></script>
 
 </html>

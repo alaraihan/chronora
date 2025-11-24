@@ -1,18 +1,353 @@
 import User from "../../models/userSchema.js";
 import { sendOtp, generateOtp } from "../../utils/mail.js";
 import bcrypt from "bcrypt";
-;
+import { setFlash ,getFlash} from "../../utils/flash.js";  
 
-const googleCallback=(req,res)=>{
-  console.log("Google login succesful,User: ",req.user);
-  req.session.userId=req.user._id;
-  req.session.user={
-    id:req.user._id,
-    fullName:req.user.fullName,
-    email:req.user.email,
+const render = (req, res, view, options = {}) => {
+  const flash = getFlash(req); 
+  return res.render(view, { flash, ...options });
+};
+
+const loadSignUp = (req, res) => {
+  return render(req, res, "user/signup", {
+    title: "Chronora - Signup",
+    layout: "layouts/userLayouts/auth",
+  });
+};
+
+const signUp = async (req, res) => {
+  try {
+    const { fullName, email, password, confirm } = req.body;
+
+    if (!fullName || !email || !password || !confirm) {
+      setFlash(req, "error", "All fields are required");
+      return res.redirect("/signup");
+    }
+
+    if (password !== confirm) {
+      setFlash(req, "error", "Passwords do not match");
+      return res.redirect("/signup");
+    }
+
+    const existing = await User.findOne({ email: email.toLowerCase().trim() });
+    if (existing) {
+      setFlash(req, "error", "User already exists with this email");
+      return res.redirect("/signup");
+    }
+
+    const otp = generateOtp(6);
+    console.log("Signup OTP (dev):", otp);
+
+    const emailSent = await sendOtp(email, otp);
+    if (!emailSent) {
+      setFlash(req, "error", "Failed to send verification email.");
+      return res.redirect("/signup");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    req.session.pendingUser = {
+      fullName,
+      email: email.toLowerCase().trim(),
+      password: hashedPassword,
+      otp,
+      otpExpires: Date.now() + 3 * 60 * 1000,
+    };
+
+    setFlash(req, "success", "OTP sent to your email!");
+    return res.redirect("/verifyOtp");
+  } catch (error) {
+    console.error("signup error", error);
+    setFlash(req, "error", "Server error");
+    return res.redirect("/signup");
   }
-  res.redirect("/home");
-}
+};
+
+const loadVerifyOtp = (req, res) => {
+  if (!req.session.pendingUser) {
+    setFlash(req, "error", "No signup in progress");
+    return res.redirect("/signup");
+  }
+  return render(req, res, "user/verifyOtp", {
+    title: "Chronora - Verify OTP",
+    layout: "layouts/userLayouts/auth",
+  });
+};
+
+const verifyOtp = async (req, res) => {
+  try {
+    const providedOtp = Array.isArray(req.body.otp)
+      ? req.body.otp.join("")
+      : (req.body.otp || "").trim();
+    const pending = req.session.pendingUser;
+
+    if (!pending) {
+      setFlash(req, "error", "No signup in progress");
+      return res.redirect("/signup");
+    }
+
+    if (Date.now() > pending.otpExpires) {
+      delete req.session.pendingUser;
+      setFlash(req, "error", "OTP expired");
+      return res.redirect("/signup");
+    }
+
+    if (providedOtp !== String(pending.otp)) {
+      setFlash(req, "error", "Incorrect OTP");
+      return res.redirect("/verifyOtp");
+    }
+
+    const newUser = await User.create({
+      fullName: pending.fullName,
+      email: pending.email,
+      password: pending.password,
+      isVerified: true,
+    });
+
+    delete req.session.pendingUser;
+    req.session.userId = newUser._id.toString();
+
+    setFlash(req, "success", "Account created successfully! Welcome!");
+    return res.redirect("/home");
+  } catch (err) {
+    console.error("verify otp error", err);
+    setFlash(req, "error", "Server error");
+    return res.redirect("/verifyOtp");
+  }
+};
+
+const loadLogin = (req, res) => {
+  return render(req, res, "user/login", {
+    title: "Chronora - Login",
+    layout: "layouts/userLayouts/auth",
+  });
+};
+
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      setFlash(req, "error", "Please provide both email and password");
+      return res.redirect("/login");
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) {
+      setFlash(req, "error", "Account not found");
+      return res.redirect("/login");
+    }
+
+    if (!user.isVerified) {
+      setFlash(req, "error", "Please verify your email first");
+      return res.redirect("/login");
+    }
+    if(user.isBlocked){
+          setFlash(req, "error", "user is Blocked");
+    return res.redirect("/login");
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      setFlash(req, "error", "Invalid email or password");
+      return res.redirect("/login");
+    }
+
+    req.session.userId = user._id.toString();
+    req.session.user = {
+      id: user._id.toString(),
+      fullName: user.fullName,
+      email: user.email,
+    };
+
+    setFlash(req, "success", "Logged in successfully!");
+    return res.redirect("/home");
+  } catch (error) {
+    console.error("login error", error);
+    setFlash(req, "error", "Something went wrong");
+    return res.redirect("/login");
+  }
+};
+
+const loadForgotPassword = (req, res) => {
+  delete req.session.resetOtpData;
+  delete req.session.resetUserId;
+  return render(req, res, "user/forgetPassword", {
+    title: "Chronora - Forgot Password",
+    layout: "layouts/userLayouts/auth",
+  });
+};
+
+const sendResetOtp = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    setFlash(req, "error", "Please enter your email");
+    return res.redirect("/forgetPassword");
+  }
+
+  try {
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) {
+      setFlash(req, "error", "No account found with this email");
+      return res.redirect("/forgetPassword");
+    }
+
+    const otp = generateOtp(6);
+    console.log("Reset OTP (dev):", otp);
+
+    req.session.resetOtpData = {
+      userId: user._id,
+      email: user.email,
+      otp,
+      otpExpires: Date.now() + 10 * 60 * 1000,
+    };
+
+    const sent = await sendOtp(user.email, otp);
+    if (!sent) {
+      setFlash(req, "error", "Failed to send OTP");
+      return res.redirect("/forgetPassword");
+    }
+
+    setFlash(req, "success", "OTP sent to your email");
+    return res.redirect("/resetOtp");
+  } catch (error) {
+    console.error("sendResetOtp error:", error);
+    setFlash(req, "error", "Server error");
+    return res.redirect("/forgetPassword");
+  }
+};
+
+const loadResetOtp = (req, res) => {
+  if (!req.session.resetOtpData) {
+    setFlash(req, "error", "No OTP session found");
+    return res.redirect("/forgetPassword");
+  }
+  return render(req, res, "user/resetOtp", {
+    title: "Chronora - Verify Reset OTP",
+    layout: "layouts/userLayouts/auth",
+    email: req.session.resetOtpData.email,
+  });
+};
+
+const verifyResetOtp = async (req, res) => {
+  const providedOtp = Array.isArray(req.body.otp) ? req.body.otp.join("") : req.body.otp?.trim() || "";
+  const data = req.session.resetOtpData;
+
+  if (!data) {
+    setFlash(req, "error", "Session expired");
+    return res.redirect("/forgetPassword");
+  }
+
+  if (Date.now() > data.otpExpires) {
+    delete req.session.resetOtpData;
+    setFlash(req, "error", "OTP expired");
+    return res.redirect("/forgetPassword");
+  }
+
+  if (providedOtp !== data.otp) {
+    setFlash(req, "error", "Incorrect OTP");
+    return res.redirect("/resetOtp");
+  }
+
+  req.session.resetUserId = data.userId;
+  delete req.session.resetOtpData;
+
+  setFlash(req, "success", "OTP verified! Set your new password");
+  return res.redirect("/resetPassword");
+};
+
+const loadResetPassword = (req, res) => {
+  if (!req.session.resetUserId) {
+    setFlash(req, "error", "Invalid session");
+    return res.redirect("/forgetPassword");
+  }
+  return render(req, res, "user/resetPassword", {
+    title: "Chronora - Reset Password",
+    layout: "layouts/userLayouts/auth",
+  });
+};
+
+const resetPassword = async (req, res) => {
+  const { password, confirm } = req.body;
+  const userId = req.session.resetUserId;
+
+  if (!userId || !password || password !== confirm) {
+    setFlash(req, "error", "Passwords do not match");
+    return res.redirect("/resetPassword");
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      delete req.session.resetUserId;
+      setFlash(req, "error", "User not found");
+      return res.redirect("/forgetPassword");
+    }
+
+    user.password = await bcrypt.hash(password, 10);
+    await user.save();
+    delete req.session.resetUserId;
+
+    setFlash(req, "success", "Password reset successfully! Please log in.");
+    return res.redirect("/login");
+  } catch (err) {
+    console.error(err);
+    setFlash(req, "error", "Failed to reset password");
+    return res.redirect("/resetPassword");
+  }
+};
+
+const resendOtp = async (req, res) => {
+  try {
+    const pending = req.session.pendingUser;
+    if (!pending) return res.json({ success: false, message: "No signup in progress" });
+
+    const newOtp = generateOtp(6);
+    console.log("Resend OTP:", newOtp);
+    pending.otp = newOtp;
+    pending.otpExpires = Date.now() + 3 * 60 * 1000;
+
+    const sent = await sendOtp(pending.email, newOtp);
+    return res.json({ success: !!sent });
+  } catch (err) {
+    return res.json({ success: false });
+  }
+};
+
+const resendResetOtp = async (req, res) => {
+  try {
+    if (!req.session.resetOtpData) return res.json({ success: false });
+    const { email } = req.session.resetOtpData;
+    const newOtp = generateOtp(6);
+    console.log("Resend reset OTP:", newOtp);
+
+    req.session.resetOtpData.otp = newOtp;
+    req.session.resetOtpData.otpExpires = Date.now() + 10 * 60 * 1000;
+
+    const sent = await sendOtp(email, newOtp);
+    return res.json({ success: !!sent });
+  } catch (err) {
+    return res.json({ success: false });
+  }
+};
+
+// ==================== GOOGLE & LOGOUT ====================
+const googleCallback = (req, res) => {
+  if (!req.user) {
+    setFlash(req, "error", "Google login failed");
+    return res.redirect("/login");
+  }
+
+  req.session.userId = req.user._id.toString();
+  req.session.user = {
+    id: req.user._id.toString(),
+    fullName: req.user.fullName || "User",
+    email: req.user.email,
+  };
+
+  setFlash(req, "success", "Logged in with Google!");
+  return res.redirect("/home");
+};
+
 const loadLogout=async(req,res)=>{
   try{
     return res.render("user/logout", { title: "Chronora-Logout",layout: 'layouts/userLayouts/auth'} )
@@ -39,423 +374,24 @@ console.error("performLogout error:", error);
     return res.status(500).send("Server error");
   }
 }
-const loadLogin = async (req, res) => {
-  try {
-    const success = req.query.verified ? "Account verified — please sign in" : null;
-    return res.render("user/login", {title: "Chronora-Login",message: null,success,layout: 'layouts/userLayouts/auth'
-    });
-  } catch (error) {
-    console.log("login page not found");
-    res.status(500).send("server error");
-  }
-};
 
-const loadSignUp = async (req, res) => {
-  try {
-    return res.render("user/signup", { title: "Chronora-Signup", message: null,layout: 'layouts/userLayouts/auth' });
-  } catch (error) {
-    console.log("signUp page not found");
-    res.status(500).send("server error");
-  }
-};
-
-
-const loadForgotPassword = (req, res) => {
-  delete req.session.resetOtpData;
-  delete req.session.resetUserId;
-  res.render("user/forgetPassword", {
-    title: "Chronora – Forgot Password",
-    message: null,
-    layout: 'layouts/userLayouts/auth'
-  });
-};
-
-const sendResetOtp = async (req, res) => {
-  const { email } = req.body;
-  if (!email) {
-    return res.render("user/forgetPassword", {
-      title: "Chronora – Forgot Password",
-      layout: "layouts/userLayouts/auth",
-      message: "Please enter your email.",
-    });
-  }
-
-  try {
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
-    if (!user) {
-      return res.render("user/forgetPassword", {
-        title: "Chronora – Forgot Password",
-        layout: "layouts/userLayouts/auth",
-        message: "No account found with this email.",
-      });
-    }
-
-    const otp = generateOtp(6);
-    console.log("Reset OTP (dev):", otp);
-
-    req.session.resetOtpData = {
-      userId: user._id,
-      email: user.email,
-      otp,
-      otpExpires: Date.now() + 10 * 60 * 1000,
-    };
-
-    const sent = await sendOtp(user.email, otp);
-    if (!sent) {
-      return res.render("user/forgetPassword", {
-        title: "Chronora – Forgot Password",
-        layout: "layouts/userLayouts/auth",
-        message: "Failed to send OTP. Try again.",
-      });
-    }
-
-    return res.render("user/resetOtp", {
-      title: "Verify Reset OTP",
-      layout: "layouts/userLayouts/auth",
-      email: user.email,
-      message: "OTP sent to your email.",
-    });
-  } catch (error) {
-    console.error("sendResetOtp error:", error);
-    return res.render("user/forgetPassword", {
-      title: "Chronora – Forgot Password",
-      layout: "layouts/userLayouts/auth",
-      message: "Server error.",
-    });
-  }
-};
-
-const loadResetOtp = (req, res) => {
-  if (!req.session.resetOtpData) {
-    return res.redirect("/forgetPassword");
-  }
-  res.render("user/resetOtp", {
-    title: "Verify Reset OTP",
-    layout: "layouts/userLayouts/auth",
-    email: req.session.resetOtpData.email,
-    message: null,
-  });
-};
-
-const verifyResetOtp = async (req, res) => {
-  const providedOtp = Array.isArray(req.body.otp)
-    ? req.body.otp.join("")
-    : (req.body.otp || "").trim();
-
-  const data = req.session.resetOtpData;
-  if (!data) return res.redirect("/forgetPassword");
-
-  if (Date.now() > data.otpExpires) {
-    delete req.session.resetOtpData;
-    return res.render("user/forgetPassword", {
-      title: "Chronora – Forgot Password",
-      layout: "layouts/userLayouts/auth",
-      message: "OTP expired. Request a new one.",
-    });
-  }
-
-  if (providedOtp !== data.otp) {
-    return res.render("user/resetOtp", {
-      title: "Verify Reset OTP",
-      layout: "layouts/userLayouts/auth",
-      email: data.email,
-      message: "Incorrect OTP. Try again.",
-    });
-  }
-
-  req.session.resetUserId = data.userId;
-  delete req.session.resetOtpData;
-
-  return res.render("user/resetPassword", {
-    title: "Reset Password",
-    layout: "layouts/userLayouts/auth",
-    message: null,
-  });
-};
-const resendResetOtp=async(req,res)=>{
-  try{
-    if(!req.session.resetOtpData){
-      return res.json({success:false,message:"No otp session found"});
-
-    }
-    const{email}=req.session.resetOtpData;
-    const newOtp=generateOtp(6);
-    console.log("resend reset password: ",newOtp);
-    req.session.resetOtpData.otp=newOtp;
-    req.session.resetOtpData.otpExpires=Date.now() + 10 * 60 * 1000;
-
-    const sent=await sendOtp(email,newOtp);
-    if(sent){
-      res.json({success:true})
-    }else{
-      res.json({success:false,message:'Failed to send otp to email'})
-    }
-  }catch(error){
-    console.error("Resend OTP Error:", err);
-    res.json({ success: false, message: "Server error" });
-  }
-}
-const loadResetPassword=async(req,res)=>{
-  if(!req.session.resetUserId){
-    return res.redirect("/forgetPassword");
-  }
-  res.render("user/resetPassword",{title:"reset password",layout:"layouts/userLayouts/auth",message:null})
-}
-const resetPassword = async (req, res) => {
-  const { password, confirm } = req.body;
-  const userId = req.session.resetUserId;
-
-  if (!userId) return res.redirect("/forgetPassword");
-  if (!password || password !== confirm) {
-    return res.render("user/resetPassword", {
-      title: "Reset Password",
-      layout: "layouts/userLayouts/auth",
-      message: "Passwords do not match.",
-    });
-  }
-
-  try {
-    const user = await User.findById(userId);
-    if (!user) {
-      delete req.session.resetUserId;
-      return res.redirect("/forgetPassword");
-    }
-
-    user.password = password; 
-    await user.save();
-
-    delete req.session.resetUserId;
-
-    return res.render("user/login", {
-      layout: "layouts/userLayouts/auth",
-      title: "Chronora – Login",
-      message: null,
-      success: "Password reset successful! Please log in.",
-    });
-  } catch (err) {
-    console.error("resetPassword error:", err);
-    return res.render("user/resetPassword", {
-      title: "Reset Password",
-      layout: "layouts/userLayouts/auth",
-      message: "Failed to reset password.",
-    });
-  }
-};
-
-const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.render("user/login", {
-        layout: "layouts/userLayouts/auth",
-        title: "Chronora-Login",
-        message: "Please provide both email and password",
-      });
-    }
-
-    const findUser = await User.findOne({ email: email.toLowerCase().trim() });
-    if (!findUser) {
-      return res.render("user/login", {
-        layout: "layouts/userLayouts/auth",
-        title: "Chronora-Login",
-        message: "Account not found",
-      });
-    }
-
-    if (!findUser.isVerified) {
-      return res.render("user/login", {
-        layout: "layouts/userLayouts/auth",
-        title: "Chronora-Login",
-        message: "Please verify your email first",
-      });
-    }
-
-    const match = await bcrypt.compare(password, findUser.password);
-    if (!match) {
-      return res.render("user/login", {
-        layout: "layouts/userLayouts/auth",
-        title: "Chronora-Login",
-        message: "Invalid email or password.",
-        success: null,
-      });
-    }
-
-    // store id as string to avoid CastErrors later
-    const userId = findUser._id.toString();
-
-    req.session.userId = userId; // plain string
-    // store small user object but keep id as string
-    req.session.user = { id: userId, fullName: findUser.fullName, email: findUser.email };
-
-    return res.redirect("/home");
-  } catch (error) {
-    console.log("login error", error);
-    return res.render("user/login", {
-      layout: "layouts/userLayouts/auth",
-      title: "Chronora-Login",
-      message: "Something went wrong. Try again later.",
-    });
-  }
-};
-const signUp = async (req, res) => {
-  try {
-    const { fullName, email, password, confirm } = req.body;
-    if (!fullName || !email || !password || !confirm) {
-      return res.render("user/signup", {
-        layout: "layouts/userLayouts/auth",
-        title: "Chronora-Signup",
-        message: "All fields are required",
-      });
-    }
-
-    if (password !== confirm) {
-      return res.render("user/signup", {
-        layout: "layouts/userLayouts/auth",
-        title: "Chronora-Signup",
-        message: "Passwords do not match",
-      });
-    }
-
-    const existing = await User.findOne({ email: email.toLowerCase().trim() });
-    if (existing) {
-      return res.render("user/signup", {
-        layout: "layouts/userLayouts/auth",
-        title: "Chronora-Signup",
-        message: "User already exists with this email",
-      });
-    }
-
-    const otp = generateOtp(6);
-    console.log("Signup OTP (dev):", otp);
-
-    const emailSent = await sendOtp(email, otp);
-    if (!emailSent) {
-      return res.render("user/signup", {
-        layout: "layouts/userLayouts/auth",
-        title: "Chronora - Signup",
-        message: "Failed to send verification email. Try again.",
-      });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    req.session.pendingUser = {
-      fullName,
-      email: email.toLowerCase().trim(),
-      password: hashedPassword,
-      otp,
-      otpExpires: Date.now() + 3 * 60 * 1000,
-    };
-
-    return res.redirect("/verifyOtp");
-  } catch (error) {
-    console.error("signup error", error);
-    return res.status(500).render("user/signup", {
-      layout: "llayouts/userLayouts/auth",
-      title: "Chronora - Signup",
-      message: "Server error",
-    });
-  }
-};
-
-const loadVerifyOtp = async (req, res) => {
-  try {
-    if (!req.session?.pendingUser) return res.redirect("/signup");
-    return res.render("user/verifyOtp", {
-      layout: "layouts/userLayouts/auth",
-      title: "Verify OTP",
-      message: null,
-    });
-  } catch (err) {
-    console.error("loadVerifyOtp error", err);
-    return res.redirect("/signup");
-  }
-};
-
-const verifyOtp = async (req, res) => {
-  try {
-    const providedOtp = Array.isArray(req.body.otp) ? req.body.otp.join("") : (req.body.otp || "").trim();
-    const pending = req.session.pendingUser;
-    if (!pending) {
-      return res.render("user/signup", {
-        layout: "layouts/userLayouts/auth",
-        title: "Chronora-Signup",
-        message: "No signup in progress. Please sign up again.",
-      });
-    }
-
-    if (Date.now() > pending.otpExpires) {
-      delete req.session.pendingUser;
-      return res.render("user/signup", {
-        layout: "layouts/userLayouts/auth",
-        title: "Chronora-Signup",
-        message: "OTP expired. Please sign up again.",
-      });
-    }
-
-    if (providedOtp !== String(pending.otp)) {
-      return res.render("user/verifyOtp", {
-        layout: "layouts/userLayouts/auth",
-        title: "Verify OTP",
-        message: "Incorrect OTP. Try again.",
-      });
-    }
-
-    const newUser = await User.create({
-      fullName: pending.fullName,
-      email: pending.email,
-      password: pending.password,
-      isVerified: true,
-    });
-
-    delete req.session.pendingUser;
-    return res.redirect("/login?verified=1");
-  } catch (err) {
-    console.error("verify otp error", err);
-    return res.status(500).render("user/verifyOtp", {
-      layout: "layouts/userLayouts/auth",
-      title: "Verify OTP",
-      message: "Server error",
-    });
-  }
-};
-
-const resendOtp = async (req, res) => {
-  try {
-    const pending = req.session?.pendingUser;
-    if (!pending) {
-      return res.json({ success: false, message: "No signup in progress." });
-    }
-
-    const newOtp = generateOtp(6);
-    console.log("Resend OTP (dev):", newOtp);
-
-    pending.otp = newOtp;
-    pending.otpExpires = Date.now() + 3 * 60 * 1000;
-    req.session.pendingUser = pending;
-
-    const emailSent = await sendOtp(pending.email, newOtp);
-    return res.json({ success: !!emailSent });
-  } catch (err) {
-    console.error("resendOtp error:", err);
-    return res.json({ success: false, message: "Server error" });
-  }
-};
+// ==================== EXPORT ====================
 export default {
-  loadLogin,
-  login,
   loadSignUp,
   signUp,
   loadVerifyOtp,
   verifyOtp,
-  resendOtp,
+  loadLogin,
+  login,
   loadForgotPassword,
   sendResetOtp,
   loadResetOtp,
   verifyResetOtp,
   loadResetPassword,
   resetPassword,
+  resendOtp,
   resendResetOtp,
   googleCallback,
+  performLogout,
   loadLogout,
-  performLogout
 };

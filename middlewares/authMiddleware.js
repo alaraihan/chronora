@@ -25,18 +25,19 @@ export const isUser=async(req,res,next)=>{
  const user=await User.findById(userId);
  
  if(!user){
-  req.session.userId=null;
-  return res.redirect("/login");
+ req.session.destroy();
+      return res.redirect("/login?error=Account not found");
  }
  if(user.isBlocked){
-  res.session.userId=null;
-  return res.redirect("/login")
+  req.session.destroy();
+  return res.redirect("/login?error=Your account has been blocked")
  }
    req.user=user;
    res.locals.currentUser=user;
    next();
   }catch(error){
 console.log('isUser error',error);
+req.session.destroy();
 res.redirect('/login');
   }
 };
@@ -56,7 +57,7 @@ export const isAdmin=async(req,res,next)=>{
      res.locals.currentAdmin=admin;
      next()
   }catch(error){
- console.log("isAdmin Error:", err);
+ console.log("isAdmin Error:", error);
     res.redirect("/admin/login");
   }
 }
