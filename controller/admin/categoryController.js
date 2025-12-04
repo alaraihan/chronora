@@ -1,157 +1,203 @@
 import Category from "../../models/categorySchema.js";
 import cloudinary from "../../config/cloudinary.js";
 import fs from "fs";
-import sendResponse from "../../utils/response.js";   
+import { setFlash, getFlash } from "../../utils/flash.js";
 
 const render = (req, res, view, options = {}) => {
-  const flash = req.session.flash || null;
-  delete req.session.flash; 
+  const flash = getFlash(req); 
   return res.render(view, { flash, ...options });
 };
-
 export const listCategories = async (req, res) => {
-  try {
-    const search = req.query.search?.trim() || "";
-    const page = Math.max(1, Number(req.query.page) || 1);
-    const limit = 8;
-    const skip = (page - 1) * limit;
+    try {
+        const search = req.query.search?.trim() || "";
+        const status = req.query.status || 'listed'; 
+        const page = Math.max(1, Number(req.query.page) || 1);
+        const limit = 4;
+        const skip = (page - 1) * limit;
 
-    const filter = { isDeleted: false };
-    if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-      ];
+        const filter = {}; 
+
+        if (search) {
+            filter.$or = [
+                { name: { $regex: search, $options: "i" } },
+                { description: { $regex: search, $options: "i" } },
+            ];
+        }
+
+        const total = await Category.countDocuments(filter);
+        const categories = await Category.find(filter)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean();
+
+        return render(req, res, "admin/categories", {
+            title: "Categories - Chronora Admin",
+            layout: "layouts/adminLayouts/main",
+            page: "categories",
+            categories,
+            search,
+            status, 
+            currentPage: page,
+            totalPages: Math.ceil(total / limit),
+            totalCategories: total,
+            pageJs: 'categories',
+            pageCss: 'categories',
+        });
+    } catch (err) {
+        console.error("listCategories error:", err);
+        return res.status(500).json({ success: false, message: "Failed to load categories" });
     }
-
-    const total = await Category.countDocuments(filter);
-    const categories = await Category.find(filter)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean();
-
-    return render(req, res, "admin/categories", {
-      title: "Categories - Chronora Admin",
-      layout: "layouts/adminLayouts/main",
-      page: "categories",
-      categories,
-      search,
-      currentPage: page,
-      totalPages: Math.ceil(total / limit),
-      totalCategories: total,
-    });
-  } catch (err) {
-    console.error("listCategories error:", err);
-    return sendResponse(req, res, "error", "Failed to load categories", {}, "/admin/dashboard");
-  }
 };
+
 export const addCategory = async (req, res) => {
-  try {
-    const { name, description } = req.body;
+    try {
+        const { name, description } = req.body;
+        const trimmedName = name?.trim();
+        const trimmedDescription = description?.trim();
 
-    if (!name?.trim() || !description?.trim()) {
-      return sendResponse(req, res, "error", "Please fill all fields", {}, "/admin/categories");
+        if (!trimmedName || !trimmedDescription) {
+            return res.status(400).json({ success: false, message: "Please fill all required fields." });
+        }
+
+        // 🚨 New validation – Image is required!
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "Please upload a category image."
+            });
+        }
+
+        const exists = await Category.findOne({
+            name: { $regex: `^${trimmedName}$`, $options: "i" },
+            isListed: true, 
+        });
+        
+        if (exists) {
+            return res.status(409).json({ success: false, message: "Category already exists!" });
+        }
+
+        // Upload image to Cloudinary
+        const result = await cloudinary.uploader.upload(req.file.path, {
+            folder: "chronora/categories",
+            transformation: { width: 500, height: 500, crop: "limit" },
+        });
+
+        fs.unlinkSync(req.file.path); // remove temp file
+
+        const category = await Category.create({
+            name: trimmedName,
+            description: trimmedDescription,
+            image: result.secure_url,
+        });
+        
+        return res.status(201).json({
+            success: true,
+            message: 'Category created successfully',
+            category
+        });
+
+    } catch (err) {
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({ success: false, message: err.message });
+        }
+
+        console.error("addCategory error:", err);
+        return res.status(500).json({ success: false, message: "Internal server error: Failed to add Category" });
     }
-
-    const exists = await Category.findOne({
-      name: { $regex: `^${name.trim()}$`, $options: "i" },
-      isDeleted: false,
-    });
-    if (exists) {
-      return sendResponse(req, res, "error", "Category already exists", {}, "/admin/categories");
-    }
-
-    let image = "";
-    if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "chronora/categories",
-        transformation: { width: 500, height: 500, crop: "limit" },
-      });
-      image = result.secure_url;
-      fs.unlinkSync(req.file.path);
-    }
-
-    const category = await Category.create({
-      name: name.trim(),
-      description: description.trim(),
-      image,
-    });
-
-    return sendResponse(req, res, "success", "Category added successfully!", {
-      category: category.toObject()
-    }, "/admin/categories");
-
-  } catch (err) {
-    console.error("addCategory error:", err);
-    return sendResponse(req, res, "error", "Failed to add category", {}, "/admin/categories");
-  }
 };
+
 export const editCategory = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { name, description } = req.body;
+    try {
+        const { id } = req.params;
+        const { name, description,isListed } = req.body;
+        const trimmedName = name?.trim();
+        const trimmedDescription = description?.trim();
 
-    if (!name?.trim() || !description?.trim()) {
-      return sendResponse(req, res, "error", "Please fill all fields", {}, "/admin/categories");
+        if (!trimmedName || !trimmedDescription) {
+            return res.status(400).json({ success: false, message: "Please fill all required fields." });
+        }
+
+        const updateData = {
+            name: trimmedName,
+            description: trimmedDescription,
+            isListed: isListed === 'true'
+        };
+
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: "chronora/categories",
+            });
+
+            updateData.image = result.secure_url;
+            fs.unlinkSync(req.file.path);
+        }
+
+        
+        const updated = await Category.findByIdAndUpdate(id, updateData, { new: true });
+        
+        if (!updated) {
+            return res.status(404).json({ success: false, message: "Category not found" });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Category updated successfully!",
+            category: updated.toObject()
+        });
+
+    } catch (err) {
+        if (err.code === 11000) {
+             return res.status(409).json({ success: false, message: "Category name already taken." });
+        }
+        
+        console.log("editCategory error:", err);
+        return res.status(500).json({ success: false, message: "Failed to update Category" });
     }
-
-    const updateData = {
-      name: name.trim(),
-      description: description.trim(),
-    };
-
-    if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "chronora/categories",
-      });
-      updateData.image = result.secure_url;
-      fs.unlinkSync(req.file.path);
-    }
-
-    const updated = await Category.findByIdAndUpdate(id, updateData, { new: true });
-    if (!updated) {
-      return sendResponse(req, res, "error", "Category not found", {}, "/admin/categories");
-    }
-
-    return sendResponse(req, res, "success", "Category updated successfully!", {
-      category: updated.toObject()
-    }, "/admin/categories");
-
-  } catch (err) {
-    console.error("editCategory error:", err);
-    return sendResponse(req, res, "error", "Failed to update category", {}, "/admin/categories");
-  }
 };
 
-export const toggleDeleteCategory = async (req, res) => {
-  try {
-    const category = await Category.findById(req.params.id);
-    if (!category) {
-      return sendResponse(req, res, "error", "Category not found");
+export const getCategory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const category = await Category.findById(id);
+
+        if (!category) {
+            return res.status(404).json({ success: false, message: "Category not found" });
+        }
+        
+        return res.status(200).json({ category });
+
+    } catch (err) {
+        console.error("getCategory error:", err);
+        return res.status(500).json({ success: false, message: "Failed to fetch category" });
     }
-
-    const wasDeleted = category.isDeleted;
-    category.isDeleted = !wasDeleted;
-    category.deletedAt = wasDeleted ? null : new Date();
-    await category.save();
-
-    const message = wasDeleted ? "Category restored!" : "Category moved to trash!";
-
-    return sendResponse(req, res, "success", message, {
-      isDeleted: category.isDeleted,
-      message
-    });
-
-  } catch (err) {
-    console.error("toggleDeleteCategory error:", err);
-    return sendResponse(req, res, "error", "Operation failed");
-  }
 };
+
+export const toggleListCategory=async(req,res)=>{
+  try{
+  const {id}=req.params;
+  const category=await Category.findById(id).select('isListed');
+    if(!category){
+      return res.status(404).json({success:false,message:"Category not found!"});
+    }
+      const newStatus=!category.isListed;
+       await Category.updateOne({_id:id},{isListed:newStatus})
+             const action = newStatus ? 'listed' : 'unlisted ';
+      return res.status(200).json({
+            success: true,
+            message: `Category successfully ${action}.`,
+            isListed:newStatus,
+        });
+  }catch(error){
+console.error("toggleListCategory error:", error);
+        return res.status(500).json({ success: false, message: "Failed to toggle category status." });
+  }
+}
 
 export default {
-  listCategories,
-  addCategory,
-  editCategory,
-  toggleDeleteCategory,
+    listCategories,
+    addCategory,
+    editCategory,
+    getCategory,
+    toggleListCategory,
 };

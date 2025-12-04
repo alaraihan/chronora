@@ -2,6 +2,9 @@
 <html>
        <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+          <% if (typeof pageCss !== 'undefined' && pageCss) { %>
+  <link rel="stylesheet" href="/css/admin/<%= pageCss %>.css" />
+  <% } %>
   </head>
 <body>
   <main>
@@ -11,7 +14,7 @@
         <script>
 const flash = <%- JSON.stringify(typeof flash !== "undefined" ? flash : null) %>;
 
-    if (flash) {
+   
       Toastify({
         text: flash.message,
         duration: 4000,
@@ -21,8 +24,11 @@ const flash = <%- JSON.stringify(typeof flash !== "undefined" ? flash : null) %>
         backgroundColor: flash.type === "success" ? "#4ade80" : "#ef4444",
         stopOnFocus: true,
       }).showToast();
-    }
+    
   </script>
+    <% if (typeof pageJs !== 'undefined' && pageJs) { %>
+  <script src="/js/admin/<%= pageJs %>.js"></script>
+  <% } %>
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </body>
 </html>

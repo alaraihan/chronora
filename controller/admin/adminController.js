@@ -1,20 +1,19 @@
 import Admin from "../../models/adminSchema.js";
 import User from "../../models/userSchema.js";
 import bcrypt from "bcrypt";
-import sendResponse from "../../utils/response.js";  
-
+import { setFlash, getFlash } from "../../utils/flash.js";
 const render = (req, res, view, options = {}) => {
-  const flash = req.session.flash || null;
-  delete req.session.flash;
+  const flash = getFlash(req);
   return res.render(view, { flash, ...options });
 };
-
 const loadLogin = (req, res) => {
   if (req.session.admin) return res.redirect("/admin/dashboard");
 
   return render(req, res, "admin/adminLogin", {
     title: "Admin Login - Chronora",
     layout: "layouts/adminLayouts/auth",
+    pageJs: "adminLogin",
+    pageCss: "adminLogin",
   });
 };
 
@@ -23,12 +22,16 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return sendResponse(req, res, "error", "Please fill email and password", {}, "/admin/login");
+      return res
+        .status(400)
+        .json({ success: false, message: "Please fill all fields" });
     }
 
     const admin = await Admin.findOne({ email: email.toLowerCase().trim() });
     if (!admin || !(await bcrypt.compare(password, admin.password))) {
-      return sendResponse(req, res, "error", "Invalid email or password", {}, "/admin/login");
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid email or password" });
     }
 
     req.session.adminId = admin._id.toString();
@@ -38,22 +41,23 @@ const login = async (req, res) => {
       name: admin.fullName || "Admin",
     };
 
-    return sendResponse(req, res, "success", "Welcome back, Admin!", {}, "/admin/dashboard");
-
+    res.status(200).json({ success: true, message: "Welcome back, Admin!" });
   } catch (err) {
     console.error("Admin login error:", err);
-    return sendResponse(req, res, "error", "Server error. Try again later.", {}, "/admin/login");
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error. Try again later." });
   }
 };
-
 const dashboard = (req, res) => {
   if (!req.session.admin) {
-    return sendResponse(req, res, "error", "Please log in first", {}, "/admin/login");
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized Admin" });
   }
 
   return render(req, res, "admin/dashboard", {
     title: "Dashboard - Chronora Admin",
-    layout: "layouts/adminLayouts/main",
     page: "dashboard",
     admin: req.session.admin,
   });
@@ -61,12 +65,17 @@ const dashboard = (req, res) => {
 
 const logout = (req, res) => {
   req.session.destroy((err) => {
-    if (err) console.error("Logout error:", err);
+    if (err) {
+      console.error("Logout error:", err);
+      return res.status(500).json({ success: false, message: "Logout failed" });
+    }
     res.clearCookie("sid");
-    return sendResponse(req, res, "success", "Logged out successfully!", {}, "/admin/login");
+    res.json({
+      success: true,
+      message: "Logged out successfully!",
+    });
   });
 };
-
 
 const loadCustomers = async (req, res) => {
   try {
@@ -103,38 +112,36 @@ const loadCustomers = async (req, res) => {
     });
   } catch (error) {
     console.error("Load customers error:", error);
-    return sendResponse(req, res, "error", "Failed to load customers", {}, "/admin/dashboard");
+    req.session.flash = { type: "error", message: "Failed to load customers" };
+    return res.redirect("/admin/dashboard");
   }
 };
-
 
 const toggleBlockCustomer = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
-      return sendResponse(req, res, "error", "User not found");
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     user.isBlocked = !user.isBlocked;
     await user.save();
 
-    const msg = user.isBlocked ? "User blocked successfully" : "User unblocked successfully";
+    const msg = user.isBlocked
+      ? "User blocked successfully"
+      : "User unblocked successfully";
 
-    return sendResponse(req, res, "success", msg, {
-      isBlocked: user.isBlocked
+    res.json({
+      success: true,
+      message: msg,
+      isBlocked: user.isBlocked,
     });
-
   } catch (error) {
     console.error("Toggle block error:", error);
-    return sendResponse(req, res, "error", "Server error");
+    res.status(500).json({ success: false, message: "Server error" });
   }
-};
-
-const loadLoginWithLogoutMessage = (req, res) => {
-  if (req.query.logout === "success") {
-    req.session.flash = { type: "success", message: "Logged out successfully!" };
-  }
-  return loadLogin(req, res);
 };
 
 export default {
@@ -144,5 +151,4 @@ export default {
   logout,
   loadCustomers,
   toggleBlockCustomer,
-  loadLoginWithLogoutMessage,
 };

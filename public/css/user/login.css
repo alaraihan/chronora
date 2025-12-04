@@ -15,6 +15,7 @@
   background: transparent;
   box-sizing: border-box;
 }
+    .google-btn{display:block;width:100%;padding:10px;border-radius:8px;border:1px solid #2a2a2a;background:#fff;color:#000;font-weight:600;cursor:pointer;text-align:center;margin-top:16px;text-decoration:none}
 
 .login-container h2 {
   text-align: center;

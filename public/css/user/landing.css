@@ -113,3 +113,104 @@
   color: #bfbfbf;
   margin-bottom: 25px;
 }
+/* SHOP BY CATEGORY SECTION - LUXURY STYLE */
+.categories-section {
+  padding: 80px 20px;
+  background-color: #12161f;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 2.2rem;
+  margin-bottom: 50px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.category-card-link {
+  text-decoration: none;
+  display: block;
+}
+
+.category-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  height: 380px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  transition: all 0.4s ease;
+}
+
+.category-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.category-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.85));
+  color: white;
+  padding: 50px 20px 30px;
+  text-align: center;
+  transition: all 0.4s ease;
+}
+
+.category-name {
+  font-size: 1.7rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  letter-spacing: 0.5px;
+}
+
+.view-text {
+  font-size: 1rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* HOVER EFFECTS */
+.category-card:hover {
+  transform: translateY(-15px);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+}
+
+.category-card:hover .category-img {
+  transform: scale(1.1);
+}
+
+.category-card:hover .category-overlay {
+  background: linear-gradient(transparent, rgba(0,0,0,0.95));
+}
+
+.no-categories {
+  color: #888;
+  font-size: 1.1rem;
+  padding: 40px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .category-card {
+    height: 300px;
+  }
+  .section-title {
+    font-size: 1.9rem;
+  }
+}

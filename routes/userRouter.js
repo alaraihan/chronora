@@ -3,7 +3,6 @@ import express from "express";
 const router = express.Router();
 
 
-import {isUser} from "../middlewares/authMiddleware.js"
 
 import userController from"../controller/user/userController.js";
 import authController from"../controller/user/authController.js";
@@ -13,11 +12,12 @@ import passport from"../config/passport.js";
 router.get("/pageNotfound", userController.pageNotfound);
 router.get("/about", userController.loadAboutpage);
 router.get("/contact", userController.loadContactpage);
-router.get("/", userController.loadLandingpage);
-router.get("/home", isUser,userController.loadHomepage);
+router.get("/",userController.loadHomepage);
 
+router.get("/product/:id", userController.productDetails);  
+router.get("/watch", userController.loadWatchPage);
 
-router.get("/login", authController.loadLogin);
+router.get("/login",authController.loadLogin);
 router.post("/login", authController.login);
 router.get("/signup", authController.loadSignUp);
 router.post("/signup", authController.signUp);

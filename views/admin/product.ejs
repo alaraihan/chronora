@@ -1,0 +1,120 @@
+
+<div class="container">
+  <div class="header">
+      <h1>Products Management</h1>
+      <button class="btn-primary" onclick="openAddModal()">+ Add New Product</button>
+  </div>
+
+  <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search products..." value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+      <button class="btn-primary" onclick="searchProducts()">Search</button>
+      <% if (searchQuery) { %>
+          <button class="btn-primary" style="background:#6b7280;" onclick="location.href='/admin/products'">Clear</button>
+      <% } %>
+  </div>
+
+  <table>
+      <thead>
+          <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th>Actions</th>
+          </tr>
+      </thead>
+      <tbody>
+          <% (products || []).forEach(p => { %>
+          <tr>
+              <td><img src="<%= p.image %>" class="product-thumbnail" onerror="this.src='/images/no-image.png'"></td>
+              <td><strong><%= p.name %></strong></td>
+              <td><%= p.categoryName || '—' %></td>
+              <td>₹<%= p.price != null ? p.price : '—' %></td>
+              <td><strong><%= typeof p.totalStock === 'number' ? p.totalStock : 0 %></strong></td>
+              <td><span class="status-badge <%= p.isBlocked ? 'blocked' : 'active' %>"><%= p.isBlocked ? 'Blocked' : 'Active' %></span></td>
+              <td>
+                  <button onclick="openEditModal('<%= p._id %>')" class="btn-primary" style="padding:8px 12px;font-size:13px;">Edit</button>
+                  <button onclick="toggleBlock('<%= p._id %>', <%= p.isBlocked ? 'true' : 'false' %>)" 
+                          style="padding:8px 12px;font-size:13px;background:<%= p.isBlocked ? '#10b981' : '#ef4444' %>;color:white;">
+                      <%= p.isBlocked ? 'Unblock' : 'Block' %>
+                  </button>
+              </td>
+          </tr>
+          <% }) %>
+      </tbody>
+  </table>
+  <div class="pagination">
+  <% if (pagination) { 
+       const cur = pagination.currentPage; const tp = pagination.totalPages; const lim = pagination.limit || 8;
+       const q = searchQuery ? '&search=' + encodeURIComponent(searchQuery) : '';
+  %>
+      <% if (cur > 1) { %>
+        <a href="?page=<%= cur - 1 %>&limit=<%= lim %><%= q %>">Previous</a>
+      <% } %>
+
+      Page <%= cur %> of <%= tp %>
+
+      <% if (cur < tp) { %>
+        <a href="?page=<%= cur + 1 %>&limit=<%= lim %><%= q %>">Next</a>
+      <% } %>
+  <% } %>
+</div>
+
+</div>
+
+
+<!-- ADD / EDIT MODAL (same modal for add + edit) -->
+<div id="productModal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">×</span>
+        <h2 id="modalTitle">Add New Product</h2>
+        <form id="productForm" autocomplete="off">
+            <input type="hidden" id="productId">
+
+            <div class="form-group">
+                <label>Product Name *</label>
+                <input type="text" id="name" >
+            </div>
+
+            <div class="form-group">
+                <label>Category *</label>
+                <select id="category" >
+                    <option value="">-- Select Category --</option>
+                    <% (categories || []).forEach(c => { %>
+                        <option value="<%= c._id %>"><%= c.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Price (₹) *</label>
+                    <input type="number" id="price" min="0" step="0.01" >
+                </div>
+                <div class="form-group">
+                    <label>Stock (calculated from variants)</label>
+                    <input type="number" id="calculatedStock" value="0" disabled>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Description *</label>
+                <textarea id="description" ></textarea>
+            </div>
+
+            <div style="margin-top:30px;padding-top:20px;border-top:2px solid #eee;">
+                <h3>Variants <button type="button" class="btn-primary" style="font-size:14px;padding:8px 16px;" onclick="addVariant()">+ Add Variant</button></h3>
+                <div id="variantsContainer"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-primary" style="background:#6b7280;" onclick="closeModal()">Cancel</button>
+                <button type="submit" id="saveBtn" class="btn-primary">Save Product</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+

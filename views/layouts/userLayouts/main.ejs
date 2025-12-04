@@ -1,45 +1,69 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title><%= title || 'Chronora' %></title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title><%= typeof title !== 'undefined' ? title : 'Chronora' %></title>
 
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
-  <link rel="stylesheet" href="/css/header.css">
-  <link rel="stylesheet" href="/css/footer.css">
-  <style>
-    :root { --header-height: 70px; }
-    body { margin: 0; padding-top: var(--header-height); background: #0f0f1a; color: white; font-family: 'Segoe UI', sans-serif; }
-  </style>
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
 
-  <%- include('../../partials/user/header') %>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+ 
+    <link rel="stylesheet" href="/css/user/header.css" /
+    >
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      integrity="sha512-..."
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="/css/user/footer.css" />
 
-  <main id="main">
-    <%- body %>
-  </main>
+    <link rel="stylesheet" href="/css/user/productDetail.css" />
+    <style>
+      :root {
+        --header-height: 70px;
+      }
+      body {
+        margin: 0;
+        padding-top: var(--header-height);
+        background: #0f0f1a;
+        color: white;
+        font-family: "Segoe UI", sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('../../partials/user/header') %>
 
-  <%- include('../../partials/user/footer') %>
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-  <script>
-const flash = <%- JSON.stringify(typeof flash !== "undefined" ? flash : null) %>;
+    <main id="main"><%- body %></main>
 
-    if (flash) {
-      Toastify({
-        text: flash.message,
-        duration: 4000,
-        close: true,
-        gravity: "top",
-        position: "right",
-        backgroundColor: flash.type === "success" ? "#4ade80" : "#ef4444",
-        stopOnFocus: true,
-      }).showToast();
-    }
-  </script>
-  <script src="/js/main.js"></script>
-</body>
+    <%- include('../../partials/user/footer') %>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+      const flash = <%- JSON.stringify(typeof flash !== "undefined" ? flash : null) %>;
+
+          if (flash) {
+            Toastify({
+              text: flash.message,
+              duration: 4000,
+              close: true,
+              gravity: "top",
+              position: "right",
+              backgroundColor: flash.type === "success" ? "#4ade80" : "#ef4444",
+              stopOnFocus: true,
+            }).showToast();
+          }
+    </script>
+    <script src="/js/main.js"></script>
+    <script src="/js/user/productDetail.js"></script>
+  </body>
 </html>

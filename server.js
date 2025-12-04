@@ -13,6 +13,7 @@ import {setUser} from './middlewares/authMiddleware.js';
 import connectDB from "./config/db.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import { checkBlockedUser } from "./middlewares/authMiddleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,8 +21,8 @@ const __dirname = path.dirname(__filename);
 connectDB();
 
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({limit:'50mb'}));
+app.use(express.urlencoded({ extended: true,limit:'50mb' }));
 
 app.use(session({
   name: 'sid', 
@@ -41,25 +42,15 @@ app.use(session({
   }
 }));
 
-// app.js — place after app.use(session(...))
 app.use((req, res, next) => {
-  // 1) take flash from session if present
   const sessionMessage = req.session?.message || null;
   const sessionSuccess = typeof req.session?.success !== 'undefined' ? req.session.success : null;
-
-  // 2) fallback to query params (useful for redirects like /login?success=Logged%20out)
   const queryMessage = req.query?.message || null;
   const querySuccess = req.query?.success ? true : null;
-
-  // Resolution order: session > query
   const finalMessage = sessionMessage || queryMessage || (querySuccess ? req.query.success : null) || null;
   const finalSuccess = (sessionSuccess !== null ? sessionSuccess : (querySuccess !== null ? true : false)) || false;
-
-  // expose to views
   res.locals.message = finalMessage;
   res.locals.success = finalSuccess;
-
-  // clear session flash so it's one-time
   if (req.session) {
     delete req.session.message;
     delete req.session.success;
@@ -104,6 +95,7 @@ app.set('layout', 'layouts/userLayouts/main');
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(setUser);
+app.use(checkBlockedUser);
 
 app.use("/", userRouter);
 app.use("/admin", adminRouter);

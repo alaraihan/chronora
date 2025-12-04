@@ -1,6 +1,8 @@
 import User from "../models/userSchema.js";
 import Admin from "../models/adminSchema.js";
 
+
+
 export const setUser = (req, res, next) => {
   res.locals.user = req.session.user || null;
   next();
@@ -16,31 +18,6 @@ function getId(val){
   }
   return null;
 }
-
-export const isUser=async(req,res,next)=>{
-  try{
-   const userId=getId(req.session.userId||req.session.user);
-
-   if(!userId) return res.redirect("/login");
- const user=await User.findById(userId);
- 
- if(!user){
- req.session.destroy();
-      return res.redirect("/login?error=Account not found");
- }
- if(user.isBlocked){
-  req.session.destroy();
-  return res.redirect("/login?error=Your account has been blocked")
- }
-   req.user=user;
-   res.locals.currentUser=user;
-   next();
-  }catch(error){
-console.log('isUser error',error);
-req.session.destroy();
-res.redirect('/login');
-  }
-};
 
 export const isAdmin=async(req,res,next)=>{
   try{
@@ -61,3 +38,57 @@ export const isAdmin=async(req,res,next)=>{
     res.redirect("/admin/login");
   }
 }
+
+export const checkBlockedUser = async (req, res, next) => {
+  const publicPaths = ["/login", "/register", "/logout", "/css", "/js", "/images", "/favicon.ico","/admin"];
+  const isPublicPath = publicPaths.some(path => req.path.startsWith(path));
+  
+  if (isPublicPath) {
+    return next(); 
+  }
+  if (!req.session || !req.session.user) {
+    return next(); 
+  }
+
+  try {
+    const sessionUser = req.session.user;
+    let userId;
+    
+    if (typeof sessionUser === "string") {
+      userId = sessionUser;
+    } else if (sessionUser._id) {
+      userId = sessionUser._id; 
+    } else if (sessionUser.id) {
+      userId = sessionUser.id; 
+    } else if (sessionUser.userId) {
+      userId = sessionUser.userId; 
+    }
+
+    if (!userId) {
+      return next();
+    }
+
+    const user = await User.findById(userId).select("isBlocked");
+    
+    if (!user) {
+      req.session.destroy();
+      return res.status(404).render("user/pageNotfound", { 
+        user: null, 
+        title: "Not found" 
+      });
+    }
+
+    if (user.isBlocked === true) {
+      req.session.destroy(); 
+      return res.status(404).render("user/pageNotfound", { 
+        user: null, 
+        title: "Not found" 
+      });
+    }
+    next();
+    
+  } catch (error) {
+    console.error("Error checking blocked user:", error);
+    next(); 
+  }
+};

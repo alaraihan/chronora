@@ -1,68 +1,216 @@
-function showToast(msg, type = "success") {
-  Toastify({
-    text: msg,
-    duration: 3000,
-    gravity: "top",
-    position: "right",
-    backgroundColor: type === "success" ? "#28a745" : "#dc3545"
-  }).showToast();
+
+  const searchInput = document.querySelector('input[name="search"]');
+  let debounceTimeout;
+
+  searchInput?.addEventListener('input', function() {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+      document.getElementById('searchForm').submit();
+    }, 600);
+  });
+
+  document.querySelectorAll('.clear-search').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = '/admin/categories';
+    });
+  });
+
+function previewImage(e) {
+    const file = e.target.files[0];
+    const preview = document.getElementById('currentLogoImg');
+    const container = document.getElementById('currentLogo');
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => { preview.src = ev.target.result; container.style.display = 'block'; };
+        reader.readAsDataURL(file);
+    } else {
+        preview.src = ''; container.style.display = 'none';
+    }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".btn-edit").forEach(btn => {
-    btn.onclick = () => {
-      const row = btn.closest("tr");
-      document.querySelector("#editForm [name='id']").value = row.dataset.id;
-      document.querySelector("#editForm [name='name']").value = row.dataset.name;
-      document.querySelector("#editForm [name='description']").value = row.dataset.description || "";
-      const img = document.getElementById("currentImage");
-      img.src = row.dataset.image || "";
-      img.style.display = row.dataset.image ? "block" : "none";
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'Add Category';
+    document.getElementById('categoryForm').reset();
+    document.getElementById('categoryId').value = '';
+    document.getElementById('currentLogo').style.display = 'none';
+}
+
+async function openEditModal(id) {
+    try {
+        const { data } = await axios.get(`/admin/categories/${id}`);
+        const c = data.category;
+
+        document.getElementById('modalTitle').textContent = 'Edit Category';
+        document.getElementById('categoryId').value = c._id;
+        document.getElementById('categoryName').value = c.name;
+        document.getElementById('categoryDescription').value = c.description || '';
+        document.getElementById('categoryStatus').value = c.isListed;
+
+        document.getElementById('currentLogoImg').src = c.image || '';
+        document.getElementById('currentLogo').style.display = c.image ? 'block' : 'none';
+
+        new bootstrap.Modal(document.getElementById('categoryModal')).show();
+    } catch (err) {
+        Toastify({ text: 'Failed to load category', backgroundColor: '#ef4444' }).showToast();
+    }
+}
+
+async function saveCategory() {
+    const id = document.getElementById('categoryId').value;
+    const formData = new FormData();
+    formData.append('name', document.getElementById('categoryName').value.trim());
+    formData.append('description', document.getElementById('categoryDescription').value.trim());
+    formData.append('isListed', document.getElementById('categoryStatus').value);
+    if (document.getElementById('categoryLogo').files[0]) {
+        formData.append('logo', document.getElementById('categoryLogo').files[0]);
+    }
+
+    try {
+        if (id) {
+            await axios.put(`/admin/categories/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        } else {
+            await axios.post('/admin/categories', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        }
+        Toastify({ text: 'Saved!', backgroundColor: '#4ade80' }).showToast();
+        bootstrap.Modal.getInstance(document.getElementById('categoryModal')).hide();
+        setTimeout(() => location.reload(), 600);
+    } catch (err) {
+        Toastify({ text: err.response?.data?.message || 'Save failed', backgroundColor: '#ef4444' }).showToast();
+    }
+}
+
+async function toggleCategoryStatus(categoryId, currentListed) {
+    try {
+        await axios.patch(`/admin/categories/toggle/${categoryId}`);
+        const row = document.querySelector(`tr[data-category-id="${categoryId}"]`);
+        const badge = row.querySelector('.status-badge');
+        const btn = row.querySelector('.action-buttons button:last-child');
+        const newListed = !currentListed;
+
+        badge.className = newListed ? 'status-badge status-active' : 'status-badge status-inactive';
+        badge.textContent = newListed ? 'Listed' : 'Unlisted';
+        btn.className = newListed ? 'btn btn-sm btn-success' : 'btn btn-sm btn-secondary';
+        btn.textContent = newListed ? 'Listed' : 'Unlisted';
+        btn.onclick = () => toggleCategoryStatus(categoryId, newListed);
+
+        Toastify({ text: `Category ${newListed ? 'listed' : 'unlisted'}!`, backgroundColor: '#4ade80' }).showToast();
+    } catch (err) {
+        Toastify({ text: 'Failed to update', backgroundColor: '#ef4444' }).showToast();
+    }
+}
+let cropper = null;
+let currentFile = null;
+
+document.getElementById('categoryLogo').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    currentFile = file;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        document.getElementById('logoPreview').src = ev.target.result;
+        document.getElementById('logoPreviewContainer').style.display = 'block';
+        document.getElementById('currentLogo').style.display = 'none'; // Hide old one
     };
-  });
-
-  document.querySelectorAll(".btn-delete").forEach(btn => {
-    btn.onclick = () => {
-      const row = btn.closest("tr");
-      document.querySelector("#deleteForm [name='id']").value = row.dataset.id;
-      document.getElementById("deleteCategoryName").textContent = row.dataset.name;
-      document.getElementById("actionText").textContent = row.dataset.deleted === "true" ? "restore" : "delete";
-    };
-  });
-
-  document.getElementById("addForm").onsubmit = async (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    try {
-      await axios.post("/admin/categories", fd);
-      showToast("Added!");
-    } catch (err) {
-      showToast("Failed", "error");
-    }
-  };
-
-  document.getElementById("editForm").onsubmit = async (e) => {
-    e.preventDefault();
-    const id = e.target.querySelector("[name='id']").value;
-    const fd = new FormData(e.target);
-    try {
-      await axios.patch(`/admin/categories/${id}`, fd);
-      showToast("Updated!");
-    } catch (err) {
-      showToast("Update failed", "error");
-    }
-  };
-  document.getElementById("deleteForm").onsubmit = async (e) => {
-    e.preventDefault();
-    const id = e.target.querySelector("[name='id']").value;
-    console.log(id);
-    try {
-      const res =  await axios.patch(`/admin/categories/delete/${id}`);
-      console.log(res);
-
-      showToast("Done!");
-    } catch (err) {
-      showToast("Failed", "error");
-    }
-  };
+    reader.readAsDataURL(file);
 });
+
+function openCropper() {
+    if (!currentFile) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = document.getElementById('imageToCrop');
+        img.src = e.target.result;
+        
+        const modal = new bootstrap.Modal(document.getElementById('cropperModal'));
+        modal.show();
+
+        document.getElementById('cropperModal').addEventListener('shown.bs.modal', function initCropper() {
+            if (cropper) cropper.destroy();
+            cropper = new Cropper(img, {
+                aspectRatio: 1,          
+                viewMode: 1,
+                dragMode: 'move',
+                autoCropArea: 0.9,
+                restore: false,
+                guides: true,
+                center: true,
+                highlight: false,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: false,
+            });
+            this.removeEventListener('shown.bs.modal', initCropper);
+        });
+    };
+    reader.readAsDataURL(currentFile);
+}
+
+document.getElementById('cropDoneBtn').addEventListener('click', function() {
+    if (!cropper) return;
+
+    const canvas = cropper.getCroppedCanvas({
+        width: 400,
+        height: 400,
+        imageSmoothingQuality: 'high'
+    });
+
+    const croppedBase64 = canvas.toDataURL('image/webp', 0.85); 
+
+    document.getElementById('croppedLogo').value = croppedBase64;
+
+    
+    document.getElementById('logoPreview').src = croppedBase64;
+
+    
+    bootstrap.Modal.getInstance(document.getElementById('cropperModal')).hide();
+});
+
+document.getElementById('cropperModal').addEventListener('hidden.bs.modal', function() {
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+});
+
+const originalSaveCategory = saveCategory;
+async function saveCategory() {
+    const croppedLogo = document.getElementById('croppedLogo').value;
+    const originalFile = document.getElementById('categoryLogo').files[0];
+
+    const formData = new FormData();
+    formData.append('name', document.getElementById('categoryName').value.trim());
+    formData.append('description', document.getElementById('categoryDescription').value.trim());
+    formData.append('isListed', document.getElementById('categoryStatus').value);
+
+    if (croppedLogo) {
+        const byteString = atob(croppedLogo.split(',')[1]);
+        const mimeString = croppedLogo.split(',')[0].split(':')[1].split(';')[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        const blob = new Blob([ab], { type: mimeString });
+        formData.append('logo', blob, 'cropped-logo.webp');
+    } else if (originalFile) {
+        formData.append('logo', originalFile);
+    }
+
+    const id = document.getElementById('categoryId').value;
+
+    try {
+        if (id) {
+            await axios.put(`/admin/categories/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        } else {
+            await axios.post('/admin/categories', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        }
+        Toastify({ text: 'Category saved successfully!', backgroundColor: '#4ade80' }).showToast();
+        bootstrap.Modal.getInstance(document.getElementById('categoryModal')).hide();
+        setTimeout(() => location.reload(), 600);
+    } catch (err) {
+        Toastify({ text: err.response?.data?.message || 'Save failed', backgroundColor: '#ef4444' }).showToast();
+    }
+}

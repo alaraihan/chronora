@@ -1,52 +1,28 @@
-<!DOCTYPE html>
-
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chronora - Admin Login</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-  <link rel="stylesheet" href="/css/admin/adminLogin.css">
-  
-</head>
-<body>
 
   <div class="login-card">
     <div class="logo">Chronora</div>
     <h2>Admin Sign In</h2>
     <p style="color:#666; margin-bottom:20px;">Manage orders, banners, referrals & more</p>
 
-    <form method="POST" action="/admin/login" id="loginForm">
-      <div>
-        <input 
-          type="email" 
-          id="email" 
-          name="email" 
-          placeholder="Email / Username" 
-          value="<%= typeof email !== 'undefined' ? email : '' %>" 
-          required 
-        />
-        <small id="email-error" class="error" style="display:none;"></small>
+    <form id="loginForm">
+      <div class="input-group">
+        <input type="email" id="email" name="email" placeholder="Email" required />
+        <small id="email-error" class="error"></small>
       </div>
 
-      <div>
-        <input 
-          type="password" 
-          id="password" 
-          name="password" 
-          placeholder="Password" 
-          required 
-        />
-        <small id="password-error" class="error" style="display:none;"></small>
+      <div class="input-group">
+        <input type="password" id="password" name="password" placeholder="Password" required />
+        <small id="password-error" class="error"></small>
       </div>
 
-      <button type="submit">Sign In</button>
+      <button type="submit" id="loginBtn">
+        <span class="btn-text">Sign In</span>
+        <span class="btn-loading" style="display:none;"> Signing in...</span>
+      </button>
     </form>
 
     <p style="margin-top:20px; color:#888; font-size:14px;">Google Workspace</p>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 
 </body>

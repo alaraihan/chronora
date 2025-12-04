@@ -1,34 +1,27 @@
 import mongoose from "mongoose";
 
 const categorySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  image: {
-    type: String,
-    default: ""
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false
-  },
-  deletedAt: {
-    type: Date,
-    default: null
-  }
-}, { 
-  timestamps: true 
-});
+    name: {
+        type: String,
+        required: [true, 'Category name is required.'],
+        unique: true, 
+    },
+    description: {
+        type: String,
+        required: [true, 'Category description is required.'],
+    },
 
-categorySchema.pre(/^find/, function(next) {
-  this.where({ isDeleted: false });
-  next();
+    image: {
+        type: String, 
+        default: ""
+    },
+    isListed: {
+        type: Boolean,
+        default: true, 
+    }
+}, {
+   
+    timestamps: true 
 });
 
 export default mongoose.model("Category", categorySchema);

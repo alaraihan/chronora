@@ -1,51 +1,73 @@
     const form = document.getElementById("loginForm");
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const btnText = loginBtn.querySelector(".btn-text");
+    const btnLoading = loginBtn.querySelector(".btn-loading");
 
-    function showError(id, msg) {
-      const error = document.getElementById(id + "-error");
-      error.textContent = msg;
-      error.style.display = "block";
-    }
+   
+    const showToast = (message, isSuccess = true) => {
+      Toastify({
+        text: message,
+        backgroundColor: isSuccess ? "#4ade80" : "#ef4444",
+        duration: 3000,
+        gravity: "top",
+        position: "right"
+      }).showToast();
+    };
 
-    function hideError(id) {
-      const error = document.getElementById(id + "-error");
-      if (error) error.style.display = "none";
-    }
+    const validate = () => {
+      let valid = true;
 
-    function validateEmail() {
-      const value = emailInput.value.trim();
-      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-      if (!valid && value !== "") {
-        showError("email", "Please enter a valid email");
-        return false;
+      
+      if (!emailInput.value.trim() || !emailInput.value.includes("@")) {
+        document.getElementById("email-error").textContent = "Enter a valid email";
+        valid = false;
       } else {
-        hideError("email");
-        return true;
+        document.getElementById("email-error").textContent = "";
       }
-    }
 
-    function validatePassword() {
-      const value = passwordInput.value;
-      if (value === "") {
-        showError("password", "Password is required");
-        return false;
-      } else if (value.length < 6) {
-        showError("password", "Password must be at least 6 characters");
-        return false;
+      
+      if (passwordInput.value.length < 6) {
+        document.getElementById("password-error").textContent = "Password must be 6+ characters";
+        valid = false;
       } else {
-        hideError("password");
-        return true;
+        document.getElementById("password-error").textContent = "";
       }
-    }
 
-    emailInput.addEventListener("blur", validateEmail);
-    passwordInput.addEventListener("blur", validatePassword);
+      return valid;
+    };
 
-    form.addEventListener("submit", function(e) {
-      const emailOk = validateEmail();
-      const passOk = validatePassword();
-      if (!emailOk || !passOk) {
-        e.preventDefault();
+    
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!validate()) return;
+
+      
+      loginBtn.disabled = true;
+      btnText.style.display = "none";
+      btnLoading.style.display = "inline";
+
+      try {
+        const response = await axios.post("/admin/login", {
+          email: emailInput.value.trim(),
+          password: passwordInput.value
+        });
+
+        showToast(response.data.message || "Welcome back!", true);
+        setTimeout(() => {
+          window.location.href = "/admin/dashboard";
+        }, 800);
+
+      } catch (error) {
+        const msg = error.response?.data?.message || "Login failed. Try again.";
+        showToast(msg, false);
+        
+       
+        loginBtn.disabled = false;
+        btnText.style.display = "inline";
+        btnLoading.style.display = "none";
       }
     });
+ 

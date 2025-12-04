@@ -1,37 +1,87 @@
-<link rel="stylesheet" href="./css/user/home.css">
-<section class="hero">
-  <div class="container hero-card">
-    <h1 class="hero-title">A Legacy of Precision.<br/>The Art of Timekeeping</h1>
-    <p class="hero-sub">Discover our collection of meticulously crafted timepieces, where tradition meets contemporary design.</p>
-    <a class="btn primary" href="/shop">Shop Now</a>
-  </div>
-</section>
+<link rel="stylesheet" href="./css/user/landing.css">
 
-<section class="categories container">
-  <h2 class="section-title">Shop by Category</h2>
-  <!-- Simplified placeholders -->
-  <div class="category-grid">
-    <article class="cat-card"><img src="./images/Grizzly Brown.jpg" alt=""><div class="cat-overlay"><h3>For Him</h3></div></article>
-    <article class="cat-card"><img src="./images/download (1).jpg" alt=""><div class="cat-overlay"><h3>For Her</h3></div></article>
-    <article class="cat-card"><img src="./images/download (9).jpg" alt=""><div class="cat-overlay"><h3>Formal</h3></div></article>
-    <article class="cat-card"><img src="./images/download (3).jpg" alt=""><div class="cat-overlay"><h3>Partywear</h3></div></article>
-  </div>
-</section>
+<div class="home-container">
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>A Legacy of Precision.<br />The Art of Timekeeping</h1>
+      <p>
+        Discover our collection of meticulously crafted timepieces,
+        where tradition meets contemporary design.
+      </p>
+      <a href="/shop" class="btn">Shop Now</a>
+    </div>
+  </section>
 
-<section class="precision">
-  <div class="precision-image">
-    <img src="./images/8e0b86715ff08b729a66d9983df759c6.jpg" alt="Watch Mechanism">
-  </div>
+  <!-- ORIGINAL STATIC COLLECTION (UNCHANGED) -->
+  <section class="collection">
+    <h2>Explore the Collection</h2>
+    <div class="product-grid">
+      <div class="product-card">
+        <img src="./images/download (4).jpg" alt="The Chronora Dress Watch" />
+        <h3>The Chronora Dress Watch</h3>
+        <p>Refined • Elegant</p>
+      </div>
+      <div class="product-card">
+        <img src="./images/download (11).jpg" alt="The Elysium Classic Watch" />
+        <h3>The Elysium Classic Watch</h3>
+        <p>Minimal • Timeless</p>
+      </div>
+      <div class="product-card">
+        <img src="./images/download (12).jpg" alt="The Majesty Chronograph" />
+        <h3>The Majesty Chronograph</h3>
+        <p>Sporty • Bold</p>
+      </div>
+      <div class="product-card">
+        <img src="./images/download (5).jpg" alt="The Heritage Grand Watch" />
+        <h3>The Heritage Grand Watch</h3>
+        <p>Vintage • Distinctive</p>
+      </div>
+    </div>
+  </section>
 
-  <div class="precision-content">
-    <span class="eyebrow">Our Heritage</span>
-    <h2>A Legacy of Precision</h2>
-    <p>
-      Explore our commitment to quality materials, Swiss movement,
-      and timeless design. Each timepiece is a testament to careful
-      craftsmanship and enduring style.
-    </p>
-    <a class="btn" href="/discovery">Discover Our Craftsmanship</a>
-  </div>
-</section>
+  <!-- NEW: SHOP BY CATEGORY SECTION (FROM DATABASE) -->
+  <section class="categories-section">
+    <div class="container">
+      <h2 class="section-title">Shop by Category</h2>
 
+      <% if (categories && categories.length > 0) { %>
+        <div class="categories-grid">
+          <% categories.forEach(category => { %>
+            <a href="/watch?category=<%= category._id %>" class="category-card-link">
+              <div class="category-card">
+                <img 
+                  src="<%= category.image || '/images/default-category.jpg' %>" 
+                  alt="<%= category.name %>"
+                  class="category-img"
+                >
+                <div class="category-overlay">
+                  <h3 class="category-name"><%= category.name %></h3>
+                  <span class="view-text">View Collection →</span>
+                </div>
+              </div>
+            </a>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <p class="no-categories">No categories available yet.</p>
+      <% } %>
+    </div>
+  </section>
+
+  <!-- PRECISION SECTION -->
+  <section class="precision">
+    <div class="precision-image">
+      <img src="./images/8e0b86715ff08b729a66d9983df759c6.jpg" alt="Watch Mechanism" />
+    </div>
+    <div class="precision-content">
+      <h2>A Legacy of Precision</h2>
+      <p>
+        Our timepieces are the result of decades of craftsmanship and
+        innovation. Every component is meticulously engineered to
+        ensure precision, durability, and timeless beauty.
+      </p>
+      <a href="/discover" class="btn">Discover More</a>
+    </div>
+  </section>
+</div>

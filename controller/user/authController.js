@@ -62,40 +62,70 @@ const signUp = async (req, res) => {
   }
 };
 
-const loadVerifyOtp = (req, res) => {
-  if (!req.session.pendingUser) {
+export const loadVerifyOtp = (req, res) => {
+  const pending = req.session.pendingUser;
+
+  if (!pending) {
     setFlash(req, "error", "No signup in progress");
     return res.redirect("/signup");
   }
+
+  const now = Date.now();
+  const expiresAt = pending.otpExpires || 0;
+  const remainingSeconds = Math.max(0, Math.ceil((expiresAt - now) / 1000));
+
   return render(req, res, "user/verifyOtp", {
     title: "Chronora - Verify OTP",
     layout: "layouts/userLayouts/auth",
+    timeLeft: remainingSeconds, 
+    flash: getFlash(req),
   });
 };
 
-const verifyOtp = async (req, res) => {
+export const verifyOtp = async (req, res) => {
   try {
     const providedOtp = Array.isArray(req.body.otp)
       ? req.body.otp.join("")
       : (req.body.otp || "").trim();
-    const pending = req.session.pendingUser;
 
+    console.log("[verifyOtp] received otp:", providedOtp);
+    const pending = req.session.pendingUser;
     if (!pending) {
+      console.log("[verifyOtp] no pendingUser in session");
       setFlash(req, "error", "No signup in progress");
       return res.redirect("/signup");
     }
 
+    const remainingSeconds = Math.max(0, Math.ceil((pending.otpExpires - Date.now()) / 1000));
+
     if (Date.now() > pending.otpExpires) {
       delete req.session.pendingUser;
-      setFlash(req, "error", "OTP expired");
+      setFlash(req, "error", "OTP expired. Please sign up again.");
       return res.redirect("/signup");
     }
 
-    if (providedOtp !== String(pending.otp)) {
-      setFlash(req, "error", "Incorrect OTP");
-      return res.redirect("/verifyOtp");
+    if (!providedOtp || !/^\d{6}$/.test(providedOtp)) {
+      setFlash(req, "error", "Enter a 6-digit OTP");
+      return render(req, res, "user/verifyOtp", {
+        title: "Chronora - Verify OTP",
+        layout: "layouts/userLayouts/auth",
+        timeLeft: remainingSeconds,
+        flash: getFlash(req),
+      });
     }
 
+    if (providedOtp !== String(pending.otp)) {
+      setFlash(req, "error", "Incorrect OTP. Please try again.");
+
+      return render(req, res, "user/verifyOtp", {
+        title: "Chronora - Verify OTP",
+        layout: "layouts/userLayouts/auth",
+        timeLeft: remainingSeconds,
+        flash: getFlash(req),
+      });
+    }
+
+    console.log("[verifyOtp] OTP correct. Creating user for:", pending.email);
     const newUser = await User.create({
       fullName: pending.fullName,
       email: pending.email,
@@ -103,19 +133,35 @@ const verifyOtp = async (req, res) => {
       isVerified: true,
     });
 
-    delete req.session.pendingUser;
-    req.session.userId = newUser._id.toString();
+delete req.session.pendingUser;
+setFlash(req, "success", "Account created successfully! Please log in.");
 
-    setFlash(req, "success", "Account created successfully! Welcome!");
-    return res.redirect("/home");
+console.log("[verifyOtp] about to save session and redirect to /login; sessionID:", req.sessionID, "session:", req.session);
+
+return req.session.save(err => {
+  if (err) console.error("[verifyOtp] session.save error:", err);
+  console.log("[verifyOtp] session saved -> redirecting to /login");
+  return res.redirect("/login");
+});
+
   } catch (err) {
     console.error("verify otp error", err);
-    setFlash(req, "error", "Server error");
-    return res.redirect("/verifyOtp");
+    setFlash(req, "error", "Server error. Please try again.");
+
+    const pending = req.session.pendingUser || {};
+    const remainingSeconds = pending.otpExpires ? Math.max(0, Math.ceil((pending.otpExpires - Date.now()) / 1000)) : 0;
+
+    return render(req, res, "user/verifyOtp", {
+      title: "Chronora - Verify OTP",
+      layout: "layouts/userLayouts/auth",
+      timeLeft: remainingSeconds,
+      flash: getFlash(req),
+    });
   }
 };
 
 const loadLogin = (req, res) => {
+
   return render(req, res, "user/login", {
     title: "Chronora - Login",
     layout: "layouts/userLayouts/auth",
@@ -160,7 +206,7 @@ const login = async (req, res) => {
     };
 
     setFlash(req, "success", "Logged in successfully!");
-    return res.redirect("/home");
+    return res.redirect("/");
   } catch (error) {
     console.error("login error", error);
     setFlash(req, "error", "Something went wrong");
@@ -295,7 +341,6 @@ const resetPassword = async (req, res) => {
     return res.redirect("/resetPassword");
   }
 };
-
 const resendOtp = async (req, res) => {
   try {
     const pending = req.session.pendingUser;
@@ -304,11 +349,14 @@ const resendOtp = async (req, res) => {
     const newOtp = generateOtp(6);
     console.log("Resend OTP:", newOtp);
     pending.otp = newOtp;
-    pending.otpExpires = Date.now() + 3 * 60 * 1000;
+    pending.otpExpires = Date.now() + 3 * 60 * 1000; 
+    req.session.pendingUser = pending;
 
     const sent = await sendOtp(pending.email, newOtp);
-    return res.json({ success: !!sent });
+    const timeLeftSeconds = Math.max(0, Math.ceil((pending.otpExpires - Date.now()) / 1000));
+    return res.json({ success: !!sent, timeLeft: timeLeftSeconds });
   } catch (err) {
+    console.error("resendOtp error", err);
     return res.json({ success: false });
   }
 };
@@ -321,16 +369,17 @@ const resendResetOtp = async (req, res) => {
     console.log("Resend reset OTP:", newOtp);
 
     req.session.resetOtpData.otp = newOtp;
-    req.session.resetOtpData.otpExpires = Date.now() + 10 * 60 * 1000;
-
+    req.session.resetOtpData.otpExpires = Date.now() + 10 * 60 * 1000; 
     const sent = await sendOtp(email, newOtp);
-    return res.json({ success: !!sent });
+    const timeLeftSeconds = Math.max(0, Math.ceil((req.session.resetOtpData.otpExpires - Date.now()) / 1000));
+    return res.json({ success: !!sent, timeLeft: timeLeftSeconds });
   } catch (err) {
+    console.error("resendResetOtp error", err);
     return res.json({ success: false });
   }
 };
 
-// ==================== GOOGLE & LOGOUT ====================
+
 const googleCallback = (req, res) => {
   if (!req.user) {
     setFlash(req, "error", "Google login failed");
@@ -345,7 +394,7 @@ const googleCallback = (req, res) => {
   };
 
   setFlash(req, "success", "Logged in with Google!");
-  return res.redirect("/home");
+  return res.redirect("/");
 };
 
 const loadLogout=async(req,res)=>{
@@ -359,23 +408,27 @@ const loadLogout=async(req,res)=>{
 })
   }
 }
-const performLogout=async(req,res)=>{
-  try{
-  req.session.destroy((err)=>{
-    if(err){
+const performLogout = async (req, res) => {
+  try {
+    req.session.destroy((err) => {
+      if (err) {
         console.error("Session destroy error:", err);
-        return res.status(500).render("user/pageNotfound", {title: "Error - Chronora",message: "Unable to logout. Try again.",layout: 'layouts/userLayouts/auth'});
-    }
-  });
-  res.clearCookie("connect.sid");
-  return res.redirect("/login");
-  }catch(error){
-console.error("performLogout error:", error);
+        return res.status(500).render("user/pageNotfound", {
+          title: "Error - Chronora",
+          message: "Unable to logout. Try again.",
+          layout: 'layouts/userLayouts/auth'
+        });
+      }
+      res.clearCookie("connect.sid");
+      return res.redirect("/login");
+    });
+  } catch (error) {
+    console.error("performLogout error:", error);
     return res.status(500).send("Server error");
   }
-}
+};
 
-// ==================== EXPORT ====================
+
 export default {
   loadSignUp,
   signUp,

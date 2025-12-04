@@ -1,23 +1,46 @@
 import express from "express";
-import adminController from '../controller/admin/adminController.js';
-
 const router = express.Router();
-import {isAdmin} from "../middlewares/authMiddleware.js"
+
+import adminController from "../controller/admin/adminController.js";
+import { isAdmin } from "../middlewares/authMiddleware.js";
+
 import {
-  listCategories,
-  editCategory,
-  toggleDeleteCategory,
-  addCategory,
-} from "../controller/admin/categoryController.js";import upload from "../middlewares/uploadImage.js";
-router.get("/login",adminController.loadLoginWithLogoutMessage);
-router.post("/login",adminController.login);
-router.get("/logout",adminController.logout);
-router.get("/dashboard",isAdmin,adminController.dashboard);
+    listCategories,
+    addCategory,
+    editCategory,
+    getCategory,
+    toggleListCategory
+} from "../controller/admin/categoryController.js";
+
+
+import { 
+    listProducts, 
+    addProduct, 
+    updateProduct, 
+    getProduct,
+    toggleBlock
+} from '../controller/admin/productController.js'; 
+import upload from "../middlewares/uploadImage.js"; 
+
+
+
+router.get("/login", adminController.loadLogin);
+router.post("/login", adminController.login);
+router.get("/logout", adminController.logout);
+
+router.get("/dashboard", isAdmin, adminController.dashboard);
 router.get("/customers", isAdmin, adminController.loadCustomers);
 router.patch("/customers/toggle-block/:id", isAdmin, adminController.toggleBlockCustomer);
-router.get("/categories", isAdmin, listCategories);
-router.post("/categories", isAdmin, upload.single("image"), addCategory);
-router.patch("/categories/:id", isAdmin, upload.single("image"), editCategory);
-router.patch("/categories/delete/:id", isAdmin, toggleDeleteCategory);
 
+router.get("/categories", isAdmin, listCategories);
+router.post("/categories", isAdmin,upload.single("logo"), addCategory);
+router.put("/categories/:id", isAdmin,upload.single("logo"), editCategory);
+router.get("/categories/:id", isAdmin, getCategory);
+router.patch("/categories/toggle/:id", isAdmin, toggleListCategory);
+
+router.get('/products',isAdmin, listProducts);
+router.get('/products/get/:id',isAdmin, getProduct);  
+router.post('/products/add',isAdmin, upload.array('images'), addProduct);
+router.put('/products/edit/:id',isAdmin, upload.array('images'), updateProduct);
+router.put('/products/block/:id',isAdmin,toggleBlock);
 export default router;
