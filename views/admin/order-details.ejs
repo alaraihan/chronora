@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - Admin</title>
+    <link rel="stylesheet" href="/css/admin/order-details.css">
+</head>
+<body>
+    <main class="main-content">
+        <div class="back-button">
+            <a href="/admin/orders" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Back to Orders
+            </a>
+        </div>
+
+        <div class="order-header">
+            <div class="order-title">
+                <h1>Order #<%= order.orderId %></h1>
+                <div class="order-meta">
+                    <span class="order-date">
+                        <i class="bi bi-calendar"></i> 
+                        <%= new Date(order.createdAt).toLocaleDateString() %>
+                    </span>
+                    <span class="order-amount">
+                        <i class="bi bi-currency-rupee"></i> 
+                        ₹<%= order.totalAmount.toFixed(2) %>
+                    </span>
+                </div>
+            </div>
+            
+            <% if (hasReturnRequest) { %>
+            <div class="request-actions">
+                <h3>Return Request Pending</h3>
+                <p class="request-info">Customer has requested to return this order</p>
+
+                <% if (order.returnReason) { %>
+                <p class="request-reason"><strong>Reason:</strong> <%= order.returnReason %></p>
+                <% } %>
+
+                <div class="request-buttons">
+                    <button onclick="approveReturnRequest()" class="btn-approve">
+                        Approve Return
+                    </button>
+                    <button onclick="rejectReturnRequest()" class="btn-reject">
+                        Reject Request
+                    </button>
+                </div>
+            </div>
+            <% } %>
+            
+            <% if (order.status === 'ReturnApproved') { %>
+            <div class="request-actions">
+                <h3>Return Approved</h3>
+                <p class="request-info">
+                    Product return approved. Click below once the product is received.
+                </p>
+
+                <button onclick="markAsReturned()" class="btn-approve">
+                    Mark as Returned
+                </button>
+            </div>
+            <% } %>
+
+            <% if (nextStatuses && nextStatuses.length > 0) { %>
+            <div class="status-update-form" id="statusUpdateForm">
+                <h3>Update Order Status</h3>
+                <div class="form-group">
+                    <label for="newStatus">Select New Status</label>
+                    <select id="newStatus" class="status-select">
+                        <option value="">-- Select Status --</option>
+                        <% nextStatuses.forEach(status => { %>
+                        <option value="<%= status %>"><%= status %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="reasonField" style="display: none;">
+                    <label for="reasonText">Reason (Optional)</label>
+                    <textarea 
+                        id="reasonText" 
+                        class="reason-input" 
+                        placeholder="Enter reason for status change..."
+                        rows="3"
+                    ></textarea>
+                </div>
+                
+                <button onclick="updateOrderStatus()" class="btn-update-status" id="updateBtn">
+                    <i class="bi bi-check-circle"></i> Update Status
+                </button>
+            </div>
+            <% } %>
+        </div>
+
+        <div class="order-details-container">
+            <div class="order-info-section">
+                <div class="info-card">
+                    <h3><i class="bi bi-person"></i> Customer Information</h3>
+                    <div class="info-content">
+                        <div class="info-row">
+                            <span class="info-label">Name:</span>
+                            <span class="info-value"><%= order.address.fullName %></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Phone:</span>
+                            <span class="info-value"><%= order.address.phone %></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value"><%= order.userId?.email || 'N/A' %></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3><i class="bi bi-truck"></i> Shipping Address</h3>
+                    <div class="info-content">
+                        <div class="address-block">
+                            <p><%= order.address.address1 %></p>
+                            <% if (order.address.address2) { %>
+                            <p><%= order.address.address2 %></p>
+                            <% } %>
+                            <p><%= order.address.city %>, <%= order.address.state %></p>
+                            <p><%= order.address.pincode %>, <%= order.address.country %></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3><i class="bi bi-credit-card"></i> Payment Information</h3>
+                    <div class="info-content">
+                        <div class="info-row">
+                            <span class="info-label">Method:</span>
+                            <span class="info-value"><%= order.paymentMethod.toUpperCase() %></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Status:</span>
+                            <span class="payment-status status-<%= order.paymentStatus.toLowerCase() %>">
+                                <%= order.paymentStatus %>
+                            </span>
+                        </div>
+                        <% if (order.paymentId) { %>
+                        <div class="info-row">
+                            <span class="info-label">Payment ID:</span>
+                            <span class="info-value"><%= order.paymentId %></span>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <% if (order.cancelReason || order.returnReason) { %>
+                <div class="info-card request-details">
+                    <h3><i class="bi bi-exclamation-circle"></i> Request Details</h3>
+                    <div class="info-content">
+                        <% if (order.cancelReason) { %>
+                        <div class="info-row">
+                            <span class="info-label">Cancel Reason:</span>
+                            <span class="info-value"><%= order.cancelReason %></span>
+                        </div>
+                        <% } %>
+                        <% if (order.returnReason) { %>
+                        <div class="info-row">
+                            <span class="info-label">Return Reason:</span>
+                            <span class="info-value"><%= order.returnReason %></span>
+                        </div>
+                        <% } %>
+                        <% if (order.returnComments) { %>
+                        <div class="info-row">
+                            <span class="info-label">Comments:</span>
+                            <span class="info-value"><%= order.returnComments %></span>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+                <% } %>
+
+                <div class="action-buttons">
+                    <a href="/admin/orders/print/<%= order._id %>" target="_blank" class="btn-action btn-print">
+                        <i class="bi bi-printer"></i> Print Invoice
+                    </a>
+                    <button onclick="copyOrderId()" class="btn-action btn-copy">
+                        <i class="bi bi-clipboard"></i> Copy Order ID
+                    </button>
+                </div>
+            </div>
+
+            <div class="order-items-section">
+                <div class="items-section">
+                    <div class="section-header">
+                        <h2><i class="bi bi-box-seam"></i> Order Items (<%= order.products.length %>)</h2>
+                    </div>
+                    
+                    <% if (order.products.length === 0) { %>
+                    <div class="no-items">
+                        <i class="bi bi-inbox"></i>
+                        <p>No items in this order</p>
+                    </div>
+                    <% } else { %>
+                    <div class="items-list">
+                        <% order.products.forEach((item, index) => { 
+                            let imageSrc = '/images/default-watch.jpg';
+                            if (item.variantId && item.variantId.images && item.variantId.images[0]) {
+                                imageSrc = item.variantId.images[0];
+                            } else if (item.productId && item.productId.images && item.productId.images[0]) {
+                                imageSrc = item.productId.images[0];
+                            }
+                        %>
+                        <div class="item-card">
+                            <div class="item-info">
+                                <div class="item-image">
+                                    <img src="<%= imageSrc %>" 
+                                         alt="<%= item.productId?.name || 'Product' %>"
+                                         onerror="this.src='/images/default-watch.jpg'">
+                                </div>
+                                <div class="item-details">
+                                    <h4><%= item.productId?.name || 'Product unavailable' %></h4>
+                                    <% if (item.variantId?.colorName) { %>
+                                    <p class="item-variant">
+                                        <i class="bi bi-palette"></i> Variant: <%= item.variantId.colorName %>
+                                    </p>
+                                    <% } %>
+                                    <div class="item-meta">
+                                        <span class="item-price">
+                                            <i class="bi bi-currency-rupee"></i>₹<%= item.price.toFixed(2) %>
+                                        </span>
+                                        <span class="item-quantity">
+                                            <i class="bi bi-x"></i> <%= item.quantity %>
+                                        </span>
+                                        <span class="item-total">
+                                            Total: ₹<%= (item.price * item.quantity).toFixed(2) %>
+                                        </span>
+                                    </div>
+                                    <div class="item-status">
+                                        <span class="status-badge status-<%= item.itemStatus.toLowerCase().replace(/ /g, '-') %>">
+                                            <%= item.itemStatus %>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <% }); %>
+                    </div>
+                    <% } %>
+                </div>
+
+                <!-- Order Timeline -->
+                <div class="timeline-section">
+                    <div class="section-header">
+                        <h2><i class="bi bi-clock-history"></i> Order Timeline</h2>
+                    </div>
+                    
+                    <div class="timeline" id="orderTimeline">
+                        <!-- Initial order placed event -->
+                        <div class="timeline-event active">
+                            <div class="event-icon">
+                                <i class="bi bi-cart"></i>
+                            </div>
+                            <div class="event-content">
+                                <h4>Order Placed</h4>
+                                <p class="event-date">
+                                    <i class="bi bi-calendar"></i> 
+                                    <%= new Date(order.createdAt).toLocaleString() %>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Status history events -->
+                        <% timeline.forEach((event, index) => { %>
+                        <div class="timeline-event active">
+                            <div class="event-icon">
+                                <i class="bi bi-arrow-right-circle"></i>
+                            </div>
+                            <div class="event-content">
+                                <h4>
+                                    <%= event.status %>
+                                    <% if (event.previousStatus) { %>
+                                    <small>(Changed from <%= event.previousStatus %>)</small>
+                                    <% } %>
+                                </h4>
+                                <% if (event.reason) { %>
+                                <p class="event-reason"><%= event.reason %></p>
+                                <% } %>
+                                <p class="event-date">
+                                    <i class="bi bi-calendar"></i> 
+                                    <%= new Date(event.date).toLocaleString() %>
+                                </p>
+                                <p class="event-by">
+                                    <i class="bi bi-person"></i> 
+                                    <%= event.changedBy || 'System' %>
+                                </p>
+                            </div>
+                        </div>
+                        <% }); %>
+                        
+                        <!-- Future statuses (inactive) - Only show if in normal flow -->
+                        <% if (!hasCancelRequest && !hasReturnRequest && order.status !== 'Cancelled' && order.status !== 'Returned') { %>
+                        <% const futureStatuses = ['Confirmed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered']; %>
+                        <% futureStatuses.forEach(status => { %>
+                            <% if (!timeline.some(e => e.status === status) && order.status !== status) { %>
+                            <div class="timeline-event future">
+                                <div class="event-icon">
+                                    <i class="bi bi-dash-circle"></i>
+                                </div>
+                                <div class="event-content">
+                                    <h4 class="text-muted"><%= status %></h4>
+                                    <p class="event-date">Pending</p>
+                                </div>
+                            </div>
+                            <% } %>
+                        <% }); %>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Embed order ID in JavaScript for use in functions
+        const ORDER_ID = '<%= order._id %>';
+        const ORDER_DISPLAY_ID = '<%= order.orderId %>';
+        const HAS_CANCEL_REQUEST = <%= hasCancelRequest %>;
+        const HAS_RETURN_REQUEST = <%= hasReturnRequest %>;
+    </script>
+    <script src="/js/admin/order-details.js"></script>
+</body>
+</html>

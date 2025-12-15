@@ -249,6 +249,8 @@ export const productDetails = async (req, res) => {
     .limit(4)
     .populate("category"); 
 
+const allVariants = await Variant.find({}, { product: 1, images: 1 }).lean();
+
 
     return res.render("user/productDetail", {
       title: "Product Detail",
@@ -257,6 +259,7 @@ export const productDetails = async (req, res) => {
       variant,
       stockStatus,
       relatedProducts,
+      allVariants
     });
 
   } catch (error) {

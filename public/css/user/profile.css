@@ -1,101 +1,735 @@
- * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0f0f1a;
-      color: white;
-      min-height: 100vh;
-    }
-    .profile-body {
-      margin-top: 100px;
-      display: flex;
-      min-height: calc(100vh - 100px);
-    }
-    .sidebar {
-      width: 280px;
-      background: #1a1a2e;
-      padding: 2rem;
-      border-right: 1px solid #333;
-    }
-    .sidebar h2 {
-      color: #9d4edd;
-      text-align: center;
-      margin-bottom: 3rem;
-      font-size: 2rem;
-    }
-    .sidebar-menu a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 1rem 1.2rem;
-      color: #ccc;
-      text-decoration: none;
-      border-radius: 12px;
-      margin-bottom: 0.5rem;
-      transition: 0.3s;
-    }
-    .sidebar-menu a.active, .sidebar-menu a:hover {
-      background: #9d4edd;
-      color: white;
-    }
-    .sidebar-menu a.logout { color: #e74c3c; }
-    .sidebar-menu a.logout:hover { background: #c0392b; }
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    .main-content {
-      flex: 1;
-      padding: 3rem;
-    }
-    .welcome-section h1 {
-      font-size: 2.8rem;
-      margin-bottom: 0.5rem;
-    }
-    .welcome-section h1 span { color: #9d4edd; }
-    .welcome-section p { color: #aaa; font-size: 1.1rem; }
+/* Body */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #0f0f1a;
+  color: white;
+  min-height: 100vh;
+}
 
-    .profile-card {
-      background: #16213e;
-      margin-top: 2rem;
-      padding: 2.5rem;
-      border-radius: 16px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    }
-    .profile-card h2 {
-      color: #9d4edd;
-      font-size: 1.8rem;
-      margin-bottom: 2rem;
-    }
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-    .info-item {
-      background: #1e2a48;
-      padding: 1.5rem;
-      border-radius: 12px;
-    }
-    .label { color: #999; font-size: 0.9rem; }
-    .value { color: white; font-weight: 600; font-size: 1.1rem; margin-top: 0.5rem; display: block; }
+/* Profile Body */
+.profile-body {
+  margin-top: 100px;
+  display: flex;
+  min-height: calc(100vh - 100px);
+}
 
-    .action-buttons {
-      display: flex;
-      gap: 1rem;
-    }
-    .btn-primary, .btn-secondary {
-      padding: 14px 32px;
-      border-radius: 50px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: 0.3s;
-    }
-    .btn-primary {
-      background: #9d4edd;
-      color: white;
-    }
-    .btn-primary:hover { background: #7c3aed; transform: translateY(-3px); }
-    .btn-secondary {
-      background: transparent;
-      color: #9d4edd;
-      border: 2px solid #9d4edd;
-    }
-    .btn-secondary:hover { background: #9d4edd; color: white; }
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  background: #1a1a2e;
+  padding: 2rem;
+  border-right: 1px solid #333;
+}
+
+.sidebar h2 {
+  color: #9d4edd;
+  text-align: center;
+  margin-bottom: 3rem;
+  font-size: 2rem;
+}
+
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 1rem 1.2rem;
+  color: #ccc;
+  text-decoration: none;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+  transition: 0.3s;
+}
+
+.sidebar-menu a.active,
+.sidebar-menu a:hover {
+  background: #9d4edd;
+  color: white;
+}
+
+.sidebar-menu a.logout {
+  color: #e74c3c;
+}
+
+.sidebar-menu a.logout:hover {
+  background: #c0392b;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding: 3rem;
+}
+
+/* Welcome Section */
+.welcome-section h1 {
+  font-size: 2.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-section h1 span {
+  color: #9d4edd;
+}
+
+.welcome-section p {
+  color: #aaa;
+  font-size: 1.1rem;
+}
+
+/* Profile Card */
+.profile-card {
+  background: #16213e;
+  margin-top: 2rem;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
+
+.profile-card h2 {
+  color: #9d4edd;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+}
+
+/* Info Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.info-item {
+  background: #1e2a48;
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.label {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.value {
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 14px 32px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn-primary {
+  background: #9d4edd;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #7c3aed;
+  transform: translateY(-3px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #9d4edd;
+  border: 2px solid #9d4edd;
+}
+
+.btn-secondary:hover {
+  background: #9d4edd;
+  color: white;
+}
+
+/* Profile Inline Edit Section */
+.chronora-profile {
+  display: flex;
+  gap: 2rem;
+}
+
+.main-area {
+  flex: 1;
+}
+
+.main-header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.main-header .subtitle {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: #1e2a48;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.profile-field {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.profile-field span {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+
+.profile-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #9d4edd;
+}
+
+.edit-btn {
+  margin-top: 0.5rem;
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  background: #4f46e5;
+  color: #fff;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.edit-btn:hover {
+  background: #7c3aed;
+}
+
+.edit-form input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #444;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  width: 100%;
+  background: #0f0f1a;
+  color: white;
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: #9d4edd;
+  margin-left: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  text-decoration: none;
+  border: 1px solid #9d4edd;
+  transition: 0.3s;
+}
+
+.btn-ghost:hover {
+  background: #9d4edd;
+  color: white;
+}
+/* Card for edit page */
+.profile-card {
+  background: #16213e;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
+
+/* Profile image display */
+.profile-img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #9d4edd;
+  margin-bottom: 1rem;
+}
+
+/* Profile field container */
+.profile-field {
+  margin-bottom: 1.5rem;
+}
+
+/* Field label */
+.profile-field span {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+
+/* File input */
+.edit-form input[type="file"] {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: #0f0f1a;
+  color: white;
+  width: 100%;
+}
+
+/* Buttons */
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-primary {
+  background-color: #9d4edd;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 0.6rem 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: #7c3aed;
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: #9d4edd;
+  border: 2px solid #9d4edd;
+  padding: 0.6rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.btn-ghost:hover {
+  background-color: #9d4edd;
+  color: white;
+}
+.chronora-profile .edit-card {
+  background-color: #1f2541;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 500px;
+  margin: 2rem auto;
+  color: #fff;
+}
+
+.edit-card h1 {
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-group input {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+}
+/* Address Cards */
+.address-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.address-card {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  width: 300px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.address-card.default {
+  border-color: green;
+  background-color: #f0fff0;
+}
+
+.address-card .actions {
+  margin-top: 0.5rem;
+}
+
+.address-card .actions a, .address-card .actions button {
+  margin-right: 0.5rem;
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 1rem;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 1rem;
+  border: 1px solid #888;
+  width: 400px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.modal .close {
+  color: #aaa;
+  position: absolute;
+  top: 10px; right: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal .close:hover {
+  color: black;
+}
+
+form label {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+form input, form textarea, form button {
+  width: 100%;
+  padding: 0.4rem;
+  margin-top: 0.2rem;
+}
+
+form button {
+  margin-top: 1rem;
+  cursor: pointer;
+}/* Header with Add button */
+.address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.address-header h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+#addAddressBtn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  background-color: #e0e0e0;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Address cards grid */
+.address-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Individual card */
+.address-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s;
+}
+
+.address-card:hover {
+  transform: translateY(-3px);
+}
+
+.address-card.default {
+  border: 2px solid #007bff;
+}
+
+.address-card .badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  background-color: #d0e7ff;
+  color: #007bff;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.address-card p {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+}
+
+.address-card .actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.8rem;
+}
+
+.address-card .actions button,
+.address-card .actions a {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.address-card .actions button {
+  background-color: #f0f0f0;
+}
+
+.address-card .actions a {
+  color: #555;
+  text-decoration: none;
+}
+
+/* Modal styling */
+.modal {
+  display: none; 
+  position: fixed;
+  z-index: 1000; 
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 95%;
+  position: relative;
+}
+
+.modal-content .close {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.modal-content h2 {
+  margin-bottom: 1rem;
+}
+
+.modal-content form label {
+  display: block;
+  margin-top: 0.8rem;
+  font-size: 0.9rem;
+}
+
+.modal-content form input,
+.modal-content form textarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.3rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+}
+
+#saveBtn {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.6rem;
+  background-color: #007bff;
+  color: #fff;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+
+
+.save-btn {
+  background-color: #9b59b6;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin-right: 1rem;
+}
+
+.save-btn:hover {
+  background-color: #7d3ea5;
+}
+
+.cancel-btn {
+  background-color: #444a6b;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.cancel-btn:hover {
+  background-color: #333b5a;
+}
+/* Container */
+.chronora-profile.container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Main area */
+.main-area {
+  flex: 1;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* Header */
+.main-header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+/* Card */
+.edit-card.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 25px;
+  max-width: 500px;
+  margin: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Form group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.form-group input {
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border 0.3s;
+}
+
+.form-group input:focus {
+  border-color: #00b09b;
+  outline: none;
+}
+
+/* Buttons */
+.btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+/* Primary save button */
+.btn-primary {
+  background: #00b09b;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #00917a;
+}
+
+/* Secondary cancel button */
+.btn-secondary {
+  background: #ccc;
+  color: #333;
+  margin-left: 10px;
+}
+
+.btn-secondary:hover {
+  background: #b3b3b3;
+}
+
+/* OTP form button */
+.btn-success {
+  background: #4caf50;
+  color: #fff;
+}
+
+.btn-success:hover {
+  background: #3e8e41;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .chronora-profile.container {
+    flex-direction: column;
+  }
+  .main-area {
+    padding: 20px;
+  }
+}

@@ -157,7 +157,6 @@ resendLink.addEventListener('click', async (e) => {
 
 
 form.addEventListener('submit', (e) => {
-  // Prevent submit if otp expired
   if (timeLeft <= 0) {
     e.preventDefault();
     alert('OTP expired. Please click resend to get a new code.');

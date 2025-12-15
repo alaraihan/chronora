@@ -19,6 +19,26 @@ function getId(val){
   return null;
 }
 
+
+export const checkLogin=(req,res,next)=>{
+  if(req.session&&req.session.userId){
+    res.redirect('/')
+  }else{
+    next()
+  }
+}
+
+ export const isLoggedIn = (req, res, next) => {
+  if (req.session && req.session.userId) {
+    // You can attach user to req if needed
+    req.user = { _id: req.session.userId };
+    return next();             
+  } else {
+    res.redirect("/login");  
+  }
+};
+
+
 export const isAdmin=async(req,res,next)=>{
   try{
   const adminId=getId(req.session.admin||req.session.adminId);

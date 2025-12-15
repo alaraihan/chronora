@@ -1,5 +1,3 @@
-
-
 <!-- Breadcrumbs -->
 <div class="breadcrumbs">
   <a href="/">Home</a> <span>›</span>
@@ -11,37 +9,33 @@
 <div class="product-wrapper" style="display:flex; gap:2rem; align-items:flex-start;">
 
   <!-- LEFT: Image Gallery -->
- <!-- LEFT: Image Gallery -->
-<div class="gallery" style="flex:1; max-width:540px; position:relative;">
-  <div class="main-img" style="box-shadow:0 6px 18px rgba(0,0,0,0.06); padding:1rem; background:#fff; border-radius:8px;">
-    <% 
-      const activeImages = (variant && variant.images && variant.images.length)
-        ? variant.images 
-        : ['/images/placeholder-watch.jpg'];
-    %>
+  <div class="gallery" style="flex:1; max-width:540px; position:relative;">
+    <div class="main-img" style="box-shadow:0 6px 18px rgba(0,0,0,0.06); padding:1rem; background:#fff; border-radius:8px;">
+      <% 
+        const activeImages = (variant && variant.images && variant.images.length)
+          ? variant.images 
+          : ['/images/placeholder-watch.jpg'];
+      %>
 
-    <!-- zoom-container wraps the image for CSS-only hover zoom -->
-    <div class="zoom-container" style="width:100%; overflow:hidden; border-radius:6px;">
-      <img id="mainImage" src="<%= activeImages[0] %>" alt="<%= product.name %>" style="width:100%; height:auto; object-fit:contain; display:block;">
+      <div class="zoom-container" style="width:100%; overflow:hidden; border-radius:6px;">
+        <img id="mainImage" src="<%= activeImages[0] %>" alt="<%= product.name %>" style="width:100%; height:auto; object-fit:contain; display:block;">
+      </div>
     </div>
+
+    <% if (activeImages.length > 1) { %>
+      <div class="thumbnails" style="display:flex; gap:0.5rem; margin-top:12px;">
+        <% activeImages.forEach((img, i) => { %>
+          <img 
+            src="<%= img %>" 
+            class="<%= i === 0 ? 'active' : '' %>"
+            onclick="document.getElementById('mainImage').src=this.src; document.querySelectorAll('.thumbnails img').forEach(function(t){ t.classList.remove('active'); }); this.classList.add('active');"
+            style="width:64px; height:64px; object-fit:cover; border-radius:6px; cursor:pointer; border:2px solid transparent;"
+            alt="thumbnail"
+          >
+        <% }) %>
+      </div>
+    <% } %>
   </div>
-
-  <% if (activeImages.length > 1) { %>
-    <div class="thumbnails" style="display:flex; gap:0.5rem; margin-top:12px;">
-      <% activeImages.forEach((img, i) => { %>
-        <img 
-          src="<%= img %>" 
-          class="<%= i === 0 ? 'active' : '' %>"
-          onclick="document.getElementById('mainImage').src=this.src; document.querySelectorAll('.thumbnails img').forEach(t=>t.classList.remove('active')); this.classList.add('active');"
-          style="width:64px; height:64px; object-fit:cover; border-radius:6px; cursor:pointer; border:2px solid transparent;"
-          alt="thumbnail"
-        >
-      <% }) %>
-    </div>
-  <% } %>
-</div>
-
-
 
   <!-- RIGHT: Product Details -->
   <div class="details" style="flex:1;">
@@ -63,32 +57,47 @@
       <%= product.description || "A timeless piece of elegance." %>
     </p>
 
-    <!-- Color Variants -->
+    <!-- Variant buttons -->
     <% if (variants && variants.length > 0) { %>
-      <div class="color-palette" style="margin:12px 0;">
-        <% variants.forEach(v => { %>
+      <div class="variant-buttons" style="margin:12px 0;">
+        <% variants.forEach(function(v) { 
+             const isActive = variant && v._id && variant._id && v._id.toString() === variant._id.toString();
+             const label = v.colorName || v.name || (v.reference ? v.reference : ('Variant ' + (v._id.toString().slice(-4))));
+        %>
           <a 
             href="/product/<%= product._id %>?variant=<%= v._id %>" 
-            class="color-swatch <%= variant && v._id.toString() === variant._id.toString() ? 'active' : '' %>"
-            style="display:inline-block; width:28px; height:28px; border-radius:50%; margin-right:8px; background:<%= v.colorCode || '#ccc' %>; border:1px solid #ddd;"
-            title="<%= v.colorName || 'Color' %>"
-          ></a>
-        <% }) %>
+            class="variant-btn <%= isActive ? 'active' : '' %>" 
+            data-variant-id="<%= v._id %>" 
+            role="button"
+            aria-pressed="<%= isActive ? 'true' : 'false' %>"
+            title="<%= label %>"
+          >
+            <span class="variant-label"><%= label %></span>
+            <% if (isActive) { %>
+              <span class="variant-check" aria-hidden="true">✓</span>
+            <% } %>
+          </a>
+        <% }); %>
       </div>
     <% } %>
-    <!-- Quantity controls (replace any previous quantity markup) -->
-<div id="quantityWrapper" style="margin: 12px 0;">
-  <div class="quantity-box" id="quantityBox" data-initial="1" aria-label="Quantity selector">
-    <button type="button" class="qty-btn" id="qtyMinus" aria-label="Decrease quantity">−</button>
-    <span id="qtyValue" aria-live="polite">1</span>
-    <button type="button" class="qty-btn" id="qtyPlus" aria-label="Increase quantity">+</button>
-  </div>
-  <!-- Optional hidden input for form submission (uncomment if you submit a form) -->
-  <!-- <input type="hidden" id="qtyInput" name="quantity" value="1"> -->
-</div>
 
+    <!-- Quantity controls -->
+    <div id="quantityWrapper" style="margin: 12px 0;">
+      <div class="quantity-box" id="quantityBox" data-initial="1" data-max-stock="<%= (variant && variant.stock) ? variant.stock : 1 %>" aria-label="Quantity selector">
+        <button type="button" class="qty-btn" id="qtyMinus" aria-label="Decrease quantity">−</button>
+        <span id="qtyValue" aria-live="polite">1</span>
+        <button type="button" class="qty-btn" id="qtyPlus" aria-label="Increase quantity">+</button>
+      </div>
+    </div>
 
-    <button class="add-to-cart-btn" <%= stockStatus !== 'In Stock' ? 'disabled' : '' %> style="padding:8px 12px; border-radius:6px;">
+    <!-- Add to cart button: use consistent class "add-to-cart" -->
+    <button 
+      type="button"
+      class="add-to-cart"
+      data-product-id="<%= product._id %>" 
+      data-variant-id="<%= (variant && variant._id) ? variant._id : '' %>"
+      <%= stockStatus !== 'In Stock' ? 'disabled' : '' %>
+      style="padding:12px 32px; font-size:16px; background:#007bff; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:12px;">
       <%= stockStatus === 'In Stock' ? 'Add to Cart' : 'Out of Stock' %>
     </button>
 
@@ -96,35 +105,30 @@
       <div class="highlights" style="margin-top:16px;">
         <h3>Key Highlights</h3>
         <ul>
-          <% product.highlights.forEach(h => { %>
+          <% product.highlights.forEach(function(h) { %>
             <li><%= h %></li>
-          <% }) %>
+          <% }); %>
         </ul>
       </div>
     <% } %>
   </div>
 </div>
 
-<!-- Related Products -->
+<!-- Related Products (unchanged) -->
 <% if (relatedProducts && relatedProducts.length > 0) { %>
   <section class="related-section" style="margin-top:32px;">
     <h2>You May Also Like</h2>
-
     <div class="related-grid" style="display:flex; gap:24px; flex-wrap:wrap; margin-top:16px;">
-      <% relatedProducts.forEach(r => { %>
-
+      <% relatedProducts.forEach(function(r) { %>
         <%  
-          // IMPORTANT: use allVariants (passed from controller) to find the related product's variant
-          // Fallback to placeholder if nothing found
-          let relImg = '/images/placeholder-watch.jpg';
+          var relImg = '/images/placeholder-watch.jpg';
           if (typeof allVariants !== 'undefined' && Array.isArray(allVariants) && allVariants.length) {
-            const relVariant = allVariants.find(v => String(v.product) === String(r._id));
+            var relVariant = allVariants.find(function(v){ return String(v.product) === String(r._id); });
             if (relVariant && relVariant.images && relVariant.images.length) {
               relImg = relVariant.images[0];
             }
           }
         %>
-
         <a href="/product/<%= r._id %>" class="related-card" style="width:180px; text-align:center; text-decoration:none; color:inherit;">
           <div style="width:100%; height:140px; display:flex; align-items:center; justify-content:center; background:#fff; box-shadow:0 6px 18px rgba(0,0,0,0.06); border-radius:8px; overflow:hidden;">
             <img src="<%= relImg %>" alt="<%= r.name %>" style="max-width:100%; max-height:100%; object-fit:contain;">
@@ -134,9 +138,9 @@
             <p class="price" style="color:#c0392b; font-weight:600;">₹ <%= Number(r.price).toLocaleString('en-IN') %></p>
           </div>
         </a>
-
-      <% }) %>
+      <% }); %>
     </div>
   </section>
 <% } %>
+
 

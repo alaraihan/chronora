@@ -1,81 +1,114 @@
-document.addEventListener('DOMContentLoaded', () => {
-  try {
-    const minus = document.getElementById('qtyMinus') || document.querySelector('.qty-btn.minus');
-    const plus  = document.getElementById('qtyPlus')  || document.querySelector('.qty-btn.plus');
-    let valueEl = document.getElementById('qtyValue');
-    if (!valueEl) {
-      valueEl = document.querySelector('#quantityBox span, .quantity-box span, .qty-value, span[data-role="qty"]');
-    }
 
-    if (!minus || !plus || !valueEl) {
-      console.warn('Quantity elements missing. Expected ids: qtyMinus, qtyPlus, qtyValue.');
-      console.warn('Found:', { minus, plus, valueEl });
+const showToast = (msg, type = "success") => {
+  Toastify({
+    text: msg,
+    duration: 3000,
+    gravity: "top",
+    position: "right",
+    backgroundColor: type === "error" ? "#e74c3c" : "#27ae60",
+  }).showToast();
+};
+const _recentToasts = new Set();
+const showToastOnce = (msg, type = "success", ttl = 1500) => {
+  const key = `${type}|${msg}`;
+  if (_recentToasts.has(key)) return;
+  _recentToasts.add(key);
+  showToast(msg, type);
+  setTimeout(() => _recentToasts.delete(key), ttl);
+};
+
+const toNumberFromText = (s) => {
+  if (s === null || s === undefined) return 0;
+  const cleaned = String(s).replace(/[^\d.-]/g, "");
+  return Number(cleaned) || 0;
+};
+
+const inFlight = new Map();
+
+document.addEventListener("DOMContentLoaded", () => {
+  try {
+    const minus = document.getElementById("qtyMinus");
+    const plus  = document.getElementById("qtyPlus");
+    const valueEl = document.getElementById("qtyValue");
+    const wrapper = document.getElementById("quantityBox");
+    if (!minus || !plus || !valueEl || !wrapper) {
       return;
     }
 
-    valueEl.style.color = valueEl.style.color || '#111';
-    valueEl.style.background = valueEl.style.background || '#fff';
-    valueEl.style.minWidth = valueEl.style.minWidth || '36px';
-    valueEl.style.display = valueEl.style.display || 'inline-block';
-    valueEl.style.textAlign = 'center';
-    valueEl.style.padding = valueEl.style.padding || '6px 0';
-    valueEl.setAttribute('aria-live', 'polite');
+    let count = parseInt(wrapper.dataset.initial || "1", 10);
+    const maxStock = parseInt(wrapper.dataset.maxStock || "1", 10) || Infinity;
 
-    const wrapper = document.getElementById('quantityBox') || document.querySelector('.quantity-box');
-    let count = 1;
-    if (wrapper && wrapper.dataset && wrapper.dataset.initial) {
-      const n = parseInt(wrapper.dataset.initial, 10);
-      if (!isNaN(n) && n >= 1) count = n;
-    }
-
-    valueEl.textContent = String(count);
-
-    const maxStock = wrapper && wrapper.dataset && wrapper.dataset.maxStock
-      ? parseInt(wrapper.dataset.maxStock, 10) || Infinity
-      : Infinity;
-
-    function updateUI() {
+    const updateUI = () => {
       valueEl.textContent = String(count);
-      valueEl.style.color = '#111';
       minus.disabled = count <= 1;
       plus.disabled = count >= maxStock;
-      console.log('Quantity updated:', count);
-    }
+    };
 
-    minus.addEventListener('click', () => {
+    minus.addEventListener("click", (e) => {
+      e.preventDefault();
       if (count > 1) {
-        count = count - 1;
+        count -= 1;
         updateUI();
       }
     });
 
-    plus.addEventListener('click', () => {
+    plus.addEventListener("click", (e) => {
+      e.preventDefault();
       if (count < maxStock) {
-        count = count + 1;
+        count += 1;
         updateUI();
       }
     });
-
-    let syncTimer = null;
-    function startSync() {
-      if (syncTimer) return;
-      syncTimer = setInterval(() => {
-        if (valueEl.textContent !== String(count)) {
-          valueEl.textContent = String(count);
-        }
-      }, 300);
-    }
-    function stopSync() {
-      if (syncTimer) clearInterval(syncTimer);
-      syncTimer = null;
-    }
-    minus.addEventListener('mousedown', startSync);
-    plus.addEventListener('mousedown', startSync);
-    window.addEventListener('mouseup', stopSync);
 
     updateUI();
-    console.log('Quantity selector ready. Initial:', count);
   } catch (err) {
-    console.error('Quantity init error:', err);
+    console.error("Quantity init error:", err);
+  }
+});
+
+document.addEventListener("click", async (event) => {
+  const btn = event.target.closest(".add-to-cart");
+  if (!btn) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (btn.disabled) return;
+
+  const productId = btn.dataset.productId;
+  const variantId = btn.dataset.variantId;
+  const qtyEl = document.getElementById("qtyValue");
+  const quantity = qtyEl ? Math.max(1, parseInt(qtyEl.textContent || "1", 10)) : 1;
+
+  const key = `add-${productId}-${variantId}-${quantity}`;
+  if (inFlight.get(key)) {
+    console.log("Add already in flight for", key);
+    return;
+  }
+
+  inFlight.set(key, true);
+  btn.disabled = true;
+  console.log("Add-to-cart request:", { productId, variantId, quantity, ts: Date.now() });
+
+  try {
+    const res = await axios.post("/cart/add", { productId, variantId, quantity });
+
+    if (res.data && res.data.success) {
+      showToastOnce("Added to cart!", "success");
+      const cartCount = document.getElementById("cart-count");
+      if (cartCount) {
+        cartCount.textContent = (parseInt(cartCount.textContent || "0", 10) + 1).toString();
+      }
+    } else {
+      const msg = res.data?.message || "Failed to add to cart";
+      showToastOnce(msg, "error");
+    }
+  } catch (err) {
+    const msg = err.response?.data?.message || "Something went wrong";
+    showToastOnce(msg, "error");
+    console.error("Add-to-cart error:", err);
+  } finally {
+    inFlight.delete(key);
+    btn.disabled = false;
   }
 });

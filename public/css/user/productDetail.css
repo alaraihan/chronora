@@ -147,6 +147,29 @@ body {
     z-index: 5;
     pointer-events: none;
 }
+.quantity-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qty-btn {
+  width: 38px;
+  height: 38px;
+  background: #f1f1f1;
+  border: 1px solid #ccc;
+  color: #333;       /* <-- makes + and - visible */
+  font-size: 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#qtyValue {
+  min-width: 24px;
+  text-align: center;
+  font-size: 18px;
+  color: #333;
+}
 
 /* Thumbnails */
 .thumbnails {
@@ -385,6 +408,82 @@ body {
 
 .qty-btn:active { transform: translateY(1px); }
 .qty-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+/* Ensure swatch is a filled circle and visible */
+.color-swatch {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+  border: 1px solid rgba(0,0,0,0.12);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06) inset;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+  /* Force the inline background-color to show (important only if other rules override) */
+  background-clip: padding-box;
+}
+
+/* Slight lift on hover */
+.color-swatch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+/* Active selection outline */
+.color-swatch.active {
+  outline: 3px solid rgba(0,0,0,0.12);
+  outline-offset: 2px;
+}
+
+/* If you want a stronger visible border for very light colors (like white/gold) */
+.color-swatch.light {
+  border: 1px solid rgba(0,0,0,0.32);
+}
+
+/* Optional: show color name on hover as a small label (below swatches) */
+/* Variant button styles */
+.variant-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.variant-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: #f2f2f5;
+  color: #222;
+  text-decoration: none;
+  font-size: 14px;
+  border: 1px solid rgba(0,0,0,0.06);
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms;
+  cursor: pointer;
+}
+
+.variant-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.variant-btn .variant-check {
+  font-weight: 700;
+  color: #0a74ff;
+  font-size: 14px;
+  margin-left: 4px;
+}
+
+/* Active state */
+.variant-btn.active {
+  background: #0a74ff;
+  color: #fff;
+  border-color: rgba(10,116,255,0.9);
+  box-shadow: 0 8px 24px rgba(10,116,255,0.12);
+}
 
 #qtyValue {
   width: 36px;

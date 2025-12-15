@@ -1,0 +1,59 @@
+<link rel="stylesheet" href="/css/user/orders.css">
+
+<div class="orders-container">
+  <aside class="sidebar">
+    <%- include('../partials/user/sidebar') %>
+  </aside>
+
+  <main class="orders-content">
+    <h1>My Orders</h1>
+    <p class="subtext">Manage your order history here.</p>
+
+    <div class="orders-list" id="ordersList">
+      <% if (!orders || orders.length === 0) { %>
+        <p style="text-align:center; color:#999; padding:60px;">No orders yet.</p>
+      <% } else { %>
+        <% orders.forEach(order => { %>
+          <div class="order-card">
+            <div class="order-header">
+              <div class="order-info">
+                <strong class="order-id">Order # <%= order.orderId %></strong>
+                <div><%= new Date(order.orderDate).toDateString() %></div>
+                <div class="order-total">₹<%= order.totalAmount.toLocaleString('en-IN') %></div>
+                <div class="order-status">
+                  Status: 
+<span class="<%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
+                    <%= order.status %>
+                  </span>
+                </div>
+              </div>
+              <div class="order-actions">
+                <a href="/profile/orders/<%= order.orderId %>" class="btn">View Details</a>
+              </div>
+            </div>
+
+            <div class="order-items">
+              <% order.products.forEach(item => { %>
+                <div class="order-item-preview">
+                  <img 
+                    src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" 
+                    alt="<%= item.productId?.name || 'Watch' %>"
+                    class="preview-img"
+                    onerror="this.src='/images/default-watch.jpg'"
+                  >
+                  <div class="preview-details">
+                    <p class="name"><%= item.productId?.name || 'Unknown Watch' %></p>
+                    <p class="variant"><%= item.variantId?.colorName || 'Standard' %> × <%= item.quantity %></p>
+                    <p class="price">₹<%= item.price.toLocaleString('en-IN') %></p>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </main>
+</div>
+
+<script src="js/user/orders.js"></script>

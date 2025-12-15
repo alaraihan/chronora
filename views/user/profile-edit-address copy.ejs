@@ -1,0 +1,132 @@
+<link rel="stylesheet" href="/css/user/address.css">
+<div class="profile-layout">
+  <%- include('../partials/user/sidebar') %>
+
+  <div class="profile-content">
+    <div class="content-header">
+      <h1>My Addresses</h1>
+      <p>Manage your saved addresses for faster checkout.</p>
+    </div>
+
+    <div class="address-section">
+      <div class="section-header">
+        <button class="add-new-btn" onclick="openAddModal()">
+          Add New Address
+        </button>
+      </div>
+
+      <% if (addresses && addresses.length > 0) { %>
+        <div class="addresses-container" id="addressesContainer">
+          <% addresses.forEach(address => { %>
+            <div class="address-box" data-id="<%= address._id %>">
+              <div class="address-tags">
+                <% if (address.isDefaultShipping) { %>
+                  <span class="tag shipping">Default Shipping</span>
+                <% } %>
+                <% if (address.isDefaultBilling) { %>
+                  <span class="tag billing">Default Billing</span>
+                <% } %>
+              </div>
+
+              <h3><%= address.name %></h3>
+              <p class="address-lines">
+                <%= address.street %><br>
+                <%= address.city %>, <%= address.state %> <%= address.zip %><br>
+                <%= address.country %><br><br>
+                <strong><%= address.phone %></strong>
+              </p>
+
+              <div class="address-actions">
+                <button class="edit-btn" onclick="openEditModal('<%= address._id %>')">
+                  Edit
+                </button>
+                <button class="delete-btn" onclick="deleteAddress('<%= address._id %>')">
+                  Delete
+                </button>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <img src="/images/no-address.png" alt="No addresses" style="width:120px; opacity:0.5;">
+          <p>No saved addresses yet</p>
+          <button class="add-new-btn" onclick="openAddModal()">Add Your First Address</button>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Add Address Modal -->
+<!-- Add Address Modal -->
+<div id="addModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('addModal')">×</span>
+    <h2>Add New Address</h2>
+    <form id="addForm">
+      <input type="text" id="add_name" placeholder="Full Name" required>
+      <input type="tel" id="add_phone" placeholder="Phone Number" required>
+      <input type="text" id="add_street" placeholder="Street Address / House No." required>
+      <input type="text" id="add_city" placeholder="City" required>
+      <input type="text" id="add_state" placeholder="State" required>
+      <input type="text" id="add_zip" placeholder="ZIP Code" required>
+      <input type="text" id="add_country" placeholder="Country" value="India" readonly>
+
+     <label><input type="checkbox" id="add_defaultShipping"> Default Shipping Address</label>
+<label><input type="checkbox" id="add_defaultBilling"> Default Billing Address</label>
+      <button type="button" onclick="addAddress()">Save Address</button>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Address Modal -->
+<!-- Edit Address Modal -->
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('editModal')">×</span>
+    <h2>Edit Address</h2>
+    <form id="editForm">
+      <input type="hidden" id="edit_id">
+
+      <input type="text" id="edit_name" placeholder="Full Name" required>
+      <input type="tel" id="edit_phone" placeholder="Phone Number" required>
+      <input type="text" id="edit_street" placeholder="Street Address" required>
+      <input type="text" id="edit_city" placeholder="City" required>
+      <input type="text" id="edit_state" placeholder="State" required>
+      <input type="text" id="edit_zip" placeholder="ZIP Code" required>
+
+      <!-- FIXED: Correct ID and placed properly -->
+      <input type="text" id="edit_country" placeholder="Country" value="India" readonly>
+
+      <label><input type="checkbox" id="edit_defaultShipping"> Set as Default Shipping Address</label>
+      <label><input type="checkbox" id="edit_defaultBilling"> Set as Default Billing Address</label>
+
+      <button type="button" onclick="updateAddress()">Update Address</button>
+    </form>
+  </div>
+</div>
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content" style="max-width: 420px; text-align: center;">
+    <span class="close" onclick="closeModal('deleteModal')">×</span>
+    <div style="padding: 20px 10px;">
+      <div style="font-size: 54px; margin-bottom: 16px;">Warning</div>
+      <h2 style="margin: 0 0 16px; color: #fff;">Delete Address?</h2>
+      <p style="color: #ccc; margin-bottom: 30px; font-size: 15px;">
+        This action <strong>cannot be undone</strong>. This address will be permanently deleted.
+      </p>
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button type="button" onclick="closeModal('deleteModal')" 
+                style="background: #333; padding: 12px 28px; min-width: 110px;">
+          Cancel
+        </button>
+        <button type="button" id="confirmDeleteBtn" 
+                style="background: #e74c3c; padding: 12px 28px; min-width: 110px;">
+          Delete Forever
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/js/user/profile-address-edit.js"></script>

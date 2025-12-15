@@ -1,0 +1,132 @@
+<link rel="stylesheet" href="/css/user/cart.css">
+
+<div class="cart-page-wrapper">
+  <h2>Your Shopping Cart</h2>
+
+  <% if (!cartItems || cartItems.length === 0) { %>
+    <div class="empty-cart">
+      <p>Your cart is empty</p>
+      <a href="/watch" class="btn-primary">Continue Shopping</a>
+    </div>
+  <% } else { %>
+
+    <div class="cart-main">
+      <div class="cart-items">
+
+        <% cartItems.forEach(item => { %>
+          <% 
+            const price = Number(item.variantId?.price || item.productId?.price || 0);
+            const qty = Number(item.quantity || 0);
+            const stock = Number(item.variantId?.stock || 0);
+            const lineTotal = price * qty;
+
+            const isAvailable = !item.productId?.isBlocked && !item.variantId?.isBlocked && stock >= qty;
+          %>
+
+          <div class="cart-item <%= !isAvailable ? 'unavailable' : '' %>" 
+               data-item-id="<%= item._id %>" 
+               data-stock="<%= stock %>">
+
+            <a href="/product/<%= item.productId._id %>" class="item-link">
+              <img src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" 
+                   alt="<%= item.productId.name %>">
+            </a>
+
+            <div class="item-info">
+              <div class="product-title">
+                <%= item.productId.name %>
+              </div>
+              <div class="variant-name">
+                <%= 
+                  item.variantId?.color || 
+                  item.variantId?.variantLabel || 
+                  item.variantId?.name
+                %>
+              </div>
+
+              <% if (!isAvailable) { %>
+                <div class="status-badge unavailable">Unavailable</div>
+              <% } else { %>
+                <div class="price">₹<%= price.toLocaleString('en-IN') %> each</div>
+              <% } %>
+            </div>
+
+            <div class="quantity-control">
+              <button class="qty-btn decrement" data-id="<%= item._id %>" <%= qty <= 1 ? 'disabled' : '' %>>−</button>
+              <span class="qty-display"><%= qty %></span>
+              <button class="qty-btn increment" data-id="<%= item._id %>" <%= qty >= stock ? 'disabled' : '' %>>+</button>
+            </div>
+
+            <div class="item-total">
+              ₹<span class="line-total"><%= lineTotal.toLocaleString('en-IN') %></span>
+            </div>
+
+            <button class="remove-item" data-id="<%= item._id %>">Remove</button>
+          </div>
+        <% }) %>
+
+      </div>
+
+      <div class="order-summary">
+        <h3>Order Summary</h3>
+
+        <div class="summary-row">
+          <span>Cart Subtotal</span>
+          <span id="cartSubtotal">₹<%= cartItems.reduce((sum, i) => sum + (Number(i.variantId?.price || i.productId?.price || 0) * i.quantity), 0).toLocaleString('en-IN') %></span>
+        </div>
+
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span id="shippingAmount">
+            <% const sub = cartItems.reduce((s, i) => s + (Number(i.variantId?.price || i.productId?.price || 0) * i.quantity), 0); %>
+            <% if (sub >= 15000) { %>
+              <span style="color:#4ade80;font-weight:600;">FREE</span>
+            <% } else { %>
+              ₹100
+            <% } %>
+          </span>
+        </div>
+
+        <% if (sub < 15000) { %>
+          <div class="free-shipping-note">
+            Add ₹<%= (15000 - sub).toLocaleString('en-IN') %> more for <strong>FREE</strong> shipping!
+          </div>
+        <% } %>
+
+        <div class="summary-total">
+          <span>Payable Amount</span>
+          <strong id="totalAmount">₹<%= (sub + (sub < 15000 ? 100 : 0)).toLocaleString('en-IN') %></strong>
+        </div>
+
+<% if (canCheckout) { %>
+  <a href="/checkout" id="checkoutBtn" class="checkout-btn active">
+    Proceed to Checkout
+  </a>
+<% } else { %>
+  <button class="checkout-btn disabled" disabled>
+    Checkout Unavailable
+  </button>
+
+  <div class="checkout-warning">
+    Some items in your cart are out of stock or unavailable.
+    Please update your cart to continue.
+  </div>
+<% } %>
+      </div>
+    </div>
+
+  <% } %>
+</div>
+
+<div id="confirmModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h3>Remove Item?</h3>
+    <p>Are you sure you want to remove this watch from your cart?</p>
+    <div class="modal-actions">
+      <button id="cancelRemove">Cancel</button>
+      <button id="confirmRemove" class="danger">Yes, Remove</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/user/cart.js"></script>

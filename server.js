@@ -2,14 +2,16 @@ import express from "express";
 const app = express();
 import dotenv from "dotenv";
 dotenv.config();
-import session from "express-session";
+import {sessions} from "./middlewares/session.js";
 import passport from "./config/passport.js";
 import expressLayouts from 'express-ejs-layouts';
-import MongoStore from "connect-mongo";
-import mongoose from "mongoose";
 import userRouter from "./routes/userRouter.js";
 import adminRouter from "./routes/adminRouter.js";
+import { message } from "./middlewares/message.js";
 import {setUser} from './middlewares/authMiddleware.js';
+import { Cache } from "./middlewares/cache.js";
+import { layouts } from "./middlewares/layouts.js";
+import { errorMd } from "./middlewares/error.js";
 import connectDB from "./config/db.js";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -24,52 +26,11 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json({limit:'50mb'}));
 app.use(express.urlencoded({ extended: true,limit:'50mb' }));
 
-app.use(session({
-  name: 'sid', 
-  secret: process.env.SESSION_SECRET || 'replace_this_secret',
-  resave: false,               
-  saveUninitialized: false,  
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI|| 'mongodb://127.0.0.1:27017/chronora', 
-    collectionName: 'sessions',
-    ttl: 14 * 24 * 60 * 60
-  }),
-  cookie: {
-    httpOnly: true,
-    maxAge: 14 * 24 * 60 * 60 * 1000, 
-    sameSite: 'lax',
-    secure: false 
-  }
-}));
+app.use(sessions);
 
-app.use((req, res, next) => {
-  const sessionMessage = req.session?.message || null;
-  const sessionSuccess = typeof req.session?.success !== 'undefined' ? req.session.success : null;
-  const queryMessage = req.query?.message || null;
-  const querySuccess = req.query?.success ? true : null;
-  const finalMessage = sessionMessage || queryMessage || (querySuccess ? req.query.success : null) || null;
-  const finalSuccess = (sessionSuccess !== null ? sessionSuccess : (querySuccess !== null ? true : false)) || false;
-  res.locals.message = finalMessage;
-  res.locals.success = finalSuccess;
-  if (req.session) {
-    delete req.session.message;
-    delete req.session.success;
-  }
-
-  next();
-});
-
-
-
-app.use((req, res, next) => {
-  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
-  res.setHeader("Pragma", "no-cache");
-  res.setHeader("Expires", "0");
-  res.setHeader("Surrogate-Control", "no-store");
-  next();
-});
-
-
+app.use(message);
+app.use(Cache);
+app.use(layouts);
 app.use((req, res, next) => {
   res.locals.session = req.session;
   next();
@@ -79,16 +40,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(expressLayouts);
 
-app.use((req, res, next) => {
-  if (req.path.startsWith('/admin') && req.path !== '/admin/login') {
-    res.locals.layout = 'layouts/adminLayouts/main';
-  } else if (!req.path.startsWith('/admin')) {
-    res.locals.layout = 'layouts/userLayouts/main';
-  } else {
-    res.locals.layout = false;
-  }
-  next();
-});
+
 
 app.set('layout', 'layouts/userLayouts/main');
 
@@ -99,7 +51,13 @@ app.use(checkBlockedUser);
 
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
+app.use((req, res, next) => {
+  const err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
 
+app.use(errorMd);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

@@ -1,0 +1,167 @@
+/* public/css/order-success.css */
+/* CENTERED + 3D PREMIUM CARD */
+
+:root {
+  --bg: #0b0d10;
+  --card-bg: #0f141a;
+  --text: #e6eef6;
+  --muted: #9aa0a6;
+  --accent: #16a34a;
+  --accent-dark: #0b6b3a;
+  --radius: 18px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", sans-serif;
+}
+
+/* CENTER EVERYTHING */
+.success-page {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 40px;
+}
+
+/* 3D CARD */
+.card {
+  width: 100%;
+  max-width: 620px;
+  background: var(--card-bg);
+  padding: 32px 32px;
+  border-radius: var(--radius);
+
+  /* 3D effect */
+  box-shadow:
+    0 25px 40px rgba(0, 0, 0, 0.45),
+    0 4px 10px rgba(0, 0, 0, 0.35),
+    inset 0 0 20px rgba(255, 255, 255, 0.02);
+
+  transform: translateY(0);
+  animation: pop 0.5s ease-out;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.92); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ILLUSTRATION CENTERED */
+.illustration {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.illustration svg {
+  width: 130px;
+  height: auto;
+}
+
+/* TEXT */
+.content h1 {
+  text-align: center;
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+
+.sub {
+  text-align: center;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+/* SUMMARY BOX */
+.order-summary {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.order-summary p {
+  margin: 0;
+}
+
+.order-id,
+.order-total {
+  font-weight: 700;
+}
+
+/* BUTTONS */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.btn {
+  padding: 12px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--muted);
+}
+
+.btn-outline {
+  border: 1px solid rgba(22,163,74,0.3);
+  color: var(--accent);
+  background: transparent;
+}
+
+.note {
+  text-align: center;
+  color: var(--muted);
+  margin-top: 10px;
+}
+
+.link {
+  color: #bfffd2;
+  text-decoration: underline;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  .card {
+    padding: 22px 20px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+}

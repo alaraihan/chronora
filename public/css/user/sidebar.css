@@ -1,0 +1,145 @@
+:root {
+  --bg: #0f0d12;
+  --panel: #211826;
+  --panel-2: #2a2030;
+  --muted: #bdb3c2;
+  --accent: #6d2f7a;
+  --accent-2: #4a1f4a;
+}
+
+/* SIDEBAR */
+.cs-sidebar {
+  padding: 18px;
+  border-radius: 12px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cs-brand {
+  color: white;
+  font-weight: 700;
+  margin-left: 6px;
+}
+
+.cs-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cs-avatar img {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.cs-initial {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #4b2b4f, #2b1a2b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+}
+
+.cs-usermeta {
+  display: flex;
+  flex-direction: column;
+}
+
+.cs-name {
+  color: #fff;
+  font-weight: 600;
+}
+
+.cs-email {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.cs-toggle {
+  margin-left: auto;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+}
+
+.cs-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 6px;
+}
+
+.cs-navitem {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.cs-navitem i {
+  font-size: 18px;
+  width: 22px;
+  text-align: center;
+}
+
+.cs-navitem:hover {
+  background: rgba(255, 255, 255, 0.02);
+  color: #fff;
+}
+
+.cs-navitem.active {
+  background: linear-gradient(
+    90deg,
+    rgba(109, 47, 122, 0.16),
+    rgba(74, 31, 74, 0.06)
+  );
+  color: #fff;
+}
+
+.cs-footer {
+  margin-top: auto;
+  color: rgba(255, 255, 255, 0.22);
+  font-size: 13px;
+  padding: 8px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 960px) {
+  .cs-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    transform: translateX(-100%);
+    transition: transform 0.28s ease-in-out;
+    z-index: 70;
+    padding: 20px;
+  }
+
+  .cs-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .cs-toggle {
+    display: block;
+  }
+}
+
+@media (min-width: 961px) {
+  .cs-toggle {
+    display: none;
+  }
+}

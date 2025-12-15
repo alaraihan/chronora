@@ -85,11 +85,12 @@
                             data-product-id="<%= product._id %>"
                             data-variant-id="<%= variant ? variant._id : '' %>"
                             <%= stock <= 0 ? 'disabled' : '' %>>
-                        <%= stock <= 0 ? 'Out of Stock' : 'Add to Cart' %>
+                        <%= stock <= 0 ? 'Out of Stock' : 'View Product' %>
                     </button>
                 </div>
+                </a>
 
-            </a>
+            
         <% }) %>
     <% } else { %>
         <div class="empty-state">

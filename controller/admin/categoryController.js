@@ -60,7 +60,6 @@ export const addCategory = async (req, res) => {
             return res.status(400).json({ success: false, message: "Please fill all required fields." });
         }
 
-        // 🚨 New validation – Image is required!
         if (!req.file) {
             return res.status(400).json({
                 success: false,
@@ -77,13 +76,12 @@ export const addCategory = async (req, res) => {
             return res.status(409).json({ success: false, message: "Category already exists!" });
         }
 
-        // Upload image to Cloudinary
         const result = await cloudinary.uploader.upload(req.file.path, {
             folder: "chronora/categories",
             transformation: { width: 500, height: 500, crop: "limit" },
         });
 
-        fs.unlinkSync(req.file.path); // remove temp file
+        fs.unlinkSync(req.file.path); 
 
         const category = await Category.create({
             name: trimmedName,

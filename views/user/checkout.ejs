@@ -1,0 +1,183 @@
+<link rel="stylesheet" href="/css/user/checkout.css" />
+
+<div class="checkout-wrapper">
+  <div class="checkout-container">
+    <h2 class="page-title">Checkout</h2>
+
+    <div class="checkout-main">
+      <div class="checkout-left">
+
+        <div class="section-card">
+          <h3>Select Delivery Address</h3>
+<div id="addressList">
+  <% if (addresses && addresses.length > 0) { %>
+    <% addresses.forEach((addr, index) => { %>
+      <label class="address-option <%= index === 0 ? 'selected' : '' %>" data-id="<%= addr._id %>">
+        <input 
+          type="radio" 
+          name="selectedAddress" 
+          value="<%= addr._id %>" 
+          <%= index === 0 ? 'checked' : '' %> 
+        />
+        <div class="address-content">
+          <div class="address-header">
+            <strong><%= addr.name || 'No Name' %></strong>
+            <% if (addr.isDefaultShipping) { %>
+              <span class="default-badge">Default</span>
+            <% } %>
+          </div>
+          <p>
+            <%= addr.street || '' %><%= addr.street ? ',' : '' %>
+            <%= addr.city || '' %><%= addr.city ? ',' : '' %>
+            <%= addr.state || '' %> <%= addr.zip || '' %>
+          </p>
+          <p>Mobile: <%= addr.phone || 'Not provided' %></p>
+        </div>
+      </label>
+    <% }) %>
+  <% } else { %>
+    <p style="color:#999; text-align:center; padding:20px;">
+      No saved addresses yet. Add one below.
+    </p>
+  <% } %>
+</div>
+
+          <button type="button" class="add-address-btn" id="openAddressModal">
+            + Add New Address
+          </button>
+        </div>
+
+        <div class="section-card">
+          <h3>Select Payment Method</h3>
+          <div id="paymentMethods">
+            <label class="payment-option selected">
+              <input type="radio" name="payment" value="cod" checked />
+              <span class="checkmark"></span>
+              <div>
+                <strong>Cash on Delivery</strong>
+                <p>Pay when you receive your order</p>
+              </div>
+            </label>
+
+            <label class="payment-option">
+              <input type="radio" name="payment" value="wallet" />
+              <span class="checkmark"></span>
+              <div>
+                <strong>Wallet</strong>
+                <p>Balance: ₹<%= (user?.wallet?.balance || 0).toLocaleString('en-IN') %></p>
+              </div>
+            </label>
+
+            <label class="payment-option">
+              <input type="radio" name="payment" value="razorpay" />
+              <span class="checkmark"></span>
+              <div>
+                <strong>Razorpay</strong>
+                <p>Card • UPI • Netbanking</p>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="checkout-right">
+        <div class="section-card order-summary">
+          <h3>Order Summary</h3>
+          <div class="summary-items">
+            <% (cartItems || []).forEach(item => { %>
+              <div class="summary-item">
+                <img 
+                  src="<%= item.variantId?.images?.[0] || '/images/default.jpg' %>" 
+                  alt="<%= item.productId?.name || 'Product' %>"
+                >
+                <div class="item-info">
+                  <p><%= item.productId?.name || 'Unknown Product' %></p>
+                  <small>
+                    <%= item.variantId?.color || item.variantId?.variantName || 'Standard' %> × <%= item.quantity %>
+                  </small>
+                </div>
+                <strong>
+                  ₹<%= ((item.variantId?.price || item.productId?.price || 0) * item.quantity).toLocaleString('en-IN') %>
+                </strong>
+              </div>
+            <% }) %>
+          </div>
+
+          <hr>
+
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>₹<%= (subtotal || 0).toLocaleString('en-IN') %></span>
+          </div>
+
+          <div class="summary-row">
+            <span>Delivery Charge</span>
+            <span style="color:#4ade80;">
+              <%= (subtotal || 0) >= 15000 ? 'FREE' : '₹100' %>
+            </span>
+          </div>
+
+          <div class="summary-total">
+            <span>Grand Total</span>
+            <strong>
+              ₹<%= ((subtotal || 0) + ((subtotal || 0) < 15000 ? 100 : 0)).toLocaleString('en-IN') %>
+            </strong>
+          </div>
+
+          <button class="place-order-btn" id="placeOrderBtn">Place Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="addressModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Add New Address</h3>
+      <span class="close-modal" id="closeModal">×</span>
+    </div>
+
+    <form id="addressForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" name="name" required />
+        </div>
+        <div class="form-group">
+          <label>Mobile *</label>
+          <input type="text" name="phone" required maxlength="10" pattern="[0-9]{10}" />
+        </div>
+        <div class="form-group full-width">
+          <label>Street Address / House No. *</label>
+          <input type="text" name="street" required />
+        </div>
+        <div class="form-group">
+          <label>City *</label>
+          <input type="text" name="city" required />
+        </div>
+        <div class="form-group">
+          <label>State *</label>
+          <input type="text" name="state" required />
+        </div>
+        <div class="form-group">
+          <label>ZIP Code *</label>
+          <input type="text" name="zip" required maxlength="6" pattern="[0-9]{6}" />
+        </div>
+        <div class="form-group full-width">
+          <label>
+            <input type="checkbox" name="isDefaultShipping" />
+            Set as default shipping address
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn-save">Save Address</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/user/checkout.js"></script>

@@ -1,0 +1,35 @@
+
+  <link rel="stylesheet" href="/css/user/order-success.css" />
+
+  <main class="success-page">
+    <section class="card">
+      <div class="illustration">
+        <svg width="220" height="160" viewBox="0 0 220 160">
+          <rect x="10" y="40" width="200" height="100" rx="12" fill="#F3FBF6" stroke="#C8EDE0" />
+          <path d="M30 75 L55 105 L90 55" fill="none" stroke="#2FA47A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="170" cy="60" r="18" fill="#FFEFD6" stroke="#FFD7A6" />
+          <path d="M160 58 L174 72" stroke="#FF9E3B" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="content">
+        <h1>Thank you — your order is confirmed!</h1>
+        <p class="sub">We’ve received your order. A confirmation email has been sent.</p>
+
+        <div class="order-summary">
+          <p><strong>Order ID:</strong> <%= orderId %></p>
+          <% if (orderTotal) { %>
+            <p><strong>Total:</strong> ₹<%= orderTotal %></p>
+          <% } %>
+        </div>
+
+        <div class="actions">
+          <a class="btn btn-primary" href="/profile/orders/<%= orderId %>">View Order</a>
+          <a class="btn btn-ghost" href="/watch">Continue Shopping</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/order-success.js"></script>
+

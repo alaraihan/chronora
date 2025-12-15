@@ -50,7 +50,7 @@ const signUp = async (req, res) => {
       email: email.toLowerCase().trim(),
       password: hashedPassword,
       otp,
-      otpExpires: Date.now() + 3 * 60 * 1000,
+      otpExpires: Date.now() +  1000*30,
     };
 
     setFlash(req, "success", "OTP sent to your email!");
@@ -91,7 +91,7 @@ export const verifyOtp = async (req, res) => {
     console.log("[verifyOtp] received otp:", providedOtp);
     const pending = req.session.pendingUser;
     if (!pending) {
-      console.log("[verifyOtp] no pendingUser in session");
+      console.log("verifyOtp no pendingUser in session");
       setFlash(req, "error", "No signup in progress");
       return res.redirect("/signup");
     }
@@ -125,7 +125,7 @@ export const verifyOtp = async (req, res) => {
       });
     }
 
-    console.log("[verifyOtp] OTP correct. Creating user for:", pending.email);
+    console.log("verifyOtp OTP correct. Creating user for:", pending.email);
     const newUser = await User.create({
       fullName: pending.fullName,
       email: pending.email,
@@ -136,11 +136,11 @@ export const verifyOtp = async (req, res) => {
 delete req.session.pendingUser;
 setFlash(req, "success", "Account created successfully! Please log in.");
 
-console.log("[verifyOtp] about to save session and redirect to /login; sessionID:", req.sessionID, "session:", req.session);
+console.log("verifyOtp about to save session and redirect to /login; sessionID:", req.sessionID, "session:", req.session);
 
 return req.session.save(err => {
-  if (err) console.error("[verifyOtp] session.save error:", err);
-  console.log("[verifyOtp] session saved -> redirecting to /login");
+  if (err) console.error("verifyOtp session.save error:", err);
+  console.log("verifyOtp session saved -> redirecting to /login");
   return res.redirect("/login");
 });
 
