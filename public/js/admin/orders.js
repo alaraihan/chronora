@@ -1,193 +1,231 @@
 
-const params = new URLSearchParams(window.location.search);
-const overlay = document.getElementById("loadingOverlay");
+    // Global URLSearchParams to manage filters and pagination
+    const params = new URLSearchParams(window.location.search);
+    const overlay = document.getElementById("loadingOverlay");
 
-function showLoading() {
-  if (overlay) overlay.style.display = "flex";
-}
+    // Loading overlay helpers
+    function showLoading() {
+        if (overlay) overlay.style.display = "flex";
+    }
 
-function hideLoading() {
-  if (overlay) overlay.style.display = "none";
-}
+    function hideLoading() {
+        if (overlay) overlay.style.display = "none";
+    }
 
-function toast(message, type = "success") {
-  const colors = {
-    success: "#28a745",
-    error: "#dc3545",
-    info: "#17a2b8"
-  };
+    // Toast notification
+    function toast(message, type = "error") {
+        Toastify({
+            text: message,
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: type === "success" ? "#28a745" : "#dc3545"
+        }).showToast();
+    }
 
-  Toastify({
-    text: message,
-    duration: 3000,
-    gravity: "top",
-    position: "right",
-    backgroundColor: colors[type]
-  }).showToast();
-}
+    // Apply search and status filters
+    function applyFilters() {
+        const searchInput = document.getElementById("searchInput");
+        const statusSelect = document.getElementById("statusFilter");
 
+        const search = searchInput?.value.trim();
+        const status = statusSelect?.value;
 
-function applyFilters() {
-  const search = document.getElementById("searchInput").value.trim();
-  const status = document.getElementById("statusFilter").value;
-  const limit  = document.getElementById("limitFilter").value;
+        params.set("page", "1"); // Reset to first page on filter
 
-  params.set("page", 1);
-  params.set("limit", limit);
+        if (search) {
+            params.set("search", search);
+        } else {
+            params.delete("search");
+        }
 
-  search ? params.set("search", search) : params.delete("search");
-  status ? params.set("status", status) : params.delete("status");
+        if (status) {
+            params.set("status", status);
+        } else {
+            params.delete("status");
+        }
 
-  loadOrders();
-}
+        updateURLAndLoad();
+    }
 
+    // Pagination click handler
+    function goToPage(page) {
+        params.set("page", page);
+        updateURLAndLoad();
+    }
 
-function resetFilters() {
-  window.location.href = "/admin/orders";
-}
+    // Update browser URL and reload data
+    function updateURLAndLoad() {
+        const newUrl = `/admin/orders?${params.toString()}`;
+        window.history.pushState({}, "", newUrl);
+        loadOrders();
+    }
 
-function removeSearch() {
-  params.delete("search");
-  params.set("page", 1);
-  loadOrders();
-}
+    // Main function: Load orders via AJAX
+    function loadOrders() {
+        showLoading();
 
-function removeStatus() {
-  params.delete("status");
-  params.set("page", 1);
-  loadOrders();
-}
-function goToPage(page) {
-  params.set("page", page);
-  loadOrders();
-}
+        axios.get(`/admin/orders?${params.toString()}`, {
+            headers: { Accept: "application/json" }
+        })
+        .then(response => {
+            const data = response.data;
 
-function loadOrders() {
-  showLoading();
+            if (!data.success) {
+                toast("Failed to load orders", "error");
+                return;
+            }
 
-  const url = `/admin/orders?${params.toString()}`;
+            // Flatten orders into individual product line items
+            const lineItems = [];
+            data.orders.forEach(order => {
+                if (order.products && order.products.length > 0) {
+                    order.products.forEach(prod => {
+                        lineItems.push({
+                            orderId: order.orderId || "N/A",
+                            order_id: order._id,
+                            shortId: order._id.toString().slice(-6),
+                            createdAt: order.createdAt,
+                            customerName: order.address?.fullName || order.userId?.name || "Guest",
+                            customerContact: order.address?.phone || order.userId?.email || "",
+                            status: order.status || "Pending",
+                            product: prod
+                        });
+                    });
+                }
+            });
 
-  axios
-    .get(url, { headers: { Accept: "application/json" } })
-    .then(res => {
-      if (!res.data.success) {
-        toast("Failed to load orders", "error");
-        return;
-      }
+            renderLineItems(lineItems);
+            renderPagination(data.pagination);
+        })
+        .catch(error => {
+            console.error("Load orders error:", error);
+            toast("Server error while loading orders", "error");
+        })
+        .finally(() => {
+            hideLoading();
+        });
+    }
 
-      renderOrders(res.data.orders);
-      updatePaginationInfo(res.data.pagination);
-      loadStats();
+    // Render each product as a table row
+    function renderLineItems(items) {
+        const tbody = document.getElementById("ordersTableBody");
 
-      window.history.pushState({}, "", url);
-    })
-    .catch(() => {
-      toast("Server error", "error");
-    })
-    .finally(() => {
-      hideLoading();
+        if (items.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="text-center py-5">
+                        <i class="bi bi-inbox" style="font-size: 3rem; opacity: 0.5;"></i>
+                        <h4>No products found</h4>
+                        <p>No matching orders or products with current filters.</p>
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        tbody.innerHTML = items.map(item => {
+            const prod = item.product;
+
+            // Safely extract product name (handles both productId and product fields)
+            const productName = 
+                prod.productId?.name || 
+                prod.product?.name || 
+                "Unknown Product";
+
+            // Variant info (color and size)
+            const variantObj = prod.variantId || prod.variant;
+            const variantInfo = [];
+            if (variantObj?.colorName) variantInfo.push(variantObj.colorName);
+            if (variantObj?.size) variantInfo.push(variantObj.size);
+            const variant = variantInfo.length ? ` (${variantInfo.join(" - ")})` : "";
+
+            // Price and quantity
+            const price = prod.price || prod.productId?.price || prod.product?.price || 0;
+            const qty = prod.quantity || 1;
+            const subtotal = price * qty;
+
+            // Status badge class (handles spaces in status like "Out for Delivery")
+            const statusClass = item.status.toLowerCase().replace(/ /g, '-');
+
+            return `
+                <tr>
+                    <td><strong>#${item.orderId}</strong><br><small class="text-muted">${item.shortId}</small></td>
+                    <td><strong>${item.customerName}</strong><br><small>${item.customerContact}</small></td>
+                    <td>
+                        ${new Date(item.createdAt).toLocaleDateString("en-IN")}<br>
+                        <small>${new Date(item.createdAt).toLocaleTimeString("en-IN", {hour: "2-digit", minute: "2-digit"})}</small>
+                    </td>
+                    <td><strong>${productName}${variant}</strong></td>
+                    <td class="text-center">${qty}</td>
+                    <td class="text-end">₹${price.toFixed(2)}</td>
+                    <td class="text-end">₹${subtotal.toFixed(2)}</td>
+                    <td><span class="status-badge status-${statusClass}">${item.status}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="/admin/orders/${item.order_id}" class="btn-action btn-view" title="View Order">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="/admin/orders/print/${item.order_id}" target="_blank" class="btn-action btn-print" title="Print Invoice">
+                                <i class="bi bi-printer"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>`;
+        }).join("");
+    }
+
+    // Render pagination controls
+    function renderPagination(pag) {
+        const container = document.getElementById("paginationContainer");
+
+        if (!pag || pag.totalPages <= 1) {
+            container.innerHTML = "";
+            return;
+        }
+
+        let html = "";
+
+        // Previous button
+        if (pag.currentPage > 1) {
+            html += `<a href="javascript:goToPage(${pag.currentPage - 1})" class="page-link prev">
+                        <i class="bi bi-chevron-left"></i> Previous
+                     </a>`;
+        }
+
+        // Page numbers
+        html += '<div class="page-numbers">';
+        for (let i = 1; i <= pag.totalPages; i++) {
+            if (i === pag.currentPage) {
+                html += `<span class="page-number active">${i}</span>`;
+            } else {
+                html += `<a href="javascript:goToPage(${i})" class="page-number">${i}</a>`;
+            }
+        }
+        html += '</div>';
+
+        // Next button
+        if (pag.currentPage < pag.totalPages) {
+            html += `<a href="javascript:goToPage(${pag.currentPage + 1})" class="page-link next">
+                        Next <i class="bi bi-chevron-right"></i>
+                     </a>`;
+        }
+
+        container.innerHTML = html;
+    }
+
+    // Event Listeners
+    document.getElementById("searchInput")?.addEventListener("keypress", e => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            applyFilters();
+        }
     });
-}
 
-function renderOrders(orders) {
-  const tbody = document.getElementById("ordersTableBody");
+    document.getElementById("statusFilter")?.addEventListener("change", () => {
+        applyFilters();
+    });
 
-  if (!orders.length) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="6" class="text-center py-5">
-          <div class="empty-state">
-            <i class="bi bi-inbox"></i>
-            <h4>No orders found</h4>
-          </div>
-        </td>
-      </tr>
-    `;
-    return;
-  }
-
-  tbody.innerHTML = orders.map(order => `
-    <tr>
-      <td>
-        <strong>${order.orderId}</strong>
-        <small class="text-muted d-block">${order._id.slice(-6)}</small>
-      </td>
-
-      <td>
-        <strong>${order.address?.fullName || order.userId?.name || "Guest"}</strong>
-        <small class="d-block">${order.address?.phone || order.userId?.email || ""}</small>
-      </td>
-
-      <td>
-        ${new Date(order.createdAt).toLocaleDateString("en-IN")}
-        <br>
-        <small>${new Date(order.createdAt).toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})}</small>
-      </td>
-
-      <td>
-        <strong>₹${order.totalAmount.toFixed(2)}</strong>
-        <small class="d-block">${order.products.length} item(s)</small>
-      </td>
-
-      <td>
-        <select onchange="updateStatus('${order._id}', this.value)">
-          ${statusOptions(order.status)}
-        </select>
-      </td>
-
-      <td>
-        <a href="/admin/orders/${order._id}" class="btn-action btn-view">
-          <i class="bi bi-eye"></i>
-        </a>
-        <a href="/admin/orders/print/${order._id}" target="_blank" class="btn-action btn-print">
-          <i class="bi bi-printer"></i>
-        </a>
-      </td>
-    </tr>
-  `).join("");
-}
-
-function statusOptions(current) {
-  const statuses = ["pending","processing","shipped","delivered","cancelled"];
-  return statuses.map(s =>
-    `<option value="${s}" ${s === current ? "selected" : ""}>${capitalize(s)}</option>`
-  ).join("");
-}
-
-function capitalize(text) {
-  return text.charAt(0).toUpperCase() + text.slice(1);
-}
-
-
-function updateStatus(orderId, status) {
-  axios
-    .post(`/admin/orders/${orderId}/status`, { status })
-    .then(res => {
-      if (res.data.success) {
-        toast("Order status updated");
-        loadStats();
-      } else {
-        toast(res.data.message, "error");
-      }
-    })
-    .catch(() => toast("Failed to update status", "error"));
-}
-
-
-function loadStats() {
-  axios
-    .get(`/admin/orders/stats?${params.toString()}`)
-    .then(res => {
-      if (!res.data.success) return;
-
-      document.getElementById("totalOrders").innerText = res.data.stats.total;
-      document.querySelector(".stat-pending h3").innerText = res.data.stats.pending;
-      document.querySelector(".stat-delivered h3").innerText = res.data.stats.delivered;
-      document.querySelector(".stat-revenue h3").innerText = `₹ ${res.data.stats.revenue}`;
-    })
-    .catch(() => {});
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  loadStats();
-});
+    // Load orders when page finishes loading
+    document.addEventListener("DOMContentLoaded", () => {
+        loadOrders();
+    });

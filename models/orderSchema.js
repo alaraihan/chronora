@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import crypto from "crypto";
 
+/* ================= ORDERED ITEM ================= */
+
 const orderedItemSchema = new mongoose.Schema({
   productId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -43,10 +45,12 @@ const orderedItemSchema = new mongoose.Schema({
     default: "Pending",
   },
 
+  // ✅ FIXED: Timeline fields now MATCH controller logic
   itemTimeline: {
     confirmedAt: Date,
     processedAt: Date,
     shippedAt: Date,
+    outForDeliveryAt: Date,   // ✅ ADDED
     deliveredAt: Date,
     cancelledAt: Date,
     returnRequestedAt: Date,
@@ -61,6 +65,8 @@ const orderedItemSchema = new mongoose.Schema({
   },
 });
 
+/* ================= SHIPPING ADDRESS ================= */
+
 const shippingAddressSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   phone: { type: String, required: true },
@@ -72,6 +78,8 @@ const shippingAddressSchema = new mongoose.Schema({
   country: { type: String, default: "India" },
   addressType: String,
 });
+
+/* ================= ORDER ================= */
 
 const orderSchema = new mongoose.Schema(
   {
@@ -93,29 +101,29 @@ const orderSchema = new mongoose.Schema(
     deliveryDate: Date,
 
     status: {
-  type: String,
-  enum: [
-    "Pending",
-    "Confirmed",
-    "Processing",
-    "Shipped",
-    "Out for Delivery",
-    "Delivered",
+      type: String,
+      enum: [
+        "Pending",
+        "Confirmed",
+        "Processing",
+        "Shipped",
+        "Out for Delivery",
+        "Delivered",
 
-    "CancelRequested",
-    "ReturnRequested",
-    "ReturnRejected",
-    "ReturnApproved",
+        "CancelRequested",
+        "ReturnRequested",
+        "ReturnRejected",
+        "ReturnApproved",
 
-    "Cancelled",
-    "Returned",
+        "Cancelled",
+        "Returned",
 
-    "Partially Delivered",
-    "Partially Cancelled",
-    "Partially Returned",
-  ],
-  default: "Pending",
-},
+        "Partially Delivered",
+        "Partially Cancelled",
+        "Partially Returned",
+      ],
+      default: "Pending",
+    },
 
     cancelReason: {
       type: String,
@@ -127,28 +135,32 @@ const orderSchema = new mongoose.Schema(
       default: "",
     },
 
-    review: {
-      rating: {
-        type: Number,
-        min: 1,
-        max: 5,
+    reviews: [
+      {
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        variantId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Variant",
+          required: true,
+        },
+        rating: { type: Number, min: 1, max: 5, required: true },
+        title: String,
+        text: { type: String, required: true },
+        reviewedAt: { type: Date, default: Date.now },
       },
-      title: {
-        type: String,
-        default: "",
-      },
-      text: {
-        type: String,
-        default: "",
-      },
-      reviewedAt: Date,
-    },
+    ],
 
     statusHistory: {
       type: [
         {
           status: String,
           reason: String,
+          changedBy: String,
+          previousStatus: String,
           date: { type: Date, default: Date.now },
         },
       ],
@@ -197,6 +209,7 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+/* ================= AUTO ORDER ID ================= */
 
 orderSchema.pre("save", function (next) {
   if (!this.orderId) {
@@ -206,6 +219,8 @@ orderSchema.pre("save", function (next) {
   }
   next();
 });
+
+/* ================= EXPORT ================= */
 
 const Order = mongoose.model("Order", orderSchema);
 export default Order;

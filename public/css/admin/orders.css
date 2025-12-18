@@ -11,7 +11,73 @@
     padding-bottom: 15px;
     border-bottom: 2px solid #eaeaea;
 }
+.orders-table th, .orders-table td {
+    vertical-align: middle;
+}
 
+.action-buttons a {
+    margin: 0 4px;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    text-transform: capitalize;
+}.loading-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    flex-direction: column;
+    gap: 1rem;
+    display: none;
+}
+
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.page-link {
+    padding: 8px 16px;
+    margin: 0 4px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+}
+
+.page-link:hover {
+    background: #007bff;
+    color: white;
+}
+
+.page-number.active {
+    background: #007bff;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+/* Add more status colors if needed */
+.status-pending { background: #fff3cd; color: #856404; }
+.status-processing { background: #d1ecf1; color: #0c5460; }
+.status-shipped { background: #d4edda; color: #155724; }
+.status-delivered { background: #cce5ff; color: #004085; }
+.status-cancelled { background: #f8d7da; color: #721c24; }
+
+.empty-state {
+    color: #666;
+    padding: 40px;
+}
 .content-header h1 {
     font-size: 28px;
     color: #333;

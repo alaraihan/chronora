@@ -1,159 +1,294 @@
 document.addEventListener('DOMContentLoaded', function () {
-  console.log('Order Detail JS Loaded');
+  console.log('Order Detail Page Loaded - Single Item View');
 
-  function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.textContent = message;
-    toast.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 12px 20px;
-      background: ${type === 'error' ? '#e74c3c' : '#2ecc71'};
-      color: white;
-      border-radius: 6px;
-      z-index: 9999;
-      font-weight: 500;
-    `;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+  // Extract orderId from header
+  const orderIdElement = document.querySelector('.order-summary-header h1');
+  if (!orderIdElement) {
+    console.error('Order ID not found');
+    return;
+  }
+  
+  const orderId = orderIdElement.textContent.replace('Order ', '').trim();
+  console.log('Order ID:', orderId);
+
+  // Get the item index from the page (set by EJS)
+  const itemIndex = window.ITEM_INDEX !== undefined ? window.ITEM_INDEX : 0;
+  console.log('Item Index:', itemIndex);
+
+  // Toast notification using Toastify
+  function toast(message, type = 'success') {
+    Toastify({
+      text: message,
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      stopOnFocus: true,
+      style: {
+        background: type === 'error' ? '#e74c3c' : '#2ecc71',
+        borderRadius: "8px",
+        fontWeight: "500",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+      }
+    }).showToast();
   }
 
-  const modals = {
-    modalTrack: document.getElementById('modalTrack'),
-    modalCancel: document.getElementById('modalCancel'),
-    modalReturn: document.getElementById('modalReturn'),
-    modalReview: document.getElementById('modalReview'),
-    modalInvoice: document.getElementById('modalInvoice'),
-    modalReorder: document.getElementById('modalReorder')
-  };
-
+  // Modal controls
   function showModal(id) {
-    modals[id]?.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    const modal = document.getElementById(id);
+    if (modal && !modal.classList.contains('active')) {
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
   }
 
   function hideModal(id) {
-    modals[id]?.classList.remove('active');
-    document.body.style.overflow = '';
+    const modal = document.getElementById(id);
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
   }
 
-  document.querySelectorAll('[data-close]').forEach(btn => {
-    btn.addEventListener('click', () => hideModal(btn.dataset.close));
+  // Close modals on backdrop or × click
+  document.querySelectorAll('[data-close]').forEach(el => {
+    el.addEventListener('click', () => hideModal(el.dataset.close));
   });
 
+  // Global buttons
   document.getElementById('btnTrack')?.addEventListener('click', () => showModal('modalTrack'));
-  document.getElementById('btnCancel')?.addEventListener('click', () => showModal('modalCancel'));
-  document.getElementById('btnReturn')?.addEventListener('click', () => showModal('modalReturn'));
-  document.getElementById('btnReview')?.addEventListener('click', () => showModal('modalReview'));
   document.getElementById('btnInvoice')?.addEventListener('click', () => showModal('modalInvoice'));
-  document.getElementById('btnReorder')?.addEventListener('click', () => showModal('modalReorder'));
 
-  function getOrderId() {
-    return document
-      .querySelector('.order-header h1')
-      ?.textContent.replace('Order ', '')
-      .trim();
-  }
+  // === CANCEL ITEM ===
+  document.querySelectorAll('.btn-cancel').forEach(btn => {
+    btn.addEventListener('click', () => {
+      showModal('modalCancel');
+    });
+  });
 
-  document.getElementById('confirmCancel')?.addEventListener('click', async function () {
-    const reasonInput = document.querySelector('input[name="cancelReason"]:checked');
-    if (!reasonInput) return showToast('Select a reason', 'error');
+  document.getElementById('confirmCancel')?.addEventListener('click', async () => {
+    const confirmBtn = document.getElementById('confirmCancel');
 
-    let reason = reasonInput.value;
+    let reason = document.querySelector('input[name="cancelReason"]:checked')?.value;
+    if (!reason) {
+      return toast('Please select a cancellation reason', 'error');
+    }
+    
     if (reason === 'Other') {
-      const other = document.getElementById('otherCancelReason').value.trim();
-      if (!other) return showToast('Enter reason', 'error');
-      reason = other;
+      const otherReason = document.getElementById('otherCancelReason')?.value.trim();
+      if (!otherReason) {
+        return toast('Please specify your reason', 'error');
+      }
+      reason = otherReason;
     }
 
+    // Disable button to prevent double submission
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Processing...';
+
     try {
-      const res = await fetch(`/profile/orders/${getOrderId()}/cancel`, {
+      console.log('Sending cancel request:', { itemIndexes: [itemIndex], reason });
+      
+      const response = await fetch(`/profile/orders/${orderId}/cancel-items`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason })
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          itemIndexes: [itemIndex],
+          reason
+        })
       });
 
-      const data = await res.json();
-      if (data.success) {
-        showToast(data.message);
-        hideModal('modalCancel');
-        document.querySelector('.order-status').textContent = 'Cancelled';
-      } else {
-        showToast(data.message, 'error');
+      const data = await response.json();
+      console.log('Cancel response:', data);
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to cancel item');
       }
-    } catch {
-      showToast('Network error', 'error');
+
+      toast(data.message || 'Item cancelled successfully', 'success');
+      hideModal('modalCancel');
+      
+      // Redirect back to orders page after success
+      setTimeout(() => {
+        window.location.href = '/profile/orders';
+      }, 1500);
+
+    } catch (error) {
+      console.error('Cancel error:', error);
+      toast(error.message || 'Network error. Please try again.', 'error');
+    } finally {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Confirm Cancellation';
     }
   });
 
-  document.getElementById('submitReturn')?.addEventListener('click', async function () {
-    const reasonInput = document.querySelector('input[name="returnReason"]:checked');
+  // === RETURN ITEM ===
+  document.querySelectorAll('.btn-return').forEach(btn => {
+    btn.addEventListener('click', () => {
+      showModal('modalReturn');
+    });
+  });
+
+  document.getElementById('submitReturn')?.addEventListener('click', async () => {
+    const submitBtn = document.getElementById('submitReturn');
+
+    const reason = document.querySelector('input[name="returnReason"]:checked')?.value;
     const refundMethod = document.getElementById('refundMethod')?.value;
 
-    if (!reasonInput) return showToast('Select return reason', 'error');
+    if (!reason) {
+      return toast('Please select a return reason', 'error');
+    }
+
+    // Disable button
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
 
     try {
-      const res = await fetch(`/profile/orders/${getOrderId()}/return`, {
+      console.log('Sending return request:', { itemIndexes: [itemIndex], reason, refundMethod });
+      
+      const response = await fetch(`/profile/orders/${orderId}/return-items`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          reason: reasonInput.value,
+          itemIndexes: [itemIndex],
+          reason,
           refundMethod
         })
       });
 
-      const data = await res.json();
-      if (data.success) {
-        showToast(data.message);
-        hideModal('modalReturn');
-        document.querySelector('.order-status').textContent = 'Returned';
-      } else {
-        showToast(data.message, 'error');
+      const data = await response.json();
+      console.log('Return response:', data);
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to submit return request');
       }
-    } catch {
-      showToast('Network error', 'error');
+
+      toast(data.message || 'Return request submitted successfully', 'success');
+      hideModal('modalReturn');
+      
+      // Redirect back to orders page after success
+      setTimeout(() => {
+        window.location.href = '/profile/orders';
+      }, 1500);
+
+    } catch (error) {
+      console.error('Return error:', error);
+      toast(error.message || 'Network error. Please try again.', 'error');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Return Request';
     }
   });
 
-  const stars = document.querySelectorAll('.star');
+  // === REVIEW ITEM ===
+  document.querySelectorAll('.btn-review').forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Reset rating
+      document.getElementById('ratingValue').value = 0;
+      document.querySelectorAll('#modalReview .star').forEach(s => s.textContent = '☆');
+      const submitBtn = document.getElementById('submitReview');
+      if (submitBtn) submitBtn.disabled = true;
+
+      showModal('modalReview');
+    });
+  });
+
+  // Star rating
+  const stars = document.querySelectorAll('#modalReview .star');
   const ratingInput = document.getElementById('ratingValue');
   const submitReviewBtn = document.getElementById('submitReview');
 
   stars.forEach(star => {
     star.addEventListener('click', () => {
-      const rating = star.dataset.rating;
+      const rating = parseInt(star.dataset.rating);
       ratingInput.value = rating;
-      stars.forEach((s, i) => (s.textContent = i < rating ? '★' : '☆'));
-      submitReviewBtn.disabled = false;
+
+      stars.forEach((s, i) => {
+        s.textContent = i < rating ? '★' : '☆';
+      });
+
+      if (submitReviewBtn) submitReviewBtn.disabled = false;
     });
   });
 
-  submitReviewBtn?.addEventListener('click', async function () {
+  submitReviewBtn?.addEventListener('click', async () => {
     const rating = ratingInput.value;
-    const title = document.getElementById('reviewTitle').value.trim();
-    const text = document.getElementById('reviewText').value.trim();
+    const title = document.getElementById('reviewTitle')?.value.trim();
+    const text = document.getElementById('reviewText')?.value.trim();
 
-    if (!rating || !text) {
-      return showToast('Rating & review required', 'error');
+    if (!rating || rating === '0') {
+      return toast('Please select a rating', 'error');
     }
+    
+    if (!text) {
+      return toast('Please write a review', 'error');
+    }
+
+    submitReviewBtn.disabled = true;
+    submitReviewBtn.textContent = 'Submitting...';
 
     try {
-      const res = await fetch(`/profile/orders/${getOrderId()}/review`, {
+      console.log('Sending review:', { productIndex: itemIndex, rating, title, text });
+      
+      const response = await fetch(`/profile/orders/${orderId}/review-item`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rating, title, text })
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productIndex: parseInt(itemIndex),
+          rating: parseInt(rating),
+          title: title || null,
+          text
+        })
       });
 
-      const data = await res.json();
-      if (data.success) {
-        showToast('Review submitted');
-        hideModal('modalReview');
-      } else {
-        showToast(data.message, 'error');
+      const data = await response.json();
+      console.log('Review response:', data);
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to submit review');
       }
-    } catch {
-      showToast('Network error', 'error');
+
+      toast('Review submitted successfully!', 'success');
+      hideModal('modalReview');
+      
+      // Reload page to show "Reviewed" badge
+      setTimeout(() => location.reload(), 1500);
+
+    } catch (error) {
+      console.error('Review error:', error);
+      toast(error.message || 'Failed to submit review', 'error');
+    } finally {
+      submitReviewBtn.disabled = false;
+      submitReviewBtn.textContent = 'Submit Review';
     }
+  });
+
+  // Toggle "Other" reason input
+  document.querySelectorAll('input[name="cancelReason"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const container = document.getElementById('otherReasonContainer');
+      if (container) {
+        container.style.display = radio.value === 'Other' ? 'block' : 'none';
+      }
+    });
+  });
+
+  // Invoice download handlers
+  document.getElementById('downloadPDF')?.addEventListener('click', async () => {
+    try {
+      window.open(`/profile/orders/${orderId}/invoice`, '_blank');
+      toast('Downloading invoice...', 'success');
+    } catch (error) {
+      toast('Failed to download invoice', 'error');
+    }
+  });
+
+  document.getElementById('emailInvoice')?.addEventListener('click', () => {
+    toast('Email invoice feature coming soon', 'error');
   });
 });

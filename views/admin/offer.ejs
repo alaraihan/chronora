@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | Admin</title>
+    <link rel="stylesheet" href="/css/admin/offer.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <style>
+        .offer-type-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .type-product { background: #e3f2fd; color: #1976d2; }
+        .type-category { background: #e8f5e8; color: #388e3c; }
+        .discount-badge {
+            background: #ff9800;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<main class="main-content">
+    <header class="content-header">
+        <h1><i class="bi bi-tag-fill"></i> Offers Management</h1>
+    </header>
+
+    <div class="filters-card">
+        <div class="filter-row" style="justify-content: space-between; align-items: center;">
+            <div class="filter-group">
+                <select id="typeFilter" class="status-select">
+                    <option value="">All Offer Types</option>
+                    <option value="product">Product Offer</option>
+                    <option value="category">Category Offer</option>
+                </select>
+            </div>
+
+            <button onclick="openModal(null)" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add New Offer
+            </button>
+        </div>
+    </div>
+
+    <div class="orders-summary">
+        <div class="summary-card">
+            <h3 id="totalOffers">0</h3>
+            <p>Total Active Offers</p>
+        </div>
+        <div class="summary-text">
+            Highest discount wins if multiple offers apply
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>Offer Name</th>
+                    <th>Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Discount Type</th>
+                    <th>Discount Value</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="offersTableBody"></tbody>
+        </table>
+    </div>
+</main>
+
+<!-- Add / Edit Modal -->
+<div id="offerModal" class="modal">
+    <div class="modal-content">
+        <span class="btn-close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle">Add New Offer</h2>
+
+        <form id="offerForm">
+            <input type="hidden" id="offerId" />
+
+            <div style="margin-bottom: 15px;">
+                <label><strong>Offer Name</strong></label>
+                <input type="text" id="name" class="search-input" placeholder="e.g. Christmas Sale" required style="width:100%; margin-top:5px;">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label><strong>Offer Type</strong></label>
+                <select id="type" class="status-select" style="width:100%; margin-top:5px;" required>
+                    <option value="product">Product Offer</option>
+                    <option value="category">Category Offer</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label><strong>Target (Product/Category)</strong></label>
+                <select id="targetId" class="status-select" style="width:100%; margin-top:5px;" required>
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label><strong>Discount Type</strong></label>
+                <select id="discountType" class="status-select" style="width:100%; margin-top:5px;" required>
+                    <option value="percentage">Percentage (%)</option>
+                    <option value="fixed">Fixed Amount</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label><strong>Discount Value</strong></label>
+                <input type="number" id="discountValue" min="1" class="search-input" placeholder="e.g. 25 or 500" required style="width:100%; margin-top:5px;">
+            </div>
+
+            <div style="margin-bottom: 15px; display:flex; gap:15px;">
+                <div style="flex:1;">
+                    <label><strong>Start Date</strong></label>
+                    <input type="date" id="startDate" class="search-input" required style="width:100%; margin-top:5px;">
+                </div>
+                <div style="flex:1;">
+                    <label><strong>End Date</strong></label>
+                    <input type="date" id="endDate" class="search-input" required style="width:100%; margin-top:5px;">
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Offer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="loadingOverlay" class="loading-overlay">
+    <i class="bi bi-hourglass-split" style="font-size: 2.5rem;"></i>
+    <div>Loading offers...</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script>
+let editingOffer = null;
+
+function toast(msg, type = 'error') {
+    Toastify({
+        text: msg,
+        duration: 3000,
+        backgroundColor: type === 'success' ? '#28a745' : '#dc3545'
+    }).showToast();
+}
+
+async function openModal(offer = null) {
+    editingOffer = offer;
+    document.getElementById("modalTitle").textContent = offer ? "Edit Offer" : "Add New Offer";
+    document.getElementById("offerId").value = offer?._id || "";
+    document.getElementById("name").value = offer?.name || "";
+    document.getElementById("discountType").value = offer?.discountType || "percentage";
+    document.getElementById("discountValue").value = offer?.discountValue || "";
+    document.getElementById("startDate").value = offer?.startDate ? new Date(offer.startDate).toISOString().split('T')[0] : "";
+    document.getElementById("endDate").value = offer?.endDate ? new Date(offer.endDate).toISOString().split('T')[0] : "";
+
+    const typeSelect = document.getElementById("type");
+    typeSelect.value = offer?.type || "product";
+    
+    // Load targets and preselect if editing
+    await loadTargets();
+    
+    // Set targetId after loading targets if editing
+    if (editingOffer) {
+        setTimeout(() => {
+            const targetSelect = document.getElementById("targetId");
+            const targetId = editingOffer.productId?._id || editingOffer.categoryId?._id;
+            if (targetId) {
+                targetSelect.value = targetId;
+            }
+        }, 200); // Small delay to ensure options are loaded
+    }
+
+    document.getElementById("offerModal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("offerModal").style.display = "none";
+    document.getElementById("offerForm").reset();
+    editingOffer = null;
+}
+
+async function loadTargets() {
+    const type = document.getElementById("type").value;
+    const select = document.getElementById("targetId");
+    select.innerHTML = '<option value="">Loading...</option>';
+
+    try {
+        const res = await axios.get(`/admin/offers/targets?type=${type}`);
+        select.innerHTML = '<option value="">Select one...</option>';
+        res.data.targets.forEach(item => {
+            const opt = document.createElement("option");
+            opt.value = item._id;
+            opt.textContent = item.name;
+            select.appendChild(opt);
+        });
+    } catch (err) {
+        select.innerHTML = '<option value="">Error loading</option>';
+        toast("Failed to load targets");
+    }
+}
+
+document.getElementById("type").addEventListener("change", loadTargets);
+
+document.getElementById("offerForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const data = {
+        name: document.getElementById("name").value.trim(),
+        type: document.getElementById("type").value,
+        targetId: document.getElementById("targetId").value,
+        discountType: document.getElementById("discountType").value,
+        discountValue: parseFloat(document.getElementById("discountValue").value),
+        startDate: document.getElementById("startDate").value,
+        endDate: document.getElementById("endDate").value
+    };
+
+    // Validation
+    if (data.discountValue <= 0) {
+        toast("Discount value must be greater than 0");
+        return;
+    }
+
+    if (new Date(data.endDate) <= new Date(data.startDate)) {
+        toast("End date must be after start date");
+        return;
+    }
+
+    try {
+        if (editingOffer) {
+            await axios.put(`/admin/offers/${editingOffer._id}`, data);
+            toast("Offer updated successfully", "success");
+        } else {
+            await axios.post(`/admin/offers`, data);
+            toast("Offer created successfully", "success");
+        }
+        closeModal();
+        loadOffers();
+    } catch (err) {
+        toast(err.response?.data?.message || "Error saving offer");
+    }
+});
+
+async function deleteOffer(id) {
+    if (!confirm("Delete this offer permanently?")) return;
+
+    try {
+        await axios.delete(`/admin/offers/${id}`);
+        toast("Offer deleted", "success");
+        loadOffers();
+    } catch (err) {
+        toast("Error deleting offer");
+    }
+}
+
+function renderOffers(offers) {
+    const tbody = document.getElementById("offersTableBody");
+    tbody.innerHTML = offers.length === 0 
+        ? `<tr><td colspan="8" style="text-align:center; padding:50px; color:#888;">No offers found</td></tr>`
+        : "";
+
+    offers.forEach(offer => {
+        const discountStr = offer.discountType === 'percentage' 
+            ? `${offer.discountValue}% OFF` 
+            : `₹${offer.discountValue} OFF`;
+
+        const start = new Date(offer.startDate).toLocaleDateString();
+        const end = new Date(offer.endDate).toLocaleDateString();
+        
+        // Get target name
+        const targetName = offer.productId?.name || offer.categoryId?.name || "Unknown";
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td><strong>${offer.name}</strong></td>
+            <td>
+                <span class="offer-type-badge type-${offer.type}">${offer.type === 'product' ? 'Product' : 'Category'}</span>
+                <div style="font-size:0.85rem; color:#666; margin-top:4px;">${targetName}</div>
+            </td>
+            <td>${start}</td>
+            <td>${end}</td>
+            <td>${offer.discountType === 'percentage' ? 'Percentage' : 'Fixed'}</td>
+            <td><span class="discount-badge">${discountStr}</span></td>
+            <td><span class="status-badge status-${offer.active ? 'delivered' : 'cancelled'}">${offer.active ? 'Active' : 'Inactive'}</span></td>
+            <td>
+                <button onclick='openModal(${JSON.stringify(offer).replace(/'/g, "\\'")})' class="btn-small btn-primary" style="margin-right:8px;">Edit</button>
+                <button onclick="deleteOffer('${offer._id}')" class="btn-small" style="background:#dc3545;color:white;">Delete</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+async function loadOffers() {
+    document.getElementById("loadingOverlay").style.display = "flex";
+    try {
+        const type = document.getElementById("typeFilter").value;
+        const url = type ? `/admin/offers/data?type=${type}` : `/admin/offers/data`;
+        const res = await axios.get(url);
+        document.getElementById("totalOffers").textContent = res.data.offers.length;
+        renderOffers(res.data.offers);
+    } catch (err) {
+        toast("Failed to load offers");
+    } finally {
+        document.getElementById("loadingOverlay").style.display = "none";
+    }
+}
+
+document.getElementById("typeFilter").addEventListener("change", loadOffers);
+
+// Initial load
+document.addEventListener('DOMContentLoaded', function() {
+    loadOffers();
+    // Pre-load targets for product type
+    loadTargets();
+});
+</script>
+
+</body>
+</html>

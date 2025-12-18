@@ -1,3 +1,6 @@
+const ORDER_ID = window.ORDER_ID;
+
+/* ================= TOAST ================= */
 
 function showToast(message, type = 'info') {
     const colors = {
@@ -7,140 +10,84 @@ function showToast(message, type = 'info') {
         info: '#17a2b8'
     };
 
-    Toastify({
-        text: message,
-        duration: 3000,
-        close: true,
-        gravity: "top",
-        position: "right",
-        backgroundColor: colors[type] || colors.info,
-        className: "toastify-custom"
-    }).showToast();
-}
-
-
-const statusSelect = document.getElementById('newStatus');
-if (statusSelect) {
-    statusSelect.addEventListener('change', () => {
-        const reasonField = document.getElementById('reasonField');
-        if (reasonField) reasonField.style.display = 'none';
-    });
-}
-
-function updateOrderStatus() {
-    const newStatus = document.getElementById('newStatus').value;
-    const reason = document.getElementById('reasonText').value;
-
-    if (!newStatus) {
-        showToast('Please select a status', 'warning');
+    if (!window.Toastify) {
+        alert(message);
         return;
     }
 
-    if (!confirm(`Change order status to "${newStatus}"?`)) return;
-
-    const btn = document.getElementById('updateBtn');
-    const oldHTML = btn.innerHTML;
-    btn.innerHTML = 'Updating...';
-    btn.disabled = true;
-
-    axios.post(`/admin/orders/${ORDER_ID}/status`, { status: newStatus, reason })
-        .then(res => {
-            if (res.data.success) {
-                showToast(res.data.message, 'success');
-                setTimeout(() => location.reload(), 1200);
-            } else {
-                showToast(res.data.message || 'Failed', 'error');
-            }
-        })
-        .catch(() => showToast('Server error', 'error'))
-        .finally(() => {
-            btn.innerHTML = oldHTML;
-            btn.disabled = false;
-        });
+    Toastify({
+        text: message,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        backgroundColor: colors[type]
+    }).showToast();
 }
 
+/* ================= APPROVE RETURN ================= */
 
-function approveCancelRequest() {
-    if (!confirm('Approve cancellation request?')) return;
+function approveItemReturn(itemIndex) {
+    axios.post(`/admin/orders/${window.ORDER_ID}/return/approve`, {
+        itemIndex
+    })
+    .then(res => {
+        Toastify({
+            text: res.data.message || "Return approved",
+            backgroundColor: "#28a745",
+            duration: 3000
+        }).showToast();
 
-    const reason = prompt('Reason (optional):') || 'Cancel approved by admin';
-
-    axios.post(`/admin/orders/${ORDER_ID}/approve-cancel`, { reason })
-        .then(res => {
-            if (res.data.success) {
-                showToast(res.data.message, 'success');
-                setTimeout(() => location.reload(), 1200);
-            }
-        })
-        .catch(() => showToast('Server error', 'error'));
+        location.reload();
+    })
+    .catch(err => {
+        console.error(err.response?.data || err.message);
+        Toastify({
+            text: "Server error",
+            backgroundColor: "#dc3545",
+            duration: 3000
+        }).showToast();
+    });
 }
 
-function rejectCancelRequest() {
-    if (!confirm('Reject cancellation request?')) return;
+function rejectItemReturn(itemIndex) {
+    axios.post(`/admin/orders/${window.ORDER_ID}/return/reject`, {
+        itemIndex
+    })
+    .then(res => {
+        Toastify({
+            text: res.data.message || "Return rejected",
+            backgroundColor: "#ffc107",
+            duration: 3000
+        }).showToast();
 
-    const reason = prompt('Reason (optional):') || 'Cancel rejected by admin';
-
-    axios.post(`/admin/orders/${ORDER_ID}/reject-cancel`, { reason })
-        .then(res => {
-            if (res.data.success) {
-                showToast(res.data.message, 'success');
-                setTimeout(() => location.reload(), 1200);
-            }
-        })
-        .catch(() => showToast('Server error', 'error'));
+        location.reload();
+    })
+    .catch(err => {
+        console.error(err.response?.data || err.message);
+        Toastify({
+            text: "Server error",
+            backgroundColor: "#dc3545",
+            duration: 3000
+        }).showToast();
+    });
 }
 
+function updateItemStatusUI(index, status) {
+    const card = document.querySelector(`.item-card[data-index="${index}"]`);
+    if (!card) return;
 
-function approveReturnRequest() {
-    if (!confirm('Approve return request?')) return;
+    let badge = card.querySelector('.status-badge');
+    if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'status-badge';
+        card.querySelector('.item-details').prepend(badge);
+    }
 
-    const reason = prompt('Reason (optional):') || 'Return approved by admin';
-
-    axios.post(`/admin/orders/${ORDER_ID}/approve-return`, { reason })
-        .then(res => {
-            if (res.data.success) {
-                showToast(res.data.message, 'success');
-                setTimeout(() => location.reload(), 1200);
-            }
-        })
-        .catch(() => showToast('Server error', 'error'));
+    badge.textContent = status;
+    badge.className = `status-badge status-${status.toLowerCase().replace(/ /g, '-')}`;
 }
 
-function markAsReturned() {
-    if (!confirm("Mark this order as returned?")) return;
-
-    axios.post(`/admin/orders/${ORDER_ID}/mark-returned`)
-        .then(res => {
-            if (res.data.success) {
-                showToast("Order marked as returned", "success");
-                setTimeout(() => location.reload(), 1500);
-            } else {
-                showToast(res.data.message || "Failed", "error");
-            }
-        })
-        .catch(() => {
-            showToast("Server error", "error");
-        });
-}
-
-function rejectReturnRequest() {
-    if (!confirm('Reject return request?')) return;
-
-    const reason = prompt('Reason (optional):') || 'Return rejected by admin';
-
-    axios.post(`/admin/orders/${ORDER_ID}/reject-return`, { reason })
-        .then(res => {
-            if (res.data.success) {
-                showToast(res.data.message, 'success');
-                setTimeout(() => location.reload(), 1200);
-            }
-        })
-        .catch(() => showToast('Server error', 'error'));
-}
-
-
-function copyOrderId() {
-    navigator.clipboard.writeText(ORDER_DISPLAY_ID)
-        .then(() => showToast('Order ID copied', 'success'))
-        .catch(() => showToast('Copy failed', 'error'));
+function removeReturnButtons(index) {
+    const card = document.querySelector(`.item-card[data-index="${index}"]`);
+    card?.querySelector('.return-actions')?.remove();
 }

@@ -1,8 +1,8 @@
 import Order from "../../models/orderSchema.js";
-import Product from "../../models/productSchema.js";
 import Variant from "../../models/variantSchema.js";
 import PDFDocument from "pdfkit";
 
+// Orders List Page
 export const getOrdersPage = async (req, res) => {
   try {
     const userId = req.user?._id;
@@ -11,363 +11,241 @@ export const getOrdersPage = async (req, res) => {
     const orders = await Order.find({ userId })
       .populate({
         path: "products.productId",
-        select: "name",
+        select: "name images"
       })
       .populate({
         path: "products.variantId",
-        select: "images colorName",
+        select: "images colorName size"
       })
       .sort({ createdAt: -1 })
       .lean();
 
-  
-    orders.forEach(order => {
-      console.log(`Order ${order.orderId}: Status = ${order.status}`);
-    });
-
     res.render("user/orders", { orders, active: 'Orders' });
   } catch (err) {
-    console.error("getOrdersPage:", err);
+    console.error("getOrdersPage ERROR:", err);
     res.status(500).send("Server error");
   }
 };
 
-export const cancelOrder = async (req, res) => {
-  try {
-    console.log("=== CANCEL ORDER REQUEST ===");
-    console.log("Params:", req.params);
-    console.log("Body:", req.body);
-    console.log("User:", req.user._id);
-
-    const { orderId } = req.params; 
-    const { reason } = req.body;
-
-    if (!reason) {
-      console.log("ERROR: No reason provided");
-      return res.status(400).json({
-        success: false,
-        message: "Cancel reason required",
-      });
-    }
-
-    let order = await Order.findOne({ orderId });
-    
-    if (!order) {
-      order = await Order.findById(orderId);
-      console.log("Tried finding by _id:", order ? "Found" : "Not found");
-    }
-
-    if (!order) {
-      console.log("ERROR: Order not found with ID:", orderId);
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
-    }
-
-    console.log("ORDER FOUND:");
-    console.log("- Custom orderId:", order.orderId);
-    console.log("- MongoDB _id:", order._id);
-    console.log("- Current status:", order.status);
-    console.log("- User ID in order:", order.userId);
-    console.log("- Request user ID:", req.user._id);
-
-    if (order.userId.toString() !== req.user._id.toString()) {
-      console.log("ERROR: User doesn't own this order");
-      return res.status(403).json({
-        success: false,
-        message: "Unauthorized access",
-      });
-    }
-
-    const allowedStatuses = ["Pending", "Confirmed"];
-    if (!allowedStatuses.includes(order.status)) {
-      console.log(`ERROR: Order in ${order.status} cannot be cancelled`);
-      return res.status(400).json({
-        success: false,
-        message: `Order cannot be cancelled in ${order.status} status`,
-      });
-    }
-
-    
-    order.status = "Cancelled";
-    order.cancelReason = reason;
-    order.products.forEach(item => {
-      item.itemStatus = "Cancelled";
-      item.reason = reason;
-      item.itemTimeline.cancelledAt = new Date();
-    });
-
-    order.statusHistory.push({
-      status: "Cancelled",
-      reason,
-      date: new Date()
-    });
-
-    const savedOrder = await order.save();
-  
-
-    const verifyOrder = await Order.findOne({ orderId: savedOrder.orderId });
- 
-
-    if (savedOrder.paymentStatus === "Paid") {
-      savedOrder.paymentStatus = "Refunded";
-      await savedOrder.save();
-      console.log("Payment status updated to Refunded");
-    }
-
-    res.json({
-      success: true,
-      message: "Order cancelled successfully",
-      order: {
-        orderId: savedOrder.orderId,
-        status: savedOrder.status,
-        cancelReason: savedOrder.cancelReason,
-        cancelledAt: new Date()
-      }
-    });
-
-  } catch (error) {
-    console.error("CANCEL ORDER ERROR:", error);
-    console.error("Error stack:", error.stack);
-    
-    if (error.name === 'ValidationError') {
-      console.error("Validation errors:", error.errors);
-    }
-    
-    res.status(500).json({
-      success: false,
-      message: "Server error while cancelling order",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
-};
-
+// Single Item Order Detail Page
 export const getOrderDetails = async (req, res) => {
   try {
     const { orderId } = req.params;
-    
-    console.log("Getting order details for:", orderId);
-    console.log("User requesting:", req.user._id);
+    const { productId, variantId } = req.query;
 
     const order = await Order.findOne({ orderId })
       .populate("products.productId", "name images")
-      .populate("products.variantId", "colorName images")
+      .populate("products.variantId", "colorName images size")
       .lean();
 
-    if (!order) {
-      console.log("Order not found:", orderId);
-      return res.status(404).render('error', {
-        message: 'Order not found'
-      });
+    if (!order || order.userId.toString() !== req.user._id.toString()) {
+      return res.status(404).render('user/error', { message: 'Order not found or access denied' });
     }
-
-    console.log("Order found. User ID in order:", order.userId);
-    console.log("Order status:", order.status);
-
-    if (order.userId.toString() !== req.user._id.toString()) {
-      console.log("Access denied for user:", req.user._id);
-      return res.status(403).render('error', {
-        message: 'Access denied'
-      });
-    }
-
-    order._debug = {
-      status: order.status,
-      cancelReason: order.cancelReason,
-      timestamp: new Date().toISOString()
-    };
 
     res.render("user/orderDetail", { 
       order,
-      title: `Order ${order.orderId}`
+      requestedProductId: productId || null,
+      requestedVariantId: variantId || null,
+      title: `Order ${order.orderId}`,
+      active: 'Orders'
     });
-
   } catch (err) {
     console.error("getOrderDetails ERROR:", err);
-    res.status(500).send("Server error");
+    res.status(500).render('user/error', { message: 'Server error' });
   }
 };
 
-export const returnOrder = async (req, res) => {
+// Cancel Single Item
+export const cancelOrderItem = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { reason, refundMethod } = req.body;
+    const { itemIndex, reason } = req.body;
+    const index = parseInt(itemIndex);
 
-    if (!reason) {
-      return res.status(400).json({
-        success: false,
-        message: "Return reason required",
-      });
+    if (isNaN(index) || !reason?.trim()) {
+      return res.json({ success: false, message: "Invalid data" });
     }
 
-    const order = await Order.findOne({ orderId });
-
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
+    const order = await Order.findById(orderId);
+    if (!order || order.userId.toString() !== req.user._id.toString()) {
+      return res.json({ success: false, message: "Unauthorized" });
     }
 
-    if (order.userId.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: "Unauthorized access",
-      });
+    const item = order.products[index];
+    if (!item) return res.json({ success: false, message: "Item not found" });
+
+    const allowed = ["Pending", "Confirmed", "Processing"];
+    if (!allowed.includes(item.itemStatus)) {
+      return res.json({ success: false, message: `Cannot cancel (${item.itemStatus})` });
     }
 
-    if (order.status !== "Delivered") {
-      return res.status(400).json({
-        success: false,
-        message: "Only delivered orders can be returned",
-      });
-    }
+    item.itemStatus = "Cancelled";
+    item.reason = reason.trim();
+    item.itemTimeline ||= {};
+    item.itemTimeline.cancelledAt = new Date();
 
-    order.status = "ReturnRequested";
-    order.returnReason = reason;
-    order.refundMethod = refundMethod;
-    order.returnRequestedAt = new Date();
-
-    order.products.forEach(item => {
-      if (item.itemStatus === "Delivered") {
-        item.itemStatus = "ReturnRequested";
-        item.reason = reason;
-        item.itemTimeline.returnRequestedAt = new Date();
-      }
-    });
-
-    order.statusHistory.push({
-      status: "ReturnRequested",
-      reason,
-      date: new Date(),
-    });
-
+    order.markModified('products');
     await order.save();
 
-    return res.json({
-      success: true,
-      message: "Return request sent to admin for approval",
-      order: {
-        orderId: order.orderId,
-        status: order.status,
-      },
-    });
-
-  } catch (error) {
-    console.error("returnOrder error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    res.json({ success: true, message: "Item cancelled successfully" });
+  } catch (err) {
+    console.error("cancelOrderItem ERROR:", err);
+    res.json({ success: false, message: "Server error" });
   }
 };
 
-export const submitOrderReview = async (req, res) => {
+// Return Single Item
+export const returnOrderItem = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { rating, title, text } = req.body;
+    const { itemIndex, reason } = req.body;
+    const index = parseInt(itemIndex);
 
-    if (!rating || !text) {
-      return res.status(400).json({
-        success: false,
-        message: "Rating and review text are required",
-      });
+    if (isNaN(index) || !reason?.trim()) {
+      return res.json({ success: false, message: "Invalid data" });
     }
 
-    const order = await Order.findOne({ orderId });
-
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
+    const order = await Order.findById(orderId);
+    if (!order || order.userId.toString() !== req.user._id.toString()) {
+      return res.json({ success: false, message: "Unauthorized" });
     }
 
-    if (order.review && order.review.rating) {
-      return res.status(400).json({
-        success: false,
-        message: "Review already submitted for this order",
-      });
+    const item = order.products[index];
+    if (!item) return res.json({ success: false, message: "Item not found" });
+
+    if (item.itemStatus !== "Delivered") {
+      return res.json({ success: false, message: "Only delivered items can be returned" });
     }
 
-    order.review = {
+    item.itemStatus = "ReturnRequested";
+    item.reason = reason.trim();
+    item.itemTimeline ||= {};
+    item.itemTimeline.returnRequestedAt = new Date();
+
+    order.markModified('products');
+    await order.save();
+
+    res.json({ success: true, message: "Return request submitted" });
+  } catch (err) {
+    console.error("returnOrderItem ERROR:", err);
+    res.json({ success: false, message: "Server error" });
+  }
+};
+
+// Review Single Item
+export const reviewOrderItem = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { itemIndex, rating, title = "", text } = req.body;
+    const index = parseInt(itemIndex);
+
+    if (isNaN(index) || !rating || rating < 1 || rating > 5 || !text?.trim()) {
+      return res.json({ success: false, message: "Invalid review data" });
+    }
+
+    const order = await Order.findById(orderId)
+      .populate("products.productId")
+      .populate("products.variantId");
+
+    if (!order || order.userId.toString() !== req.user._id.toString()) {
+      return res.json({ success: false, message: "Unauthorized" });
+    }
+
+    const item = order.products[index];
+    if (!item || item.itemStatus !== "Delivered") {
+      return res.json({ success: false, message: "Item not eligible for review" });
+    }
+
+    if (!order.reviews) order.reviews = [];
+
+    const alreadyReviewed = order.reviews.some(r => 
+      r.productId?.toString() === item.productId._id.toString() &&
+      r.variantId?.toString() === item.variantId._id.toString()
+    );
+
+    if (alreadyReviewed) {
+      return res.json({ success: false, message: "Already reviewed" });
+    }
+
+    order.reviews.push({
+      productId: item.productId._id,
+      variantId: item.variantId._id,
       rating: Number(rating),
-      title,
-      text,
-      reviewedAt: new Date(),
-    };
+      title: title.trim() || null,
+      text: text.trim(),
+      reviewedAt: new Date()
+    });
 
     await order.save();
-
-    return res.json({
-      success: true,
-      message: "Review submitted successfully",
-    });
-
-  } catch (error) {
-    console.error("Submit Review Error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error while submitting review",
-    });
+    res.json({ success: true, message: "Review submitted!" });
+  } catch (err) {
+    console.error("reviewOrderItem ERROR:", err);
+    res.json({ success: false, message: "Server error" });
   }
 };
 
-
+// Download Invoice (Single Item or Full Order)
 export const downloadInvoice = async (req, res) => {
   try {
     const { orderId } = req.params;
-
-    console.log("Download invoice for:", orderId);
+    const { productId, variantId } = req.query;
 
     const order = await Order.findOne({ orderId })
       .populate("products.productId", "name")
       .populate("products.variantId", "colorName");
 
-    if (!order) {
-      console.log("Order not found for invoice:", orderId);
-      return res.status(404).send("Order not found");
+    if (!order || order.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).send("Unauthorized");
     }
 
-    if (order.userId.toString() !== req.user._id.toString()) {
-      console.log("Unauthorized invoice access by:", req.user._id);
-      return res.status(403).send("Unauthorized access");
+    let itemsToInclude = order.products;
+    if (productId && variantId) {
+      itemsToInclude = order.products.filter(p => 
+        p.productId?._id?.toString() === productId && 
+        p.variantId?._id?.toString() === variantId
+      );
     }
 
-    const doc = new PDFDocument({ margin: 40 });
-
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename=Invoice-${order.orderId}.pdf`
-    );
-    res.setHeader("Content-Type", "application/pdf");
-
+    const doc = new PDFDocument({ margin: 50 });
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=Invoice-${order.orderId}.pdf`);
     doc.pipe(res);
 
-    doc.fontSize(20).text("INVOICE", { align: "center" });
-    doc.moveDown();
-    
+    doc.fontSize(25).text('INVOICE', { align: 'center' });
+    doc.moveDown(1.5);
+
     doc.fontSize(12);
     doc.text(`Order ID: ${order.orderId}`);
-    doc.text(`Status: ${order.status}`);
-    if (order.cancelReason) {
-      doc.text(`Cancel Reason: ${order.cancelReason}`);
-    }
-    doc.text(`Date: ${order.createdAt.toLocaleDateString()}`);
-    doc.text(`Total: ₹${order.totalAmount.toFixed(2)}`);
-    
+    doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`);
     doc.moveDown();
-    doc.text("Items:");
-    
-    order.products.forEach((item, index) => {
-      doc.text(`${index + 1}. ${item.productId?.name || "Product"} - ${item.variantId?.colorName || "Variant"} × ${item.quantity} = ₹${(item.price * item.quantity).toFixed(2)}`);
+
+    let total = 0;
+    itemsToInclude.forEach((item, i) => {
+      const subtotal = item.price * item.quantity;
+      total += subtotal;
+      doc.text(`${i+1}. ${item.productId?.name || 'Product'} (${item.variantId?.colorName || 'Standard'}) × ${item.quantity} = ₹${subtotal.toLocaleString('en-IN')}`);
+      doc.text(`   Status: ${item.itemStatus}`, { indent: 20 });
+      doc.moveDown(0.5);
     });
 
+    doc.moveDown();
+    doc.text(`Subtotal: ₹${total.toLocaleString('en-IN')}`);
+    if (order.deliveryCharge > 0) doc.text(`Delivery: ₹${order.deliveryCharge.toLocaleString('en-IN')}`);
+    if (order.discount > 0) doc.text(`Discount: -₹${order.discount.toLocaleString('en-IN')}`);
+    doc.fontSize(16).text(`Total Paid: ₹${order.totalAmount.toLocaleString('en-IN')}`, { bold: true });
+
+    doc.moveDown(2);
+    doc.fontSize(10).text('Shipping Address:', { underline: true });
+    doc.text(order.address.fullName);
+    doc.text(order.address.address1);
+    if (order.address.address2) doc.text(order.address.address2);
+    doc.text(`${order.address.city}, ${order.address.state} - ${order.address.pincode}`);
+    doc.text(`Phone: ${order.address.phone}`);
+
     doc.end();
-    
   } catch (err) {
     console.error("downloadInvoice ERROR:", err);
     res.status(500).send("Server error");
   }
 };
+

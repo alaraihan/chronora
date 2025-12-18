@@ -1,339 +1,412 @@
-<link rel="stylesheet" href="/css/user/orderDetail.css">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | Chronora</title>
+  <link rel="stylesheet" href="/css/user/orderDetail.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</head>
+<body>
 
 <div class="order-details-container">
-
-
   <main class="order-content">
-    <div class="order-header">
-      <h1>Order <%= order.orderId %></h1>
-      <p class="order-date">Placed on <%= new Date(order.createdAt).toLocaleDateString("en-GB") %></p>
-      <p class="total-amount">Total: ₹<%= order.totalAmount.toLocaleString('en-IN') %></p>
-      <span class="order-status status-<%= order.status.toLowerCase() %>"><%= order.status %></span>
+    <div class="back-navigation">
+      <a href="/profile/orders" class="btn-back">← Back to Orders</a>
     </div>
 
-    <div class="order-items-container">
-      <h3>Order Items (<%= order.products.length %>)</h3>
-      <% order.products.forEach(function(p) { %>
-      <div class="order-item">
-        <img src="<%= p.variantId?.images?.[0] || '/images/default-watch.jpg' %>" 
-             alt="<%= p.productId?.name || 'Product' %>"
-             onerror="this.src='/images/default-watch.jpg'">
-        <div class="item-info">
-          <h4><%= p.productId?.name || 'Product unavailable' %></h4>
-          <p class="variant">Variant: <%= p.variantId?.colorName || 'Standard' %></p>
-          <p class="quantity">Qty: <%= p.quantity %> × ₹<%= p.price.toLocaleString('en-IN') %></p>
-        </div>
-        <div class="item-total">₹<%= (p.quantity * p.price).toLocaleString('en-IN') %></div>
+    <div class="order-summary-header">
+      <div class="summary-left">
+        <h1>Order <%= order.orderId %></h1>
+        <p class="order-date">Placed on <%= new Date(order.createdAt).toLocaleDateString("en-GB") %></p>
       </div>
-      <% }) %>
+      <div class="summary-right">
+        <button type="button" id="btnTrack" class="btn-action-small">Track Item</button>
+        <button type="button" id="btnInvoice" class="btn-action-small">Invoice</button>
+      </div>
     </div>
 
-    <div class="order-actions">
-      <button id="btnTrack" 
-              class="btn-primary" 
-              <%= order.status === 'Cancelled' ? 'disabled' : '' %>>
-        📦 Track Order
-      </button>
+    <%
+      const productId = requestedProductId;
+      const variantId = requestedVariantId;
 
-      <button id="btnCancel" 
-              class="btn-danger" 
-              <%= !['Pending', 'Processing'].includes(order.status) ? 'disabled' : '' %>>
-        ✖ Cancel Order
-      </button>
+      let itemIndex = 0;
+      let item = order.products[0];
 
-      <button id="btnReturn" 
-              class="btn-warning" 
-              <%= order.status !== 'Delivered' ? 'disabled' : '' %>>
-        🔄 Return Order
-      </button>
+      if (productId && variantId) {
+        const foundIndex = order.products.findIndex(p => 
+          p.productId?._id?.toString() === productId && 
+          p.variantId?._id?.toString() === variantId
+        );
+        if (foundIndex !== -1) {
+          item = order.products[foundIndex];
+          itemIndex = foundIndex;
+        }
+      }
+    %>
 
-      <button id="btnReview" 
-              class="btn-success" 
-              <%= order.status !== 'Delivered' ? 'disabled' : '' %>>
-        ⭐ Rate & Review
-      </button>
+    <!-- Single Item Card -->
+    <div class="main-item-card" data-index="<%= itemIndex %>">
+      <div class="item-status-bar">
+        <span class="status-badge <%= item.itemStatus.toLowerCase().replace(/\s+/g, '-') %>">
+          <%= item.itemStatus %>
+        </span>
+        <% if (item.itemTimeline) {
+          const date = item.itemTimeline.deliveredAt || item.itemTimeline.shippedAt || item.itemTimeline.outForDeliveryAt || item.itemTimeline.cancelledAt || item.itemTimeline.returnRequestedAt;
+          if (date) { %>
+            <span class="status-date">on <%= new Date(date).toLocaleDateString('en-GB') %></span>
+          <% }
+        } %>
+      </div>
 
-      <button id="btnInvoice" class="btn-secondary">
-        📄 Download Invoice
-      </button>
+      <div class="item-content-large">
+        <div class="item-image-section-large">
+          <img src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" 
+               alt="<%= item.productId?.name %>" 
+               class="item-image-large">
+        </div>
 
-      <button id="btnReorder" 
-              class="btn-info" 
-              <%= !['Delivered', 'Cancelled', 'Returned', 'Refunded'].includes(order.status) ? 'disabled' : '' %>>
-        🔄 Reorder
-      </button>
+        <div class="item-details-large">
+          <h2 class="item-name-large">
+            <a href="/product/<%= item.productId?._id %>"><%= item.productId?.name %></a>
+          </h2>
+          <p class="item-variant-large">Color: <%= item.variantId?.colorName || 'Standard' %></p>
+          <p class="item-quantity-large">Quantity: <%= item.quantity %></p>
+          <p class="item-price-large">₹<%= (item.quantity * item.price).toLocaleString('en-IN') %></p>
+
+          <% if (item.reason) { %>
+            <div class="item-reason-box">
+              <strong>Reason:</strong> <%= item.reason %>
+            </div>
+          <% } %>
+
+          <% if (order.expectedDelivery && ['Pending','Confirmed','Processing','Shipped','Out for Delivery'].includes(item.itemStatus)) { %>
+            <div class="expected-delivery-box">
+              <div class="delivery-icon">📦</div>
+              <div>
+                <p class="delivery-label">Expected Delivery</p>
+                <p class="delivery-date"><%= new Date(order.expectedDelivery).toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+              </div>
+            </div>
+          <% } %>
+
+          <div class="item-actions-large">
+            <% 
+              const canCancel = ["Pending", "Confirmed", "Processing"].includes(item.itemStatus);
+              const canReturn = item.itemStatus === "Delivered";
+              const canReview = item.itemStatus === "Delivered";
+              const hasReviewed = order.reviews?.some(r => 
+                r.productId?.toString() === item.productId?._id?.toString() && 
+                r.variantId?.toString() === item.variantId?._id?.toString()
+              );
+            %>
+
+            <% if (canCancel) { %>
+              <button type="button" class="btn-action-large btn-cancel">Cancel This Item</button>
+            <% } %>
+
+            <% if (canReturn) { %>
+              <button type="button" class="btn-action-large btn-return">Return This Item</button>
+            <% } %>
+
+            <% if (canReview && !hasReviewed) { %>
+              <button type="button" class="btn-action-large btn-review">Write a Review</button>
+            <% } else if (canReview && hasReviewed) { %>
+              <div class="reviewed-badge-large">✓ Review Submitted</div>
+            <% } %>
+
+            <a href="/product/<%= item.productId?._id %>" class="btn-action-large btn-view-product">
+              View Product Page
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Address & Payment Info -->
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>Shipping Address</h3>
+        <div class="info-content">
+          <p><strong><%= order.address.fullName %></strong></p>
+          <p><%= order.address.address1 %></p>
+          <% if (order.address.address2) { %><p><%= order.address.address2 %></p><% } %>
+          <p><%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %></p>
+          <p>📞 <%= order.address.phone %></p>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>Payment Information</h3>
+        <div class="info-content">
+          <p>Method: <strong><%= order.paymentMethod.toUpperCase() %></strong></p>
+          <p>Status: <span class="status-badge <%= order.paymentStatus.toLowerCase() %>"><%= order.paymentStatus %></span></p>
+          <% if (order.paymentId) { %><p>Payment ID: <strong><%= order.paymentId %></strong></p><% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Price Breakdown -->
+    <div class="price-breakdown-card">
+      <h3>Price Details</h3>
+      <div class="price-row">
+        <span>Item Total (×<%= item.quantity %>):</span>
+        <span>₹<%= (item.price * item.quantity).toLocaleString('en-IN') %></span>
+      </div>
+      <div class="price-row">
+        <span>Delivery Charges:</span>
+        <span><%= order.deliveryCharge === 0 ? 'FREE' : '₹' + order.deliveryCharge.toLocaleString('en-IN') %></span>
+      </div>
+      <% if (order.discount > 0) { %>
+        <div class="price-row discount">
+          <span>Discount:</span>
+          <span>-₹<%= order.discount.toLocaleString('en-IN') %></span>
+        </div>
+      <% } %>
+      <div class="price-row total">
+        <span><strong>Amount Paid:</strong></span>
+        <span><strong>₹<%= order.totalAmount.toLocaleString('en-IN') %></strong></span>
+      </div>
     </div>
   </main>
 </div>
 
+<!-- MODALS (Beautiful & Functional) -->
 <div id="modalTrack" class="modal">
   <div class="modal-backdrop" data-close="modalTrack"></div>
   <div class="modal-box">
     <div class="modal-header">
-      <h2>Track Order <%= order.orderId %></h2>
+      <h2>Track Your Item</h2>
       <span class="close" data-close="modalTrack">×</span>
     </div>
     <div class="modal-body">
-      <div class="timeline">
-        <% 
-          const timelineSteps = [
-            { id: 'ordered', title: 'Order Placed', date: new Date(order.createdAt), completed: true },
-            { id: 'confirmed', title: 'Order Confirmed', date: order.status !== 'Pending' ? new Date(order.createdAt).setHours(order.createdAt.getHours() + 1) : null, completed: ['Processing', 'Shipped', 'Delivered'].includes(order.status) },
-            { id: 'processing', title: 'Processing', date: ['Processing', 'Shipped', 'Delivered'].includes(order.status) ? new Date(order.createdAt).setHours(order.createdAt.getHours() + 2) : null, completed: ['Shipped', 'Delivered'].includes(order.status) },
-            { id: 'shipped', title: 'Shipped', date: ['Shipped', 'Delivered'].includes(order.status) ? new Date(order.createdAt).setHours(order.createdAt.getHours() + 24) : null, completed: order.status === 'Delivered' },
-            { id: 'delivered', title: 'Delivered', date: order.status === 'Delivered' ? new Date(order.createdAt).setHours(order.createdAt.getHours() + 48) : null, completed: order.status === 'Delivered' }
-          ];
-          
-          let activeFound = false;
-          timelineSteps.forEach(step => {
-            const isActive = step.completed && !activeFound && order.status !== 'Delivered';
-            activeFound = activeFound || isActive;
-        %>
-        <div class="timeline-item <%= step.completed ? 'completed' : '' %> <%= isActive ? 'active' : '' %>">
-          <div class="timeline-icon">
-            <% if (step.id === 'ordered') { %>✓<% } %>
-            <% if (step.id === 'confirmed') { %>✓<% } %>
-            <% if (step.id === 'processing') { %>⚙<% } %>
-            <% if (step.id === 'shipped') { %>🚚<% } %>
-            <% if (step.id === 'delivered') { %>🏠<% } %>
-          </div>
-          <div class="timeline-content">
-            <h4><%= step.title %></h4>
-            <% if (step.date) { %>
-              <p>Order <%= step.title.toLowerCase() %> successfully</p>
-              <div class="timeline-date"><%= new Date(step.date).toLocaleString() %></div>
-            <% } else { %>
-              <p>Waiting for <%= step.title.toLowerCase() %></p>
-            <% } %>
-          </div>
+      <div class="tracking-timeline">
+        <div class="timeline-status-current">
+          <span class="status-badge <%= item.itemStatus.toLowerCase().replace(/\s+/g, '-') %>">
+            Current Status: <%= item.itemStatus %>
+          </span>
         </div>
-        <% }); %>
+        <div class="timeline-events">
+          <% 
+            const timeline = item.itemTimeline || {};
+            const events = [
+              { key: 'confirmedAt', label: 'Order Confirmed' },
+              { key: 'processedAt', label: 'Processing' },
+              { key: 'shippedAt', label: 'Shipped' },
+              { key: 'outForDeliveryAt', label: 'Out for Delivery' },
+              { key: 'deliveredAt', label: 'Delivered' }
+            ];
+            events.forEach(event => {
+              if (timeline[event.key]) { %>
+                <div class="timeline-event completed">
+                  <div class="event-dot"></div>
+                  <div class="event-content">
+                    <span class="event-title"><%= event.label %></span>
+                    <span class="event-date"><%= new Date(timeline[event.key]).toLocaleDateString('en-GB') %></span>
+                  </div>
+                </div>
+              <% }
+            });
+          %>
+        </div>
       </div>
-      
-      <% if (order.trackingNumber) { %>
-      <div class="tracking-info" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 6px;">
-        <p><strong>Tracking Number:</strong> <%= order.trackingNumber %></p>
-        <p><strong>Carrier:</strong> <%= order.shippingCarrier || 'Standard Shipping' %></p>
-        <p><a href="<%= order.trackingLink || '#' %>" target="_blank" style="color: #2563eb; text-decoration: none;">
-          ↗ Track on carrier website
-        </a></p>
-      </div>
-      <% } %>
     </div>
   </div>
 </div>
 
-<!-- Cancel Order Modal -->
 <div id="modalCancel" class="modal">
   <div class="modal-backdrop" data-close="modalCancel"></div>
   <div class="modal-box">
     <div class="modal-header">
-      <h2>Cancel Order <%= order.orderId %></h2>
+      <h2>Cancel This Item</h2>
       <span class="close" data-close="modalCancel">×</span>
     </div>
     <div class="modal-body">
-      <p class="modal-subtitle">Please select a reason for cancellation:</p>
+      <div class="modal-item-preview">
+        <img src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" alt="<%= item.productId?.name %>">
+        <div>
+          <strong><%= item.productId?.name %></strong><br>
+          <small>Color: <%= item.variantId?.colorName || 'Standard' %> × <%= item.quantity %></small>
+        </div>
+      </div>
+      <p class="modal-subtitle">Why are you cancelling?</p>
       <div class="radio-group">
-        <label class="radio-label">
-          <input type="radio" name="cancelReason" value="Ordered by mistake" checked>
-          <span class="radio-text">Ordered by mistake</span>
-        </label>
-        <label class="radio-label">
-          <input type="radio" name="cancelReason" value="Found better price">
-          <span class="radio-text">Found better price</span>
-        </label>
-        <label class="radio-label">
-          <input type="radio" name="cancelReason" value="Delivery delay">
-          <span class="radio-text">Delivery delay</span>
-        </label>
-        <label class="radio-label">
-          <input type="radio" name="cancelReason" value="Changed my mind">
-          <span class="radio-text">Changed my mind</span>
-        </label>
-        <label class="radio-label">
-          <input type="radio" name="cancelReason" value="Other">
-          <span class="radio-text">Other reason</span>
-        </label>
+        <label><input type="radio" name="cancelReason" value="Ordered by mistake" checked> Ordered by mistake</label>
+        <label><input type="radio" name="cancelReason" value="Found better price"> Found better price elsewhere</label>
+        <label><input type="radio" name="cancelReason" value="Changed my mind"> Changed my mind</label>
+        <label><input type="radio" name="cancelReason" value="Other"> Other</label>
       </div>
-      <div class="form-group" id="otherReasonContainer" style="display: none;">
-        <label for="otherCancelReason">Please specify:</label>
-        <input type="text" id="otherCancelReason" class="form-input" placeholder="Enter reason...">
-      </div>
-      <button id="confirmCancel" class="btn-confirm">Confirm Cancellation</button>
+      <button id="submitCancel" class="btn-confirm">Confirm Cancellation</button>
     </div>
   </div>
 </div>
 
-<!-- Return Order Modal -->
 <div id="modalReturn" class="modal">
   <div class="modal-backdrop" data-close="modalReturn"></div>
   <div class="modal-box">
     <div class="modal-header">
-      <h2>Return Order <%= order.orderId %></h2>
+      <h2>Return This Item</h2>
       <span class="close" data-close="modalReturn">×</span>
     </div>
     <div class="modal-body">
-      <p class="modal-subtitle">Please select a reason for return:</p>
+      <div class="modal-item-preview">
+        <img src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" alt="<%= item.productId?.name %>">
+        <div>
+          <strong><%= item.productId?.name %></strong><br>
+          <small>Color: <%= item.variantId?.colorName || 'Standard' %> × <%= item.quantity %></small>
+        </div>
+      </div>
+      <p class="modal-subtitle">Why are you returning this item?</p>
       <div class="radio-group">
-        <label class="radio-label">
-          <input type="radio" name="returnReason" value="Product damaged" checked>
-          <span class="radio-text">Product damaged</span>
-        </label>
-        <label class="radio-label">
-          <input type="radio" name="returnReason" value="Wrong item received">
-          <span class="radio-text">Wrong item received</span>
-        </label>
-        <label class="radio-label">
-          <input type="radio" name="returnReason" value="Quality not as expected">
-          <span class="radio-text">Quality not as expected</span>
-        </label>
-        <label class="radio-label">
-          <input type="radio" name="returnReason" value="Not satisfied">
-          <span class="radio-text">Not satisfied</span>
-        </label>
-        <label class="radio-label">
-          <input type="radio" name="returnReason" value="Size/color issue">
-          <span class="radio-text">Size/color issue</span>
-        </label>
-      </div>
-      <div class="form-group">
-        <label for="refundMethod">Refund Method:</label>
-        <select id="refundMethod" class="form-select">
-          <option value="original_payment">Original payment method</option>
-          <option value="wallet">Wallet credit</option>
-          <option value="bank_transfer">Bank transfer</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="returnComments">Additional Comments (Optional):</label>
-        <textarea id="returnComments" rows="3" placeholder="Any additional details..."></textarea>
+        <label><input type="radio" name="returnReason" value="Damaged" checked> Damaged or defective</label>
+        <label><input type="radio" name="returnReason" value="Wrong item"> Wrong item received</label>
+        <label><input type="radio" name="returnReason" value="Size issue"> Size/color issue</label>
+        <label><input type="radio" name="returnReason" value="Not satisfied"> Not satisfied</label>
+        <label><input type="radio" name="returnReason" value="Other"> Other</label>
       </div>
       <button id="submitReturn" class="btn-confirm">Submit Return Request</button>
     </div>
   </div>
 </div>
 
-<!-- Review Modal -->
 <div id="modalReview" class="modal">
   <div class="modal-backdrop" data-close="modalReview"></div>
   <div class="modal-box">
     <div class="modal-header">
-      <h2>Rate & Review</h2>
+      <h2>Write a Review</h2>
       <span class="close" data-close="modalReview">×</span>
     </div>
     <div class="modal-body">
-      <p class="modal-subtitle">Share your experience with this product:</p>
-      
-      <div class="form-group">
-        <label>Rating:</label>
-        <div class="star-rating" style="font-size: 28px; color: #ffd700; margin: 10px 0 20px;">
-          <span class="star" data-rating="1">☆</span>
-          <span class="star" data-rating="2">☆</span>
-          <span class="star" data-rating="3">☆</span>
-          <span class="star" data-rating="4">☆</span>
-          <span class="star" data-rating="5">☆</span>
+      <div class="review-product-preview">
+        <img src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" alt="<%= item.productId?.name %>">
+        <div>
+          <strong><%= item.productId?.name %></strong><br>
+          <small><%= item.variantId?.colorName || 'Standard' %></small>
         </div>
-        <input type="hidden" id="ratingValue" value="0">
       </div>
-      
-      <div class="form-group">
-        <label for="reviewTitle">Review Title:</label>
-        <input type="text" id="reviewTitle" class="form-input" placeholder="Summarize your experience...">
+      <p class="modal-subtitle">Rate this product</p>
+      <div class="star-rating">
+        <span class="star" data-value="1">★</span>
+        <span class="star" data-value="2">★</span>
+        <span class="star" data-value="3">★</span>
+        <span class="star" data-value="4">★</span>
+        <span class="star" data-value="5">★</span>
       </div>
-      
-      <div class="form-group">
-        <label for="reviewText">Your Review:</label>
-        <textarea id="reviewText" rows="5" placeholder="Write your detailed review here..."></textarea>
-      </div>
-      
-      <button id="submitReview" class="btn-confirm" disabled>Submit Review</button>
+      <input type="hidden" id="ratingInput" value="0">
+      <textarea id="reviewText" class="form-input" rows="5" placeholder="Share your experience..."></textarea>
+      <button id="submitReviewBtn" class="btn-confirm" disabled>Submit Review</button>
     </div>
   </div>
 </div>
 
-<!-- Invoice Modal -->
 <div id="modalInvoice" class="modal">
   <div class="modal-backdrop" data-close="modalInvoice"></div>
   <div class="modal-box">
     <div class="modal-header">
-      <h2>Download Invoice</h2>
+      <h2>Invoice</h2>
       <span class="close" data-close="modalInvoice">×</span>
     </div>
-    <div class="modal-body">
-      <div class="invoice-details">
-        <div class="invoice-row">
-          <span class="invoice-label">Invoice Number:</span>
-          <span class="invoice-value">INV-<%= order.orderId %></span>
-        </div>
-        <div class="invoice-row">
-          <span class="invoice-label">Order Date:</span>
-          <span class="invoice-value"><%= new Date(order.createdAt).toLocaleDateString() %></span>
-        </div>
-        <div class="invoice-row">
-          <span class="invoice-label">Total Amount:</span>
-          <span class="invoice-value">₹<%= order.totalAmount.toLocaleString('en-IN') %></span>
-        </div>
-        <div class="invoice-row">
-          <span class="invoice-label">Status:</span>
-          <span class="invoice-value"><%= order.status %></span>
-        </div>
-      </div>
-      
-      <p class="modal-subtitle">Choose download option:</p>
-      <div class="download-options">
-        <button id="downloadPDF" class="btn-download btn-pdf">
-          📥 Download PDF
-        </button>
-        <button id="emailInvoice" class="btn-download btn-email">
-          📧 Email Invoice
-        </button>
-      </div>
+    <div class="modal-body text-center">
+      <p>Download your invoice</p>
+      <a href="/order/<%= order._id %>/invoice" target="_blank" class="btn-confirm">Download PDF</a>
     </div>
   </div>
 </div>
 
-<!-- Reorder Modal -->
-<div id="modalReorder" class="modal">
-  <div class="modal-backdrop" data-close="modalReorder"></div>
-  <div class="modal-box">
-    <div class="modal-header">
-      <h2>Reorder Items</h2>
-      <span class="close" data-close="modalReorder">×</span>
-    </div>
-    <div class="modal-body">
-      <p class="modal-subtitle">Click on any item to view and reorder:</p>
-      
-      <% order.products.forEach((p, index) => { %>
-      <a href="/product/<%= p.productId?._id %>" 
-         class="reorder-item-link" 
-         style="display: flex; align-items: center; padding: 12px; border: 1px solid #eee; border-radius: 6px; margin-bottom: 10px; text-decoration: none; color: inherit; transition: all 0.2s; cursor: pointer;">
-        <img src="<%= p.variantId?.images?.[0] || '/images/default-watch.jpg' %>" 
-             alt="<%= p.productId?.name %>"
-             style="width: 50px; height: 50px; border-radius: 4px; margin-right: 12px; object-fit: cover;">
-        <div style="flex: 1;">
-          <strong style="color: #000; font-size: 1em;"><%= p.productId?.name || 'Product' %></strong>
-          <div style="font-size: 0.9em; color: #666; margin-top: 3px;">
-            <%= p.variantId?.colorName || 'Standard' %> × <%= p.quantity %>
-          </div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span style="font-weight: bold; color: #2ecc71;">
-            ₹<%= (p.quantity * p.price).toLocaleString('en-IN') %>
-          </span>
-          <svg width="18" height="18" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </div>
-      </a>
-      <% }) %>
-      
-      <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
-        <p style="text-align: center; color: #666; font-size: 0.9em; margin: 0;">
-          Click any item to view product details and add to cart
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-  
-<script src="/js/user/orderDetail.js"></script>
+<script>
+  const ORDER_ID = "<%= order._id %>";
+  const ITEM_INDEX = <%= itemIndex %>;
+
+  function toast(message, type = "info") {
+    Toastify({
+      text: message,
+      duration: 4000,
+      gravity: "top",
+      position: "right",
+      backgroundColor: type === "success" ? "#16a34a" : type === "error" ? "#dc2626" : "#f59e0b"
+    }).showToast();
+  }
+
+  // Open Modal
+  function openModal(id) {
+    document.getElementById(id).classList.add('active');
+  }
+
+  // Close Modal
+  document.querySelectorAll('[data-close], .modal-backdrop').forEach(el => {
+    el.addEventListener('click', () => {
+      el.closest('.modal').classList.remove('active');
+    });
+  });
+
+  // Track
+  document.getElementById('btnTrack')?.addEventListener('click', () => openModal('modalTrack'));
+
+  // Invoice
+  document.getElementById('btnInvoice')?.addEventListener('click', () => openModal('modalInvoice'));
+
+  // Cancel
+  document.querySelector('.btn-cancel')?.addEventListener('click', () => openModal('modalCancel'));
+
+  // Return
+  document.querySelector('.btn-return')?.addEventListener('click', () => openModal('modalReturn'));
+
+  // Review
+  document.querySelector('.btn-review')?.addEventListener('click', () => openModal('modalReview'));
+
+  // Cancel Submit
+  document.getElementById('submitCancel')?.addEventListener('click', async () => {
+    const reason = document.querySelector('input[name="cancelReason"]:checked')?.value || 'No reason';
+    try {
+      const res = await axios.post(`/order/${ORDER_ID}/cancel-item`, { itemIndex: ITEM_INDEX, reason });
+      toast(res.data.success ? 'Cancelled!' : res.data.message || 'Failed', res.data.success ? 'success' : 'error');
+      if (res.data.success) setTimeout(() => location.reload(), 1500);
+    } catch (err) {
+      toast('Server error', 'error');
+    }
+  });
+
+  // Return Submit
+  document.getElementById('submitReturn')?.addEventListener('click', async () => {
+    const reason = document.querySelector('input[name="returnReason"]:checked')?.value || 'No reason';
+    try {
+      const res = await axios.post(`/order/${ORDER_ID}/return-item`, { itemIndex: ITEM_INDEX, reason });
+      toast(res.data.success ? 'Return requested!' : res.data.message || 'Failed', res.data.success ? 'success' : 'error');
+      if (res.data.success) setTimeout(() => location.reload(), 1500);
+    } catch (err) {
+      toast('Server error', 'error');
+    }
+  });
+
+  // Review Submit
+  document.getElementById('submitReviewBtn')?.addEventListener('click', async () => {
+    const rating = document.getElementById('ratingInput').value;
+    const text = document.getElementById('reviewText').value.trim();
+    if (!text) return toast('Write your review', 'error');
+
+    try {
+      const res = await axios.post(`/order/${ORDER_ID}/review-item`, { itemIndex: ITEM_INDEX, rating: Number(rating), text });
+      toast(res.data.success ? 'Review submitted!' : res.data.message || 'Failed', res.data.success ? 'success' : 'error');
+      if (res.data.success) setTimeout(() => location.reload(), 1500);
+    } catch (err) {
+      toast('Server error', 'error');
+    }
+  });
+
+  // Star Rating
+  document.querySelectorAll('.star').forEach(star => {
+    star.addEventListener('click', () => {
+      const value = star.dataset.value;
+      document.getElementById('ratingInput').value = value;
+      document.querySelectorAll('.star').forEach(s => s.style.color = '#e5e7eb');
+      document.querySelectorAll(`.star[data-value="${value}"]`).forEach((s, i) => {
+        s.style.color = i < value ? '#f59e0b' : '#e5e7eb';
+      });
+      document.getElementById('submitReviewBtn').disabled = false;
+    });
+  });
+</script>
+</body>
+</html>

@@ -11,7 +11,6 @@ import { message } from "./middlewares/message.js";
 import {setUser} from './middlewares/authMiddleware.js';
 import { Cache } from "./middlewares/cache.js";
 import { layouts } from "./middlewares/layouts.js";
-import { errorMd } from "./middlewares/error.js";
 import connectDB from "./config/db.js";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -51,13 +50,7 @@ app.use(checkBlockedUser);
 
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
-app.use((req, res, next) => {
-  const err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
 
-app.use(errorMd);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

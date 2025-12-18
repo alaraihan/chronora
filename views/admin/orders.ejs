@@ -6,207 +6,223 @@
     <title><%= title %> | Admin</title>
     <link rel="stylesheet" href="/css/admin/orders.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
-    
-    <main class="main-content">
-        <header class="content-header">
-            <h1><i class="bi bi-cart-check"></i> Order Management</h1>
-            <% if (hasFilters) { %>
-            <small class="filter-indicator">Filtered Results</small>
-            <% } %>
-        </header>
 
-        <form method="GET" action="/admin/orders" class="filters-card">
-            <div class="filter-row">
-                <div class="filter-group">
-                    <input 
-                        type="text" 
-                        name="search" 
-                        placeholder="Search by Order ID, Customer, Phone..."
-                        value="<%= search %>"
-                        class="search-input"
-                    >
-                </div>
-                
-                <div class="filter-group">
-                    <select name="status" class="status-select">
-                        <option value="">All Status</option>
-                        <option value="pending" <%= status === 'pending' ? 'selected' : '' %>>Pending</option>
-                        <option value="processing" <%= status === 'processing' ? 'selected' : '' %>>Processing</option>
-                        <option value="shipped" <%= status === 'shipped' ? 'selected' : '' %>>Shipped</option>
-                        <option value="delivered" <%= status === 'delivered' ? 'selected' : '' %>>Delivered</option>
-                        <option value="cancelled" <%= status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
-                    </select>
-                </div>
-                
-                <div class="filter-actions">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-funnel"></i> Apply Filters
-                    </button>
-                    <input type="hidden" name="page" value="1">
-                    <% if (hasFilters) { %>
-                    <a href="/admin/orders" class="btn btn-secondary">
-                        <i class="bi bi-x-circle"></i> Clear All
-                    </a>
-                    <% } %>
-                </div>
+<main class="main-content">
+    <header class="content-header">
+        <h1><i class="bi bi-cart-check"></i> Order Management (Line Items)</h1>
+    </header>
+
+    <div class="filters-card">
+        <div class="filter-row">
+            <div class="filter-group">
+                <input 
+                    type="text" 
+                    id="searchInput"
+                    placeholder="Search by Order ID, Customer, Phone, Product..."
+                    class="search-input"
+                    value="<%= search || '' %>"
+                >
             </div>
             
-            <% if (hasFilters) { %>
-            <div class="active-filters">
-                <strong>Active Filters:</strong>
-                <% if (search) { %>
-                <span class="filter-badge">
-                    Search: "<%= search %>"
-                    <a href="?status=<%= status %>&page=1" class="remove-filter">×</a>
-                </span>
-                <% } %>
-                <% if (status) { %>
-                <span class="filter-badge">
-                    Status: <%= status %>
-                    <a href="?search=<%= search %>&page=1" class="remove-filter">×</a>
-                </span>
-                <% } %>
+            <div class="filter-group">
+                <select id="statusFilter" class="status-select">
+                    <option value="">All Status</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Out for Delivery">Out for Delivery</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                    <option value="ReturnRequested">Return Requested</option>
+                    <option value="ReturnApproved">Return Approved</option>
+                    <option value="Returned">Returned</option>
+                </select>
             </div>
-            <% } %>
-        </form>
 
-        <div class="orders-summary">
-            <div class="summary-card">
-                <h3><%= totalOrders %></h3>
-                <p>Total Orders</p>
-            </div>
-            <div class="summary-text">
-                <% if (hasFilters) { %>
-                Showing <%= orders.length %> filtered results
-                <% } else { %>
-                All orders listed below
-                <% } %>
+            <div class="filter-actions">
+                <button onclick="applyFilters()" class="btn btn-primary">
+                    <i class="bi bi-funnel"></i> Apply Filters
+                </button>
+                <a href="/admin/orders" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Clear All
+                </a>
             </div>
         </div>
+    </div>
 
-        <div class="table-container">
-            <table class="orders-table">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% if (orders.length === 0) { %>
-                    <tr>
-                        <td colspan="6" class="no-orders">
-                            <i class="bi bi-inbox"></i>
-                            <p>No orders found</p>
-                            <% if (hasFilters) { %>
-                            <a href="/admin/orders" class="btn-clear">Clear filters to see all orders</a>
-                            <% } %>
-                        </td>
-                    </tr>
-                    <% } else { %>
-                    <% orders.forEach(order => { %>
-                    <tr>
-                        <td>
-                            <strong>#<%= order.orderId %></strong>
-                            <small><%= order._id.toString().slice(-6) %></small>
-                        </td>
-                        <td>
-                            <div class="customer-info">
-                                <strong><%= order.address?.fullName || order.userId?.name || 'Guest' %></strong>
-                                <% if (order.address?.phone || order.userId?.email) { %>
-                                <small><%= order.address?.phone || order.userId?.email %></small>
-                                <% } %>
-                            </div>
-                        </td>
-                        <td>
-                            <%= new Date(order.createdAt).toLocaleDateString() %>
-                            <br>
-                            <small><%= new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %></small>
-                        </td>
-                        <td class="amount">₹<%= order.totalAmount.toFixed(2) %></td>
-                        <td>
-                            <span class="status-badge status-<%= order.status %>">
-                                <%= order.status %>
-                            </span>
-                        </td>
-                        <td>
-                            <div class="action-buttons">
-                                <a href="/admin/orders/<%= order._id %>" class="btn-view" title="View Details">
-                                    <i class="bi bi-eye"></i> View
-                                </a>
-                                <a href="/admin/orders/print/<%= order._id %>" target="_blank" class="btn-print" title="Print Invoice">
-                                    <i class="bi bi-printer"></i> Print
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    <% }); %>
-                    <% } %>
-                </tbody>
-            </table>
+    <div class="orders-summary">
+        <div class="summary-card">
+            <h3 id="totalOrders">0</h3>
+            <p>Total Line Items</p>
         </div>
-
-        <% if (totalPages > 1) { %>
-        <div class="pagination">
-            <% if (currentPage > 1) { %>
-            <a href="<%= buildPaginationUrl(currentPage - 1) %>" class="page-link prev">
-                <i class="bi bi-chevron-left"></i> Previous
-            </a>
-            <% } %>
-            
-            <div class="page-numbers">
-                <% for (let i = 1; i <= totalPages; i++) { %>
-                    <% if (i === currentPage) { %>
-                    <span class="page-number active"><%= i %></span>
-                    <% } else { %>
-                    <a href="<%= buildPaginationUrl(i) %>" class="page-number"><%= i %></a>
-                    <% } %>
-                <% } %>
-            </div>
-            
-            <% if (currentPage < totalPages) { %>
-            <a href="<%= buildPaginationUrl(currentPage + 1) %>" class="page-link next">
-                Next <i class="bi bi-chevron-right"></i>
-            </a>
-            <% } %>
+        <div class="summary-text">
+            Individual product status per order
         </div>
-        <% } %>
-    </main>
+    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const statusSelect = document.querySelector('select[name="status"]');
-            if (statusSelect) {
-                statusSelect.addEventListener('change', function() {
-                    document.querySelector('input[name="page"]').value = 1;
-                    this.form.submit();
-                });
+    <div class="table-container">
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="ordersTableBody"></tbody>
+        </table>
+    </div>
+
+    <div class="pagination" id="paginationContainer"></div>
+</main>
+
+<div id="loadingOverlay" class="loading-overlay">
+    <i class="bi bi-hourglass-split" style="font-size: 2.5rem;"></i>
+    <div>Loading orders...</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const overlay = document.getElementById("loadingOverlay");
+const totalOrdersEl = document.getElementById("totalOrders");
+
+function showLoading() { overlay.style.display = "flex"; }
+function hideLoading() { overlay.style.display = "none"; }
+
+function toast(message) {
+    Toastify({
+        text: message,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        backgroundColor: "#dc3545"
+    }).showToast();
+}
+
+function applyFilters() {
+    const search = document.getElementById("searchInput").value.trim();
+    const status = document.getElementById("statusFilter").value;
+
+    params.set("page", "1");
+    if (search) params.set("search", search); else params.delete("search");
+    if (status) params.set("status", status); else params.delete("status");
+
+    updateURLAndLoad();
+}
+
+function goToPage(page) {
+    params.set("page", page);
+    updateURLAndLoad();
+}
+
+function updateURLAndLoad() {
+    window.history.replaceState({}, "", `/admin/orders?${params.toString()}`);
+    loadOrders();
+}
+
+function renderTable(lineItems) {
+    const tbody = document.getElementById("ordersTableBody");
+    tbody.innerHTML = "";
+
+    if (lineItems.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:50px; color:#888; font-size:1.1rem;">No matching line items found</td></tr>`;
+        return;
+    }
+
+    lineItems.forEach(item => {
+        const prod = item.products[0];
+        const product = prod.productId || {};
+        const variant = prod.variantId || {};
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td><strong>${item.orderId}</strong></td>
+            <td>${item.address?.fullName || "Guest"}</td>
+            <td>${new Date(item.createdAt).toLocaleDateString()}</td>
+            <td>
+                <div>
+                    <div><strong>${product.name || 'Unknown Product'}</strong></div>
+                    <small>${variant.colorName || ''} ${variant.size ? '· ' + variant.size : ''}</small>
+                </div>
+            </td>
+            <td>${prod.quantity}</td>
+            <td>₹${(prod.price || 0).toLocaleString()}</td>
+            <td>₹${((prod.price || 0) * prod.quantity).toLocaleString()}</td>
+            <td><span class="status-badge status-${prod.itemStatus.toLowerCase().replace(/ /g, '-')}">${prod.itemStatus}</span></td>
+            <td>
+                <a href="/admin/orders/${item._id}/${item.itemIndex}/detail" class="btn-small btn-primary">View Detail</a>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function renderPagination(pag) {
+    const container = document.getElementById("paginationContainer");
+    container.innerHTML = "";
+
+    if (pag.totalPages <= 1) return;
+
+    let html = '<div style="display:flex; justify-content:center; align-items:center; gap:15px; margin-top:30px;">';
+
+    if (pag.currentPage > 1) {
+        html += `<button onclick="goToPage(${pag.currentPage - 1})" class="btn btn-secondary">Previous</button>`;
+    }
+
+    html += `<span style="font-weight:bold; font-size:1.1rem;">Page ${pag.currentPage} of ${pag.totalPages}</span>`;
+
+    if (pag.currentPage < pag.totalPages) {
+        html += `<button onclick="goToPage(${pag.currentPage + 1})" class="btn btn-primary">Next</button>`;
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function loadOrders() {
+    showLoading();
+
+    axios.get(`/admin/orders/data?${params.toString()}`)
+        .then(res => {
+            if (!res.data.success) {
+                toast("Failed to load orders");
+                return;
             }
-            
-            const searchInput = document.querySelector('input[name="search"]');
-            if (searchInput) {
-                searchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        document.querySelector('input[name="page"]').value = 1;
-                        this.form.submit();
-                    }
-                });
-            }
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            if (searchInput && urlParams.get('search')) {
-                searchInput.value = urlParams.get('search');
-            }
-            if (statusSelect && urlParams.get('status')) {
-                statusSelect.value = urlParams.get('status');
-            }
-        });
-    </script>
+
+            totalOrdersEl.textContent = res.data.pagination.totalOrders || 0;
+            renderTable(res.data.orders || []);
+            renderPagination(res.data.pagination);
+        })
+        .catch(err => {
+            console.error("Load error:", err);
+            toast("Error loading data from server");
+        })
+        .finally(() => hideLoading());
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const searchVal = params.get("search");
+    const statusVal = params.get("status");
+
+    if (searchVal) document.getElementById("searchInput").value = searchVal;
+    if (statusVal) document.getElementById("statusFilter").value = statusVal;
+
+    loadOrders();
+});
+</script>
+
 </body>
 </html>

@@ -14,46 +14,63 @@
         <p style="text-align:center; color:#999; padding:60px;">No orders yet.</p>
       <% } else { %>
         <% orders.forEach(order => { %>
-          <div class="order-card">
-            <div class="order-header">
-              <div class="order-info">
-                <strong class="order-id">Order # <%= order.orderId %></strong>
-                <div><%= new Date(order.orderDate).toDateString() %></div>
-                <div class="order-total">₹<%= order.totalAmount.toLocaleString('en-IN') %></div>
-                <div class="order-status">
-                  Status: 
-<span class="<%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
-                    <%= order.status %>
+          <% order.products.forEach(item => { %>
+            <!-- Each product gets its own card -->
+            <div class="order-card">
+              <div class="order-header-inline">
+                <div class="order-meta">
+                  <span class="order-date"><%= new Date(order.createdAt).toDateString() %></span>
+                  <span class="order-id-small">Order #<%= order.orderId %></span>
+                </div>
+                <div class="item-status-badge">
+                  <span class="status-label <%= item.itemStatus.toLowerCase().replace(/\s+/g, '-') %>">
+                    <%= item.itemStatus %>
                   </span>
                 </div>
               </div>
-              <div class="order-actions">
-                <a href="/profile/orders/<%= order.orderId %>" class="btn">View Details</a>
-              </div>
-            </div>
 
-            <div class="order-items">
-              <% order.products.forEach(item => { %>
-                <div class="order-item-preview">
+              <div class="order-item-main">
+                <div class="item-image-wrapper">
                   <img 
                     src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" 
                     alt="<%= item.productId?.name || 'Watch' %>"
-                    class="preview-img"
+                    class="item-image"
                     onerror="this.src='/images/default-watch.jpg'"
                   >
-                  <div class="preview-details">
-                    <p class="name"><%= item.productId?.name || 'Unknown Watch' %></p>
-                    <p class="variant"><%= item.variantId?.colorName || 'Standard' %> × <%= item.quantity %></p>
-                    <p class="price">₹<%= item.price.toLocaleString('en-IN') %></p>
-                  </div>
                 </div>
-              <% }) %>
+
+                <div class="item-details">
+                  <h3 class="item-name"><%= item.productId?.name || 'Unknown Watch' %></h3>
+                  <p class="item-variant"><%= item.variantId?.colorName || 'Standard' %></p>
+                  <p class="item-quantity">Qty: <%= item.quantity %></p>
+                  <p class="item-price">₹<%= (item.price * item.quantity).toLocaleString('en-IN') %></p>
+                  
+                  <% if (item.reason) { %>
+                    <p class="item-reason"><strong>Reason:</strong> <%= item.reason %></p>
+                  <% } %>
+                </div>
+
+                <div class="item-actions">
+                  <!-- ONLY View Details Button -->
+                  <a href="/profile/orders/<%= order.orderId %>?productId=<%= item.productId._id %>&variantId=<%= item.variantId._id %>" 
+                     class="btn btn-view">
+                    View Details
+                  </a>
+                </div>
+              </div>
+
+              <!-- Optional: Expected Delivery -->
+              <% if (order.expectedDelivery && !['Delivered', 'Cancelled', 'ReturnRequested', 'Returned'].includes(item.itemStatus)) { %>
+                <div class="delivery-info">
+                  <span>Expected Delivery: <%= new Date(order.expectedDelivery).toDateString() %></span>
+                </div>
+              <% } %>
             </div>
-          </div>
+          <% }) %>
         <% }) %>
       <% } %>
     </div>
   </main>
 </div>
 
-<script src="js/user/orders.js"></script>
+<!-- No script needed here anymore unless you have other JS -->
