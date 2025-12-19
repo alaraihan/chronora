@@ -101,9 +101,35 @@
 
             <div style="margin-bottom: 15px;">
                 <label><strong>Target</strong></label>
-                <select id="targetId" class="status-select" style="width:100%; margin-top:5px;" required>
-                    <option value="">Select...</option>
-                </select>
+               <div style="position: relative;">
+    <input 
+        type="text" 
+        id="targetSearch" 
+        class="search-input"
+        placeholder="Search product or category..."
+        autocomplete="off"
+        style="width:100%; margin-top:5px;"
+    />
+
+    <input type="hidden" id="targetId" />
+
+    <div 
+        id="targetDropdown" 
+        style="
+            position:absolute;
+            top:100%;
+            left:0;
+            right:0;
+            max-height:200px;
+            overflow-y:auto;
+            background:#fff;
+            border:1px solid #ddd;
+            z-index:1000;
+            display:none;
+        ">
+    </div>
+</div>
+
             </div>
 
             <div style="margin-bottom: 15px;">
@@ -169,27 +195,40 @@ function toast(msg, type = 'error') {
 
 async function openModal(offer = null) {
     editingOffer = offer;
+
+    document.getElementById("offerModal").style.display = "flex";
+
     document.getElementById("modalTitle").textContent = offer ? "Edit Offer" : "Add New Offer";
     document.getElementById("offerId").value = offer?._id || "";
     document.getElementById("name").value = offer?.name || "";
     document.getElementById("type").value = offer?.type || "product";
     document.getElementById("discountType").value = offer?.discountType || "percentage";
     document.getElementById("discountValue").value = offer?.discountValue || "";
-    document.getElementById("startDate").value = offer?.startDate ? new Date(offer.startDate).toISOString().split('T')[0] : "";
-    document.getElementById("endDate").value = offer?.endDate ? new Date(offer.endDate).toISOString().split('T')[0] : "";
+    document.getElementById("startDate").value = offer?.startDate
+        ? new Date(offer.startDate).toISOString().split('T')[0]
+        : "";
+    document.getElementById("endDate").value = offer?.endDate
+        ? new Date(offer.endDate).toISOString().split('T')[0]
+        : "";
     document.getElementById("active").checked = offer ? offer.active : true;
 
     await loadTargets();
 
     if (offer) {
         setTimeout(() => {
-            const targetId = offer.type === 'product' ? offer.productId?._id : offer.categoryId?._id;
-            document.getElementById("targetId").value = targetId || "";
-        }, 200);
-    }
+            const target = offer.type === 'product'
+                ? offer.productId
+                : offer.categoryId;
 
-    document.getElementById("offerModal").style.display = "flex";
+            if (target) {
+                document.getElementById("targetId").value = target._id;
+                document.getElementById("targetSearch").value = target.name;
+            }
+        }, 150);
+    }
 }
+
+
 
 function closeModal() {
     document.getElementById("offerModal").style.display = "none";
@@ -197,25 +236,75 @@ function closeModal() {
     editingOffer = null;
 }
 
+let targetsCache = [];
+
 async function loadTargets() {
     const type = document.getElementById("type").value;
-    const select = document.getElementById("targetId");
-    select.innerHTML = '<option>Loading...</option>';
+    const dropdown = document.getElementById("targetDropdown");
+    const searchInput = document.getElementById("targetSearch");
+
+    dropdown.innerHTML = "Loading...";
+    dropdown.style.display = "block";
 
     try {
         const res = await axios.get(`/admin/offers/targets?type=${type}`);
-        select.innerHTML = '<option value="">Select one...</option>';
-        res.data.targets.forEach(item => {
-            const opt = document.createElement("option");
-            opt.value = item._id;
-            opt.textContent = item.name;
-            select.appendChild(opt);
-        });
+        targetsCache = res.data.targets;
+
+        renderTargetList(targetsCache);
     } catch (err) {
-        select.innerHTML = '<option>Error loading</option>';
+        dropdown.innerHTML = "<div style='padding:10px;'>Error loading</div>";
         toast("Failed to load targets");
     }
+
+    searchInput.value = "";
+    document.getElementById("targetId").value = "";
 }
+
+function renderTargetList(list) {
+    const dropdown = document.getElementById("targetDropdown");
+    dropdown.innerHTML = "";
+
+    if (list.length === 0) {
+        dropdown.innerHTML = "<div style='padding:10px;'>No results</div>";
+        return;
+    }
+
+    list.forEach(item => {
+        const div = document.createElement("div");
+        div.textContent = item.name;
+        div.style.padding = "10px";
+        div.style.cursor = "pointer";
+
+        div.addEventListener("click", () => {
+            document.getElementById("targetSearch").value = item.name;
+            document.getElementById("targetId").value = item._id;
+            dropdown.style.display = "none";
+        });
+
+        div.addEventListener("mouseover", () => {
+            div.style.background = "#f1f1f1";
+        });
+
+        div.addEventListener("mouseout", () => {
+            div.style.background = "#fff";
+        });
+
+        dropdown.appendChild(div);
+    });
+}
+document.getElementById("targetSearch").addEventListener("input", function () {
+    const value = this.value.toLowerCase();
+    const filtered = targetsCache.filter(t =>
+        t.name.toLowerCase().includes(value)
+    );
+    document.getElementById("targetDropdown").style.display = "block";
+    renderTargetList(filtered);
+});
+document.addEventListener("click", (e) => {
+    if (!e.target.closest("#targetSearch")) {
+        document.getElementById("targetDropdown").style.display = "none";
+    }
+});
 
 document.getElementById("type").addEventListener("change", loadTargets);
 

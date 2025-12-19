@@ -53,7 +53,7 @@ router.get("/logout", adminController.logout);
 router.get("/dashboard", isAdmin, adminController.dashboard);
 
 
-=router.get("/customers", isAdmin, adminController.loadCustomers);
+router.get("/customers", isAdmin, adminController.loadCustomers);
 router.patch("/customers/toggle-block/:id", isAdmin, adminController.toggleBlockCustomer);
 
 
