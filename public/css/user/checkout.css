@@ -126,6 +126,10 @@ body { background: #0a0e17; color: #fff; font-family: 'Segoe UI', sans-serif; }
   top: 50%; left: 50%;
   transform: translate(-50%,-50%);
 }
+.order-summary {
+  max-height: none; /* remove fixed max height */
+  overflow-y: visible; /* show all items without scroll */
+}
 
 /* Order Summary */
 .order-summary h3 {
@@ -135,7 +139,6 @@ body { background: #0a0e17; color: #fff; font-family: 'Segoe UI', sans-serif; }
 }
 
 .summary-items {
-  max-height: 300px;
   overflow-y: auto;
   margin-bottom: 20px;
 }

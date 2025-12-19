@@ -1,7 +1,6 @@
 import Order from "../../models/orderSchema.js";
 import Variant from "../../models/variantSchema.js";
 
-// Renders the EJS page (NO DB LOGIC HERE)
 export const renderAdminOrdersPage = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -33,12 +32,10 @@ export const getAdminOrdersData = async (req, res) => {
 
     let query = {};
 
-    // Always fetch orders that match the status (if any)
     if (status) {
       query["products.itemStatus"] = status;
     }
 
-    // Basic search on order fields (helps reduce data if many orders)
     if (search) {
       const regex = new RegExp(search, "i");
       query.$or = [
@@ -48,7 +45,6 @@ export const getAdminOrdersData = async (req, res) => {
       ];
     }
 
-    // Fetch all potentially matching orders (no limit here)
     const orders = await Order.find(query)
       .populate("userId", "name email")
       .populate("products.productId", "name images price")
@@ -56,10 +52,8 @@ export const getAdminOrdersData = async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    // Start with all fetched orders
-    let filteredOrders = orders.map(order => ({ ...order })); // deep-ish copy for safety
+    let filteredOrders = orders.map(order => ({ ...order })); 
 
-    // First: Apply status filter - keep only items with matching status
     if (status) {
       filteredOrders = filteredOrders.map(order => ({
         ...order,
@@ -67,7 +61,6 @@ export const getAdminOrdersData = async (req, res) => {
       })).filter(order => order.products.length > 0);
     }
 
-    // Second: Apply search filter (including product name) on the current filtered list
     if (search) {
       const lowerSearch = search.toLowerCase();
       filteredOrders = filteredOrders.map(order => ({
@@ -81,7 +74,6 @@ export const getAdminOrdersData = async (req, res) => {
       })).filter(order => order.products.length > 0);
     }
 
-    // Flatten to line items
     let lineItems = [];
     filteredOrders.forEach(order => {
       order.products.forEach((prod, idx) => {
@@ -96,7 +88,6 @@ export const getAdminOrdersData = async (req, res) => {
       });
     });
 
-    // Pagination
     const totalLineItems = lineItems.length;
     const totalPages = Math.ceil(totalLineItems / limit);
     const start = (page - 1) * limit;
@@ -119,7 +110,6 @@ export const getAdminOrdersData = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-// All your other functions remain EXACTLY as they were
 export const getAdminOrdersPage = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -143,7 +133,6 @@ export const getAdminOrdersPage = async (req, res) => {
   }
 };
 
-/* ================= SINGLE ORDER ITEM DETAIL ================= */
 export const getOrderDetails = async (req, res) => {
   try {
     const { orderId, itemIndex } = req.params;
@@ -190,7 +179,6 @@ export const getOrderDetails = async (req, res) => {
   }
 };
 
-/* ================= UPDATE OVERALL ORDER STATUS ================= */
 export const updateOrderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -342,7 +330,6 @@ export const rejectItemReturn = async (req, res) => {
   }
 };
 
-/* ================= PRINT ORDER ================= */
 export const printOrder = async (req, res) => {
   try {
     const { orderId } = req.params;

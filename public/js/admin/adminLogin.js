@@ -11,7 +11,7 @@
         text: message,
         backgroundColor: isSuccess ? "#4ade80" : "#ef4444",
         duration: 3000,
-        gravity: "top",
+        gravity: "bottom",
         position: "right"
       }).showToast();
     };

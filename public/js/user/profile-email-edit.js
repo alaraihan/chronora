@@ -14,7 +14,7 @@ function showToast(message, success = true) {
   Toastify({
     text: message,
     duration: 3000,
-    gravity: "top",
+    gravity: "bottom",
     position: "right",
     backgroundColor: success ? "#2ecc71" : "#e74c3c",
   }).showToast();

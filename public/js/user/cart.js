@@ -2,7 +2,7 @@ const showToast = (msg, type = "success") => {
   Toastify({
     text: msg,
     duration: 3000,
-    gravity: "top",
+    gravity: "bottom",
     position: "right",
     backgroundColor: type === "error" ? "#e74c3c" : "#27ae60",
   }).showToast();
@@ -47,9 +47,7 @@ function updateOrderSummary() {
 
   if (freeShipNote) {
     if (subtotal < 15000 && shipping > 0) {
-      freeShipNote.innerHTML = `Shop ₹${(15000 - subtotal).toLocaleString(
-        "en-IN"
-      )} more for <strong>FREE</strong> shipping!`;
+      freeShipNote.innerHTML = `Shop ₹${(15000 - subtotal).toLocaleString("en-IN")} more for <strong>FREE</strong> shipping!`;
       freeShipNote.style.display = "block";
     } else {
       freeShipNote.style.display = "none";
@@ -71,10 +69,8 @@ function setCheckoutState(canCheckout) {
   }
 }
 
-
 const cartContainer = document.getElementById("cartItemsContainer") || document.body;
-
-const inFlightRequests = new Map(); 
+const inFlightRequests = new Map();
 
 cartContainer.addEventListener("click", async (e) => {
   const btn = e.target.closest(".increment, .decrement, .remove-item, .add-to-cart");
@@ -89,7 +85,7 @@ cartContainer.addEventListener("click", async (e) => {
 
     const action = btn.classList.contains("increment") ? "increment" : "decrement";
     const key = `qty-${id}`;
-    if (inFlightRequests.get(key)) return; 
+    if (inFlightRequests.get(key)) return;
     inFlightRequests.set(key, true);
     btn.disabled = true;
 
@@ -177,17 +173,14 @@ cartContainer.addEventListener("click", async (e) => {
       }
 
       showToast("Added to cart");
-      if (res.data.cartSubtotal || res.data.payableTotal) {
-        updateOrderSummary();
-        setCheckoutState(res.data.canCheckout ?? true);
-      }
+      updateOrderSummary();
+      setCheckoutState(res.data.canCheckout ?? true);
     } catch (err) {
       showToast(err.response?.data?.message || "Error adding to cart", "error");
     } finally {
       inFlightRequests.delete(key);
       btn.disabled = false;
     }
-    return;
   }
 });
 
@@ -196,62 +189,41 @@ const confirmRemoveBtn = document.getElementById("confirmRemove");
 const cancelRemoveBtn = document.getElementById("cancelRemove");
 
 if (confirmRemoveBtn) {
-  if (!confirmRemoveBtn.dataset.listenerBound) {
-    confirmRemoveBtn.dataset.listenerBound = "1";
-    confirmRemoveBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (!confirmModal) return;
-      const itemToRemove = confirmModal.dataset.removeItemId;
-      if (!itemToRemove) return;
+  confirmRemoveBtn.addEventListener("click", async () => {
+    const itemToRemove = confirmModal.dataset.removeItemId;
+    if (!itemToRemove) return;
 
-      const key = `remove-${itemToRemove}`;
-      if (inFlightRequests.get(key)) return;
-      inFlightRequests.set(key, true);
-      confirmRemoveBtn.disabled = true;
+    try {
+      const res = await axios.post(`/cart/remove/${itemToRemove}`);
+      if (res.data.success) {
+        document.querySelector(`[data-item-id="${itemToRemove}"]`)?.remove();
+        showToast("Removed from cart");
+        setCheckoutState(res.data.canCheckout);
+        updateOrderSummary();
 
-      try {
-        const res = await axios.post(`/cart/remove/${itemToRemove}`);
-        if (res.data.success) {
-          document.querySelector(`[data-item-id="${itemToRemove}"]`)?.remove();
-          showToast("Removed from cart");
-          setCheckoutState(res.data.canCheckout);
-          updateOrderSummary();
-
-          if (document.querySelectorAll(".cart-item").length === 0) {
-            location.reload();
-          }
-        } else {
-          showToast(res.data.message || "Failed to remove item", "error");
+        if (document.querySelectorAll(".cart-item").length === 0) {
+          location.reload();
         }
-      } catch (err) {
-        showToast("Failed to remove item", "error");
-      } finally {
-        inFlightRequests.delete(key);
-        confirmRemoveBtn.disabled = false;
-        confirmModal.style.display = "none";
-        delete confirmModal.dataset.removeItemId;
       }
-    });
-  }
-}
-
-if (cancelRemoveBtn && !cancelRemoveBtn.dataset.listenerBound) {
-  cancelRemoveBtn.dataset.listenerBound = "1";
-  cancelRemoveBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (confirmModal) {
+    } catch (err) {
+      showToast("Failed to remove item", "error");
+    } finally {
       confirmModal.style.display = "none";
       delete confirmModal.dataset.removeItemId;
     }
   });
 }
 
-if (confirmModal && !confirmModal.dataset.outsideClickBound) {
-  confirmModal.dataset.outsideClickBound = "1";
+if (cancelRemoveBtn) {
+  cancelRemoveBtn.addEventListener("click", () => {
+    confirmModal.style.display = "none";
+    delete confirmModal.dataset.removeItemId;
+  });
+}
+
+if (confirmModal) {
   confirmModal.addEventListener("click", (e) => {
-    if (e.target === e.currentTarget) {
+    if (e.target === confirmModal) {
       confirmModal.style.display = "none";
       delete confirmModal.dataset.removeItemId;
     }

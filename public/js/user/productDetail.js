@@ -3,7 +3,7 @@ const showToast = (msg, type = "success") => {
   Toastify({
     text: msg,
     duration: 3000,
-    gravity: "top",
+    gravity: "bottom",
     position: "right",
     backgroundColor: type === "error" ? "#e74c3c" : "#27ae60",
   }).showToast();

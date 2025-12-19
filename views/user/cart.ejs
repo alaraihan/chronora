@@ -15,12 +15,15 @@
 
         <% cartItems.forEach(item => { %>
           <% 
-            const price = Number(item.variantId?.price || item.productId?.price || 0);
-            const qty = Number(item.quantity || 0);
+            const currentPrice = Number(item.price || 0);  
+            const originalPrice = Number(item.originalPrice || 0);  
+            const qty = Number(item.quantity || 1);
             const stock = Number(item.variantId?.stock || 0);
-            const lineTotal = price * qty;
+            const lineTotal = currentPrice * qty;
 
-            const isAvailable = !item.productId?.isBlocked && !item.variantId?.isBlocked && stock >= qty;
+            const isAvailable = item.productId && !item.productId.isBlocked && 
+                                item.variantId && !item.variantId.isBlocked && 
+                                stock >= qty;
           %>
 
           <div class="cart-item <%= !isAvailable ? 'unavailable' : '' %>" 
@@ -37,17 +40,26 @@
                 <%= item.productId.name %>
               </div>
               <div class="variant-name">
-                <%= 
-                  item.variantId?.color || 
-                  item.variantId?.variantLabel || 
-                  item.variantId?.name
-                %>
+                <%= item.variantId?.colorName || item.variantId?.color || 'Standard' %>
               </div>
 
               <% if (!isAvailable) { %>
                 <div class="status-badge unavailable">Unavailable</div>
               <% } else { %>
-                <div class="price">₹<%= price.toLocaleString('en-IN') %> each</div>
+                <div class="cart-item-price">
+                  <% if (currentPrice < originalPrice) { %>
+                    <del style="color:#999; font-size:14px;">
+                      ₹ <%= originalPrice.toLocaleString('en-IN') %> each
+                    </del>
+                    <div style="font-size:20px; font-weight:bold; color:#2ecc71;">
+                      ₹ <%= currentPrice.toLocaleString('en-IN') %> each
+                    </div>
+                  <% } else { %>
+                    <div style="font-size:20px; font-weight:bold; color:#667eea;">
+                      ₹ <%= currentPrice.toLocaleString('en-IN') %> each
+                    </div>
+                  <% } %>
+                </div>
               <% } %>
             </div>
 
@@ -70,16 +82,17 @@
       <div class="order-summary">
         <h3>Order Summary</h3>
 
+        <% const subtotal = cartItems.reduce((sum, i) => sum + (Number(i.price || 0) * i.quantity), 0); %>
+
         <div class="summary-row">
           <span>Cart Subtotal</span>
-          <span id="cartSubtotal">₹<%= cartItems.reduce((sum, i) => sum + (Number(i.variantId?.price || i.productId?.price || 0) * i.quantity), 0).toLocaleString('en-IN') %></span>
+          <span id="cartSubtotal">₹<%= subtotal.toLocaleString('en-IN') %></span>
         </div>
 
         <div class="summary-row">
           <span>Shipping</span>
           <span id="shippingAmount">
-            <% const sub = cartItems.reduce((s, i) => s + (Number(i.variantId?.price || i.productId?.price || 0) * i.quantity), 0); %>
-            <% if (sub >= 15000) { %>
+            <% if (subtotal >= 15000) { %>
               <span style="color:#4ade80;font-weight:600;">FREE</span>
             <% } else { %>
               ₹100
@@ -87,34 +100,34 @@
           </span>
         </div>
 
-        <% if (sub < 15000) { %>
+        <% if (subtotal < 15000 && subtotal > 0) { %>
           <div class="free-shipping-note">
-            Add ₹<%= (15000 - sub).toLocaleString('en-IN') %> more for <strong>FREE</strong> shipping!
+            Add ₹<%= (15000 - subtotal).toLocaleString('en-IN') %> more for <strong>FREE</strong> shipping!
           </div>
         <% } %>
 
         <div class="summary-total">
           <span>Payable Amount</span>
-          <strong id="totalAmount">₹<%= (sub + (sub < 15000 ? 100 : 0)).toLocaleString('en-IN') %></strong>
+          <strong id="totalAmount">
+            ₹<%= (subtotal + (subtotal < 15000 && subtotal > 0 ? 100 : 0)).toLocaleString('en-IN') %>
+          </strong>
         </div>
 
-<% if (canCheckout) { %>
-  <a href="/checkout" id="checkoutBtn" class="checkout-btn active">
-    Proceed to Checkout
-  </a>
-<% } else { %>
-  <button class="checkout-btn disabled" disabled>
-    Checkout Unavailable
-  </button>
-
-  <div class="checkout-warning">
-    Some items in your cart are out of stock or unavailable.
-    Please update your cart to continue.
-  </div>
-<% } %>
+        <% if (canCheckout) { %>
+          <a href="/checkout" id="checkoutBtn" class="checkout-btn active">
+            Proceed to Checkout
+          </a>
+        <% } else { %>
+          <button class="checkout-btn disabled" disabled>
+            Checkout Unavailable
+          </button>
+          <div class="checkout-warning">
+            Some items in your cart are out of stock or unavailable.
+            Please update your cart to continue.
+          </div>
+        <% } %>
       </div>
     </div>
-
   <% } %>
 </div>
 

@@ -4,7 +4,7 @@ const router = express.Router();
 import upload from "../middlewares/uploadImage.js"; 
 
 import { checkLogin, isLoggedIn } from "../middlewares/authMiddleware.js";
-import userController from "../controller/user/userController.js";
+import * as userController from "../controller/user/userController.js";
 import authController from "../controller/user/authController.js";
 import passport from "../config/passport.js";
 
@@ -46,7 +46,6 @@ import {
   reviewOrderItem
 } from "../controller/user/orderController.js"; 
 
-// ====================== PUBLIC ROUTES ======================
 router.get("/pageNotfound", userController.pageNotfound);
 router.get("/about", userController.loadAboutpage);
 router.get("/contact", userController.loadContactpage);
@@ -55,7 +54,6 @@ router.get("/", userController.loadHomepage);
 router.get("/product/:id", userController.productDetails);
 router.get("/watch", userController.loadWatchPage);
 
-// ====================== AUTH ROUTES ======================
 router.get("/login", checkLogin, authController.loadLogin);
 router.post("/login", authController.login);
 
@@ -89,9 +87,7 @@ router.post("/resendResetOtp", checkLogin, authController.resendResetOtp);
 router.get("/logout", authController.loadLogout);
 router.post("/logout", authController.performLogout);
 
-// ====================== PROTECTED ROUTES (isLoggedIn) ======================
 
-// Profile
 router.get("/profile", isLoggedIn, loadProfile);
 router.get("/profile/edit/image", isLoggedIn, loadProfileImageEdit);
 router.post("/profile/edit/image", isLoggedIn, upload.single("profileImage"), profileImageEdit);
@@ -114,36 +110,31 @@ router.delete('/profile/addresses/:id', isLoggedIn, deleteAddress);
 router.get('/profile/change-password', isLoggedIn, getChangePassword);
 router.post('/profile/change-password', isLoggedIn, changePassword);
 
-// Cart
+
 router.get("/cart", isLoggedIn, loadCart);
 router.post("/cart/add", isLoggedIn, addToCart);
 router.post('/cart/update/:id', isLoggedIn, updateQuantity);
 router.post('/cart/remove/:id', isLoggedIn, removeFromCart);
 
-// Checkout
+
 router.get("/checkout", isLoggedIn, loadCheckout);
 router.post('/address/add', isLoggedIn, addAddressCheck);
 router.post('/checkout/place-order', isLoggedIn, placeOrder);
 router.get("/checkout/success", isLoggedIn, successPage);
 
-// ====================== ORDERS ======================
 
-// Orders list
 router.get("/profile/orders", isLoggedIn, getOrdersPage);
 
-// Single item detail page
 router.get("/profile/orders/:orderId", isLoggedIn, getOrderDetails);
 
-// Download invoice (single item or full order)
 router.get("/profile/orders/:orderId/invoice", isLoggedIn, downloadInvoice);
 
-// Per-item actions (must come BEFORE general order actions to avoid conflict)
-// Per-item actions
+
 router.post("/order/:orderId/cancel-item", isLoggedIn, cancelOrderItem);
 router.post("/order/:orderId/return-item", isLoggedIn, returnOrderItem);
 router.post("/order/:orderId/review-item", isLoggedIn, reviewOrderItem);
 
-// Invoice
+
 router.get("/profile/orders/:orderId/invoice", isLoggedIn, downloadInvoice);
 router.post("/profile/orders/:orderId/review-item", isLoggedIn, reviewOrderItem);
 

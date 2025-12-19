@@ -50,7 +50,6 @@ export const profileImageEdit = async (req, res) => {
       return res.status(400).json({ success: false, message: "No file uploaded" });
     }
 
-    // ✅ Upload new image
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: "chronora/Profile_images",
       transformation: [
@@ -58,7 +57,6 @@ export const profileImageEdit = async (req, res) => {
       ],
     });
 
-    // ✅ Delete old image from Cloudinary
     if (user.profileImageId) {
       await cloudinary.uploader.destroy(user.profileImageId);
     }
@@ -68,7 +66,6 @@ export const profileImageEdit = async (req, res) => {
     user.profileImageId = result.public_id;
     await user.save();
 
-    // ✅ Delete local temp file
     try {
       fs.unlinkSync(req.file.path);
     } catch (err) {

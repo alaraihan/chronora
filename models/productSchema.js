@@ -37,7 +37,7 @@ const productSchema = new mongoose.Schema({
 productSchema.virtual('image').get(function () {
   for (const variant of this.variants || []) {
     if (variant?.images?.length > 0) {
-      return variant.images[0]; // first image
+      return variant.images[0]; 
     }
   }
   return '/images/no-image.png';
@@ -47,6 +47,5 @@ productSchema.virtual('totalStock').get(function () {
   return (this.variants || []).reduce((sum, v) => sum + (v?.stock || 0), 0);
 });
 
-// This is enough – no need to repeat toObject/toJSON if already in schema options
 
 export default mongoose.model('Product', productSchema);

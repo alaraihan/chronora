@@ -17,7 +17,7 @@ const toast = (msg, type = 'error') => {
   Toastify({
     text: msg,
     duration: 4000,
-    gravity: "top",
+    gravity: "bottom",
     position: "right",
     backgroundColor: type === 'success' ? '#28a745' : '#dc3545',
     stopOnFocus: true,

@@ -2,7 +2,6 @@ import Order from "../../models/orderSchema.js";
 import Variant from "../../models/variantSchema.js";
 import PDFDocument from "pdfkit";
 
-// Orders List Page
 export const getOrdersPage = async (req, res) => {
   try {
     const userId = req.user?._id;
@@ -27,7 +26,6 @@ export const getOrdersPage = async (req, res) => {
   }
 };
 
-// Single Item Order Detail Page
 export const getOrderDetails = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -55,7 +53,6 @@ export const getOrderDetails = async (req, res) => {
   }
 };
 
-// Cancel Single Item
 export const cancelOrderItem = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -94,7 +91,6 @@ export const cancelOrderItem = async (req, res) => {
   }
 };
 
-// Return Single Item
 export const returnOrderItem = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -132,7 +128,6 @@ export const returnOrderItem = async (req, res) => {
   }
 };
 
-// Review Single Item
 export const reviewOrderItem = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -184,7 +179,6 @@ export const reviewOrderItem = async (req, res) => {
   }
 };
 
-// Download Invoice (Single Item or Full Order)
 export const downloadInvoice = async (req, res) => {
   try {
     const { orderId } = req.params;

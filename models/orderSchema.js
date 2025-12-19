@@ -1,7 +1,6 @@
+
 import mongoose from "mongoose";
 import crypto from "crypto";
-
-/* ================= ORDERED ITEM ================= */
 
 const orderedItemSchema = new mongoose.Schema({
   productId: {
@@ -9,24 +8,26 @@ const orderedItemSchema = new mongoose.Schema({
     ref: "Product",
     required: true,
   },
-
   variantId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Variant",
     required: true,
   },
-
   quantity: {
     type: Number,
     required: true,
     min: 1,
   },
-
   price: {
     type: Number,
     required: true,
-  },
-
+    min: 0,
+  }, 
+  originalPrice: {
+    type: Number,
+    required: true,
+    min: 0,
+  }, 
   itemStatus: {
     type: String,
     enum: [
@@ -45,12 +46,11 @@ const orderedItemSchema = new mongoose.Schema({
     default: "Pending",
   },
 
-  // ✅ FIXED: Timeline fields now MATCH controller logic
   itemTimeline: {
     confirmedAt: Date,
     processedAt: Date,
     shippedAt: Date,
-    outForDeliveryAt: Date,   // ✅ ADDED
+    outForDeliveryAt: Date,
     deliveredAt: Date,
     cancelledAt: Date,
     returnRequestedAt: Date,
@@ -59,13 +59,8 @@ const orderedItemSchema = new mongoose.Schema({
     returnedAt: Date,
   },
 
-  reason: {
-    type: String,
-    default: "",
-  },
+  reason: { type: String, default: "" },
 });
-
-/* ================= SHIPPING ADDRESS ================= */
 
 const shippingAddressSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
@@ -78,8 +73,6 @@ const shippingAddressSchema = new mongoose.Schema({
   country: { type: String, default: "India" },
   addressType: String,
 });
-
-/* ================= ORDER ================= */
 
 const orderSchema = new mongoose.Schema(
   {
@@ -109,15 +102,12 @@ const orderSchema = new mongoose.Schema(
         "Shipped",
         "Out for Delivery",
         "Delivered",
-
         "CancelRequested",
         "ReturnRequested",
         "ReturnRejected",
         "ReturnApproved",
-
         "Cancelled",
         "Returned",
-
         "Partially Delivered",
         "Partially Cancelled",
         "Partially Returned",
@@ -125,28 +115,13 @@ const orderSchema = new mongoose.Schema(
       default: "Pending",
     },
 
-    cancelReason: {
-      type: String,
-      default: "",
-    },
-
-    returnReason: {
-      type: String,
-      default: "",
-    },
+    cancelReason: { type: String, default: "" },
+    returnReason: { type: String, default: "" },
 
     reviews: [
       {
-        productId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
-          required: true,
-        },
-        variantId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Variant",
-          required: true,
-        },
+        productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+        variantId: { type: mongoose.Schema.Types.ObjectId, ref: "Variant", required: true },
         rating: { type: Number, min: 1, max: 5, required: true },
         title: String,
         text: { type: String, required: true },
@@ -168,12 +143,7 @@ const orderSchema = new mongoose.Schema(
     },
 
     address: shippingAddressSchema,
-
-    addressId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address",
-      required: true,
-    },
+    addressId: { type: mongoose.Schema.Types.ObjectId, ref: "Address" },
 
     paymentMethod: {
       type: String,
@@ -189,27 +159,14 @@ const orderSchema = new mongoose.Schema(
 
     paymentId: String,
 
-    totalAmount: {
-      type: Number,
-      required: true,
-    },
-
-    deliveryCharge: {
-      type: Number,
-      default: 0,
-    },
-
-    discount: {
-      type: Number,
-      default: 0,
-    },
+    totalAmount: { type: Number, required: true },     
+    deliveryCharge: { type: Number, default: 0 },
+    discount: { type: Number, default: 0 },             
 
     expectedDelivery: Date,
   },
   { timestamps: true }
 );
-
-/* ================= AUTO ORDER ID ================= */
 
 orderSchema.pre("save", function (next) {
   if (!this.orderId) {
@@ -219,8 +176,6 @@ orderSchema.pre("save", function (next) {
   }
   next();
 });
-
-/* ================= EXPORT ================= */
 
 const Order = mongoose.model("Order", orderSchema);
 export default Order;

@@ -2,7 +2,6 @@ import Offer from "../../models/offerSchema.js";
 import Product from "../../models/productSchema.js";
 import Category from "../../models/categorySchema.js";
 
-// Render page
 export const loadOfferPage = async (req, res) => {
   try {
     res.render("admin/offer", {
@@ -15,17 +14,17 @@ export const loadOfferPage = async (req, res) => {
   }
 };
 
-// Get offers for table
 export const getOffersData = async (req, res) => {
   try {
-    const { type } = req.query;
+    const { type, status } = req.query;  
 
-    let query = { active: true };
+    let query = {};
     if (type) query.type = type;
+    if (status) query.active = status === 'active';  
 
     const offers = await Offer.find(query)
-      .populate("productId", "name")    // Safe populate
-      .populate("categoryId", "name")   // Safe populate
+      .populate("productId", "name")
+      .populate("categoryId", "name")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -36,7 +35,6 @@ export const getOffersData = async (req, res) => {
   }
 };
 
-// Load products or categories for dropdown
 export const getOfferTargets = async (req, res) => {
   try {
     const { type } = req.query;
@@ -55,7 +53,6 @@ export const getOfferTargets = async (req, res) => {
   }
 };
 
-// Create new offer
 export const createOffer = async (req, res) => {
   try {
     const { name, type, targetId, discountType, discountValue, startDate, endDate } = req.body;
@@ -74,7 +71,6 @@ export const createOffer = async (req, res) => {
       active: true,
     };
 
-    // Set correct ID based on type
     if (type === "product") {
       offerData.productId = targetId;
     } else if (type === "category") {
@@ -90,7 +86,6 @@ export const createOffer = async (req, res) => {
   }
 };
 
-// Update offer
 export const updateOffer = async (req, res) => {
   try {
     const { id } = req.params;
@@ -109,11 +104,9 @@ export const updateOffer = async (req, res) => {
       endDate: new Date(endDate),
     };
 
-    // Reset both IDs first
     offerData.productId = null;
     offerData.categoryId = null;
 
-    // Set the correct one
     if (type === "product") {
       offerData.productId = targetId;
     } else if (type === "category") {
@@ -129,7 +122,6 @@ export const updateOffer = async (req, res) => {
   }
 };
 
-// Delete offer
 export const deleteOffer = async (req, res) => {
   try {
     const { id } = req.params;
@@ -138,5 +130,27 @@ export const deleteOffer = async (req, res) => {
   } catch (error) {
     console.error("DELETE OFFER ERROR:", error);
     res.status(500).json({ success: false });
+  }
+};
+export const toggleOfferActive = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const offer = await Offer.findById(id);
+
+    if (!offer) {
+      return res.status(404).json({ success: false, message: "Offer not found" });
+    }
+
+    offer.active = !offer.active;
+    await offer.save();
+
+    res.json({ 
+      success: true, 
+      message: "Status updated successfully",
+      active: offer.active 
+    });
+  } catch (error) {
+    console.error("TOGGLE STATUS ERROR:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

@@ -47,7 +47,6 @@
       }
     %>
 
-    <!-- Single Item Card -->
     <div class="main-item-card" data-index="<%= itemIndex %>">
       <div class="item-status-bar">
         <span class="status-badge <%= item.itemStatus.toLowerCase().replace(/\s+/g, '-') %>">
@@ -74,8 +73,24 @@
           </h2>
           <p class="item-variant-large">Color: <%= item.variantId?.colorName || 'Standard' %></p>
           <p class="item-quantity-large">Quantity: <%= item.quantity %></p>
-          <p class="item-price-large">₹<%= (item.quantity * item.price).toLocaleString('en-IN') %></p>
-
+<!-- Discounted Price with Strikethrough + Savings -->
+<div class="item-price-large">
+  <% if (item.price < item.originalPrice) { %>
+    <del style="color:#999; font-size:18px;">
+      ₹ <%= (item.originalPrice * item.quantity).toLocaleString('en-IN') %>
+    </del>
+    <div style="font-size:28px; font-weight:bold; color:#2ecc71; margin:8px 0;">
+      ₹ <%= (item.price * item.quantity).toLocaleString('en-IN') %>
+    </div>
+    <div style="color:#e74c3c; font-weight:600; font-size:16px;">
+      You saved ₹ <%= ((item.originalPrice - item.price) * item.quantity).toLocaleString('en-IN') %> with offer!
+    </div>
+  <% } else { %>
+    <div style="font-size:28px; font-weight:bold; color:#667eea;">
+      ₹ <%= (item.price * item.quantity).toLocaleString('en-IN') %>
+    </div>
+  <% } %>
+</div>
           <% if (item.reason) { %>
             <div class="item-reason-box">
               <strong>Reason:</strong> <%= item.reason %>
@@ -323,7 +338,7 @@
     Toastify({
       text: message,
       duration: 4000,
-      gravity: "top",
+      gravity: "bottom",
       position: "right",
       backgroundColor: type === "success" ? "#16a34a" : type === "error" ? "#dc2626" : "#f59e0b"
     }).showToast();

@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
           text: isBlocked ? "User blocked successfully" : "User unblocked successfully",
           backgroundColor: isBlocked ? "#c0392b" : "#27ae60",
           duration: 3000,
-          gravity: "top",
+          gravity: "bottom",
           position: "right",
         }).showToast();
 
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
           text: error.response?.data?.message || "Server error. Please try again.",
           backgroundColor: "#e74c3c",
           duration: 3000,
-          gravity: "top",
+          gravity: "bottom",
           position: "right",
         }).showToast();
       }

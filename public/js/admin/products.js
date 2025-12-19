@@ -9,7 +9,7 @@ function showToast(msg, type = 'success') {
         Toastify({
             text: msg,
             duration: 3500,
-            gravity: "top",
+            gravity: "bottom",
             position: "right",
             backgroundColor: type === 'error' ? "#ef4444" : (type === 'warning' ? "#f59e0b" : "#10b981")
         }).showToast();

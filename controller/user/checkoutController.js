@@ -5,11 +5,11 @@ import Product from '../../models/productSchema.js';
 import Address from "../../models/addressSchema.js";
 import Order from '../../models/orderSchema.js'
 
-const calculateTotals = (items) => {
+function calculateTotals(items) {
   let subtotal = 0;
 
   for (const item of items) {
-    const price = Number(item.variantId?.price || item.productId?.price || 0);
+    const price = Number(item.price || 0);  
     const qty = Number(item.quantity || 0);
     subtotal += price * qty;
   }
@@ -17,7 +17,7 @@ const calculateTotals = (items) => {
   const shipping = subtotal < 15000 ? 100 : 0;
   const grandTotal = subtotal + shipping;
   return { subtotal, shipping, grandTotal };
-};
+}
 export const loadCheckout = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -208,24 +208,24 @@ export const placeOrder = async (req, res) => {
     }
 
     const orderedItems = cartItems.map(ci => {
-      const product = ci.productId || {};
-      const variant = ci.variantId || {};
-      const price = Number(variant.price ?? product.price ?? 0) || 0;
-      const qty = Number(ci.quantity ?? 1) || 1;
-      return {
-        productId: product._id || ci.productId,
-        variantId: variant._id || ci.variantId || null,
-        quantity: qty,
-        price,
-        itemStatus: "Pending",
-        itemTimeline: {},
-      };
-    });
+  const price = Number(ci.price || 0); 
+  const originalPrice = Number(ci.originalPrice || 0);  
+  const qty = Number(ci.quantity || 1);
+
+  return {
+    productId: ci.productId._id,
+    variantId: ci.variantId?._id || null,
+    quantity: qty,
+    price,                  
+    originalPrice,            
+    itemStatus: "Pending",
+    itemTimeline: {},
+  };
+});
 
     const { subtotal, shipping, grandTotal } = calculateTotals(cartItems);
     const discount = Number(req.body.discount || 0) || 0;
     const finalAmount = Number(grandTotal || 0) - discount;
-    const safeFinal = Number.isFinite(finalAmount) ? finalAmount : 0;
 
     const orderDoc = new Order({
       userId,
@@ -237,9 +237,10 @@ export const placeOrder = async (req, res) => {
       paymentMethod: req.body.paymentMethod || "cod",
       paymentStatus: req.body.paymentStatus || "Pending",
       paymentId: req.body.paymentId || null,
-      totalAmount: safeFinal,
+      totalAmount: finalAmount,
       deliveryCharge: Number(shipping || 0),
-      discount: Number(discount || 0),
+      discount,
+      products:orderedItems,
       expectedDelivery: req.body.expectedDelivery || null,
     });
 

@@ -5,12 +5,12 @@ import { sendOtp, generateOtp } from "../../utils/mail.js";
 import bcrypt from "bcrypt";
 import { setFlash, getFlash } from "../../utils/flash.js";
 import Category from "../../models/categorySchema.js";
-const render = (req, res, view, options = {}) => {
+export const render = (req, res, view, options = {}) => {
   const flash = getFlash(req); 
   return res.render(view, { flash, ...options });
 };
 
-const pageNotfound = async (req, res) => {
+export const pageNotfound = async (req, res) => {
   try {
     return render(req, res, "user/pageNotfound", {
       title: "Chronora - 404 Page",
@@ -21,7 +21,7 @@ const pageNotfound = async (req, res) => {
   }
 };
 
-const googleCallback = (req, res) => {
+export const googleCallback = (req, res) => {
   try {
     console.log("Google login successful, User:", req.user);
 
@@ -41,7 +41,7 @@ const googleCallback = (req, res) => {
   }
 };
 
-const loadAboutpage = async (req, res) => {
+export const loadAboutpage = async (req, res) => {
   try {
     return render(req, res, "user/about", {
       title: "Chronora - About",
@@ -52,7 +52,7 @@ const loadAboutpage = async (req, res) => {
   }
 };
 
-const loadContactpage = async (req, res) => {
+export const loadContactpage = async (req, res) => {
   try {
     return render(req, res, "user/contact", {
       title: "Chronora - Contact",
@@ -63,7 +63,7 @@ const loadContactpage = async (req, res) => {
   }
 };
 
-const loadHomepage = async (req, res) => {
+export const loadHomepage = async (req, res) => {
   try {
     const categories=await Category.find({isListed:true})
     .select("name image")
@@ -83,6 +83,8 @@ const loadHomepage = async (req, res) => {
 };
 
 
+
+import getBestOfferForProduct from '../../utils/offerHelper.js'; 
 
 export const loadWatchPage = async (req, res) => {
   try {
@@ -146,6 +148,7 @@ export const loadWatchPage = async (req, res) => {
 
     const products = await Product.find(productQuery)
       .select("name price description category createdAt")
+      .populate('category')  
       .sort(sortOption)
       .skip(skip)
       .limit(limit)
@@ -163,10 +166,16 @@ export const loadWatchPage = async (req, res) => {
       variantMap[String(v.product)] = v;
     });
 
-    const availableProducts = products.map(product => ({
-      ...product,
-      variant: variantMap[product._id] || null
-    }));
+    const productsWithOffers = await Promise.all(
+      products.map(async (product) => {
+        const offerData = await getBestOfferForProduct(product);  
+        return {
+          ...product,
+          variant: variantMap[product._id] || null,
+          offerData  
+        };
+      })
+    );
 
     const categories = await Category.find({ isListed: true })
       .select("name")
@@ -176,7 +185,7 @@ export const loadWatchPage = async (req, res) => {
     res.render("user/watch", {
       user: req.session.user || null,
       title: "Chronora - Watch",
-      products: availableProducts,
+      products: productsWithOffers,  
       categories,
       searchQuery,
       sortQuery,
@@ -190,6 +199,7 @@ export const loadWatchPage = async (req, res) => {
     res.status(500).send("Something went wrong");
   }
 };
+
 
 
 export const productDetails = async (req, res) => {
@@ -249,12 +259,16 @@ export const productDetails = async (req, res) => {
     .limit(4)
     .populate("category"); 
 
-const allVariants = await Variant.find({}, { product: 1, images: 1 }).lean();
+    const allVariants = await Variant.find({}, { product: 1, images: 1 }).lean();
 
+    const offerData = await getBestOfferForProduct(product.toObject());
 
     return res.render("user/productDetail", {
       title: "Product Detail",
-      product,
+      product: {
+        ...product.toObject(),
+        offerData  
+      },
       variants,
       variant,
       stockStatus,

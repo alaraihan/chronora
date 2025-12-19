@@ -179,7 +179,26 @@ body {
   max-width: 420px;
   border-radius: 0.6rem;
   border: 2px solid #cbd5e1;
-}
+}  .offer-badge-admin {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 30px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 16px 0;
+  }
+
+  .price-original del {
+    color: #999;
+    font-size: 18px;
+  }
+
+  .savings {
+    margin-top: 12px;
+    font-size: 18px;
+  }
 
 .btn-update {
   padding: 1rem 2.5rem;   

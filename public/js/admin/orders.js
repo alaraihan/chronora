@@ -1,9 +1,7 @@
 
-    // Global URLSearchParams to manage filters and pagination
     const params = new URLSearchParams(window.location.search);
     const overlay = document.getElementById("loadingOverlay");
 
-    // Loading overlay helpers
     function showLoading() {
         if (overlay) overlay.style.display = "flex";
     }
@@ -12,18 +10,16 @@
         if (overlay) overlay.style.display = "none";
     }
 
-    // Toast notification
     function toast(message, type = "error") {
         Toastify({
             text: message,
             duration: 3000,
-            gravity: "top",
+            gravity: "bottom",
             position: "right",
             backgroundColor: type === "success" ? "#28a745" : "#dc3545"
         }).showToast();
     }
 
-    // Apply search and status filters
     function applyFilters() {
         const searchInput = document.getElementById("searchInput");
         const statusSelect = document.getElementById("statusFilter");
@@ -31,7 +27,7 @@
         const search = searchInput?.value.trim();
         const status = statusSelect?.value;
 
-        params.set("page", "1"); // Reset to first page on filter
+        params.set("page", "1"); 
 
         if (search) {
             params.set("search", search);
@@ -48,20 +44,17 @@
         updateURLAndLoad();
     }
 
-    // Pagination click handler
     function goToPage(page) {
         params.set("page", page);
         updateURLAndLoad();
     }
 
-    // Update browser URL and reload data
     function updateURLAndLoad() {
         const newUrl = `/admin/orders?${params.toString()}`;
         window.history.pushState({}, "", newUrl);
         loadOrders();
     }
 
-    // Main function: Load orders via AJAX
     function loadOrders() {
         showLoading();
 
@@ -76,7 +69,6 @@
                 return;
             }
 
-            // Flatten orders into individual product line items
             const lineItems = [];
             data.orders.forEach(order => {
                 if (order.products && order.products.length > 0) {
@@ -107,7 +99,6 @@
         });
     }
 
-    // Render each product as a table row
     function renderLineItems(items) {
         const tbody = document.getElementById("ordersTableBody");
 
@@ -126,25 +117,21 @@
         tbody.innerHTML = items.map(item => {
             const prod = item.product;
 
-            // Safely extract product name (handles both productId and product fields)
             const productName = 
                 prod.productId?.name || 
                 prod.product?.name || 
                 "Unknown Product";
 
-            // Variant info (color and size)
             const variantObj = prod.variantId || prod.variant;
             const variantInfo = [];
             if (variantObj?.colorName) variantInfo.push(variantObj.colorName);
             if (variantObj?.size) variantInfo.push(variantObj.size);
             const variant = variantInfo.length ? ` (${variantInfo.join(" - ")})` : "";
 
-            // Price and quantity
             const price = prod.price || prod.productId?.price || prod.product?.price || 0;
             const qty = prod.quantity || 1;
             const subtotal = price * qty;
 
-            // Status badge class (handles spaces in status like "Out for Delivery")
             const statusClass = item.status.toLowerCase().replace(/ /g, '-');
 
             return `
@@ -174,7 +161,6 @@
         }).join("");
     }
 
-    // Render pagination controls
     function renderPagination(pag) {
         const container = document.getElementById("paginationContainer");
 
@@ -185,14 +171,12 @@
 
         let html = "";
 
-        // Previous button
         if (pag.currentPage > 1) {
             html += `<a href="javascript:goToPage(${pag.currentPage - 1})" class="page-link prev">
                         <i class="bi bi-chevron-left"></i> Previous
                      </a>`;
         }
 
-        // Page numbers
         html += '<div class="page-numbers">';
         for (let i = 1; i <= pag.totalPages; i++) {
             if (i === pag.currentPage) {
@@ -203,7 +187,6 @@
         }
         html += '</div>';
 
-        // Next button
         if (pag.currentPage < pag.totalPages) {
             html += `<a href="javascript:goToPage(${pag.currentPage + 1})" class="page-link next">
                         Next <i class="bi bi-chevron-right"></i>
@@ -213,7 +196,6 @@
         container.innerHTML = html;
     }
 
-    // Event Listeners
     document.getElementById("searchInput")?.addEventListener("keypress", e => {
         if (e.key === "Enter") {
             e.preventDefault();
@@ -225,7 +207,6 @@
         applyFilters();
     });
 
-    // Load orders when page finishes loading
     document.addEventListener("DOMContentLoaded", () => {
         loadOrders();
     });

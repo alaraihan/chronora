@@ -1,9 +1,8 @@
-
 const toast = (msg, type = "success") => {
   Toastify({
     text: msg,
     duration: 3000,
-    gravity: "top",
+    gravity: "bottom",
     position: "right",
     backgroundColor: type === "success" ? "#00c853" : "#f44336",
   }).showToast();
@@ -44,8 +43,8 @@ document.getElementById('addressForm')?.addEventListener('submit', async (e) => 
               ${addr.isDefaultShipping ? '<span class="default-badge">Default</span>' : ''}
             </div>
             <p>
-              ${addr.street || ''}${addr.street ? ',' : ''} 
-              ${addr.city || ''}${addr.city ? ',' : ''} 
+              ${addr.street || ''}${addr.street ? ', ' : ''} 
+              ${addr.city || ''}${addr.city ? ', ' : ''} 
               ${addr.state || ''} ${addr.zip || ''}
             </p>
             <p>Mobile: ${addr.phone || 'Not provided'}</p>
@@ -54,18 +53,41 @@ document.getElementById('addressForm')?.addEventListener('submit', async (e) => 
       `).join('');
 
       document.getElementById('addressList').innerHTML = addressHtml;
+
+      attachAddressClickListeners();
     }
   } catch (err) {
     toast(err.response?.data?.message || "Failed to add address", "error");
   }
 });
 
-document.querySelectorAll('.address-option').forEach(el => {
-  el.addEventListener('click', function() {
-    document.querySelectorAll('.address-option').forEach(e => e.classList.remove('selected'));
-    this.classList.add('selected');
+function attachAddressClickListeners() {
+  document.querySelectorAll('.address-option').forEach(label => {
+    label.addEventListener('click', function(e) {
+      if (e.target.tagName === 'INPUT') return;
+
+      document.querySelectorAll('.address-option').forEach(l => l.classList.remove('selected'));
+      this.classList.add('selected');
+      this.querySelector('input[type="radio"]').checked = true;
+    });
   });
-});
+}
+
+function attachPaymentClickListeners() {
+  document.querySelectorAll('.payment-option').forEach(label => {
+    label.addEventListener('click', function(e) {
+      if (e.target.tagName === 'INPUT') return;
+
+      document.querySelectorAll('.payment-option').forEach(l => l.classList.remove('selected'));
+      this.classList.add('selected');
+      this.querySelector('input[type="radio"]').checked = true;
+    });
+  });
+}
+
+attachAddressClickListeners();
+attachPaymentClickListeners();
+
 document.getElementById('placeOrderBtn')?.addEventListener('click', async () => {
   const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked')?.value;
   const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value;
@@ -91,5 +113,6 @@ document.getElementById('placeOrderBtn')?.addEventListener('click', async () => 
     }
   } catch (err) {
     toast("Something went wrong", "error");
+    console.error(err);
   }
 });

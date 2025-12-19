@@ -1,6 +1,5 @@
 const ORDER_ID = window.ORDER_ID;
 
-/* ================= TOAST ================= */
 
 function showToast(message, type = 'info') {
     const colors = {
@@ -18,13 +17,12 @@ function showToast(message, type = 'info') {
     Toastify({
         text: message,
         duration: 3000,
-        gravity: "top",
+        gravity: "bottom",
         position: "right",
         backgroundColor: colors[type]
     }).showToast();
 }
 
-/* ================= APPROVE RETURN ================= */
 
 function approveItemReturn(itemIndex) {
     axios.post(`/admin/orders/${window.ORDER_ID}/return/approve`, {

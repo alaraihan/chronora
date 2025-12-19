@@ -1,14 +1,11 @@
-<!-- Breadcrumbs -->
 <div class="breadcrumbs">
   <a href="/">Home</a> <span>›</span>
   <a href="/watch">Watches</a> <span>›</span>
   <span><%= product.name %></span>
 </div>
 
-<!-- Main Product Area -->
 <div class="product-wrapper" style="display:flex; gap:2rem; align-items:flex-start;">
 
-  <!-- LEFT: Image Gallery -->
   <div class="gallery" style="flex:1; max-width:540px; position:relative;">
     <div class="main-img" style="box-shadow:0 6px 18px rgba(0,0,0,0.06); padding:1rem; background:#fff; border-radius:8px;">
       <% 
@@ -37,27 +34,82 @@
     <% } %>
   </div>
 
-  <!-- RIGHT: Product Details -->
   <div class="details" style="flex:1;">
     <h1 style="margin-top:0;"><%= product.name %></h1>
 
-    <div class="price" style="font-size:20px; font-weight:600; margin:8px 0;">
+<div class="price-section" style="margin:16px 0;">
+  <% if (product.offerData) { %>
+    <del class="original-price" style="font-size:18px; color:#999;">
+      ₹ <%= Number(product.price).toLocaleString('en-IN') %>
+    </del>
+    <div class="discounted-price" style="font-size:32px; font-weight:bold; color:#2ecc71; margin:8px 0;">
+      ₹ <%= product.offerData.offerPrice.toLocaleString('en-IN') %>
+    </div>
+    <div class="savings" style="font-size:18px; color:#e74c3c; font-weight:600;">
+      You Save ₹ <%= product.offerData.discountAmount.toLocaleString('en-IN') %>
+    </div>
+    <span class="offer-badge-large" style="
+      display:inline-block; 
+      background:linear-gradient(135deg, #ff3b30, #ff9500); 
+      color:white; 
+      padding:8px 16px; 
+      border-radius:30px; 
+      font-size:14px; 
+      font-weight:bold; 
+      margin-top:12px;
+      animation: pulse-badge 2.5s ease-in-out infinite;
+    ">
+      <% if (product.offerData.offer.discountType === 'percentage') { %>
+        <%= product.offerData.offer.discountValue %>% OFF
+      <% } else { %>
+        ₹<%= product.offerData.offer.discountValue %> OFF
+      <% } %>
+    </span>
+  <% } else { %>
+    <div class="regular-price" style="font-size:32px; font-weight:bold; color:#667eea;">
       ₹ <%= Number(product.price).toLocaleString('en-IN') %>
     </div>
+  <% } %>
+</div>
 
-    <div class="status <%= stockStatus === 'In Stock' ? 'in-stock' : 'out-stock' %>" style="margin-bottom:8px;">
-      <%= stockStatus %>
-    </div>
+<div class="status <%= stockStatus === 'In Stock' ? 'in-stock' : 'out-stock' %>" style="margin:12px 0; font-size:16px;">
+  <%= stockStatus %>
+</div>
 
-    <% if (variant && variant.colorName) { %>
-      <div class="variant-info" style="margin-bottom:12px;">Color: <strong><%= variant.colorName %></strong></div>
+<% if (variant && variant.colorName) { %>
+  <div class="variant-info" style="margin:12px 0; font-size:16px;">Color: <strong><%= variant.colorName %></strong></div>
+<% } %>
+
+<% if (product.offerData) { %>
+  <span class="offer-badge-large image-badge" style="
+    position:absolute; 
+    top:16px; 
+    right:16px; 
+    background:linear-gradient(135deg, #ff3b30, #ff9500); 
+    color:white; 
+    padding:10px 20px; 
+    border-radius:30px; 
+    font-size:16px; 
+    font-weight:bold; 
+    z-index:10;
+    box-shadow:0 4px 15px rgba(255,59,48,0.4);
+    animation: pulse-badge 2.5s ease-in-out infinite;
+  ">
+    <% if (product.offerData.offer.discountType === 'percentage') { %>
+      <%= product.offerData.offer.discountValue %>% OFF
+    <% } else { %>
+      ₹<%= product.offerData.offer.discountValue %> OFF
     <% } %>
+  </span>
+<% } %>
 
-    <p class="description" style="line-height:1.6; color:#444;">
-      <%= product.description || "A timeless piece of elegance." %>
-    </p>
+<p class="description" style="line-height:1.7; color:#555; margin:20px 0; font-size:16px;">
+  <%= product.description || "A timeless piece of elegance." %>
+</p>
 
-    <!-- Variant buttons -->
+    
+
+  
     <% if (variants && variants.length > 0) { %>
       <div class="variant-buttons" style="margin:12px 0;">
         <% variants.forEach(function(v) { 

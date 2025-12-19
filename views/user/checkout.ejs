@@ -84,24 +84,37 @@
         <div class="section-card order-summary">
           <h3>Order Summary</h3>
           <div class="summary-items">
-            <% (cartItems || []).forEach(item => { %>
-              <div class="summary-item">
-                <img 
-                  src="<%= item.variantId?.images?.[0] || '/images/default.jpg' %>" 
-                  alt="<%= item.productId?.name || 'Product' %>"
-                >
-                <div class="item-info">
-                  <p><%= item.productId?.name || 'Unknown Product' %></p>
-                  <small>
-                    <%= item.variantId?.color || item.variantId?.variantName || 'Standard' %> × <%= item.quantity %>
-                  </small>
-                </div>
-                <strong>
-                  ₹<%= ((item.variantId?.price || item.productId?.price || 0) * item.quantity).toLocaleString('en-IN') %>
-                </strong>
-              </div>
-            <% }) %>
-          </div>
+  <% (cartItems || []).forEach(item => { %>
+    <div class="summary-item">
+      <img 
+        src="<%= item.variantId?.images?.[0] || '/images/default.jpg' %>" 
+        alt="<%= item.productId?.name || 'Product' %>"
+      >
+      <div class="item-info">
+        <p><%= item.productId?.name || 'Unknown Product' %></p>
+        <small>
+          <%= item.variantId?.colorName || item.variantId?.color || 'Standard' %> × <%= item.quantity %>
+        </small>
+
+        <div style="margin-top:8px; font-size:14px;">
+          <% if (item.price < item.originalPrice) { %>
+            <del style="color:#999;">₹ <%= item.originalPrice.toLocaleString('en-IN') %></del>
+            <strong style="color:#2ecc71; margin-left:8px;">
+              ₹ <%= item.price.toLocaleString('en-IN') %> each
+            </strong>
+          <% } else { %>
+            <strong style="color:#667eea;">
+              ₹ <%= item.price.toLocaleString('en-IN') %> each
+            </strong>
+          <% } %>
+        </div>
+      </div>
+      <strong style="font-size:16px;">
+        ₹ <%= (item.price * item.quantity).toLocaleString('en-IN') %>
+      </strong>
+    </div>
+  <% }) %>
+</div>
 
           <hr>
 

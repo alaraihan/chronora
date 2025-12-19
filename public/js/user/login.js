@@ -12,7 +12,7 @@ function showToast(message, type = 'success') {
     text: message,
     duration: 4000,
     close: true,
-    gravity: "top",
+    gravity: "bottom",
     position: "right",
     backgroundColor: bgColor,
     stopOnFocus: true,

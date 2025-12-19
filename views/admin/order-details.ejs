@@ -12,7 +12,6 @@
 <body>
 
 <div class="container">
-  <!-- Header -->
   <div class="header">
     <div>
       <h1>Order Item Detail — #<%= order.orderId %></h1>
@@ -21,9 +20,7 @@
     <a href="/admin/orders" class="btn-back">← Back to Orders List</a>
   </div>
 
-  <!-- Main Layout: Product Left, Info Right -->
   <div class="grid">
-    <!-- Left: Product -->
     <div class="product-card">
       <img src="<%= item.variantId?.images?.[0] || item.productId?.images?.[0] || '/images/no-image.jpg' %>" 
            alt="<%= item.productId.name %>" 
@@ -41,10 +38,48 @@
       </div>
 
       <div class="pricing">
-        <p>Unit Price: <strong>₹<%= item.price.toLocaleString('en-IN') %></strong></p>
-        <p>Quantity: <strong><%= item.quantity %></strong></p>
-        <p class="subtotal">Subtotal: <strong>₹<%= (item.price * item.quantity).toLocaleString('en-IN') %></strong></p>
-      </div>
+
+  <% if (item.price < item.originalPrice) { %>
+    <div class="offer-badge-admin">
+      🎉 BOUGHT ON OFFER
+    </div>
+
+    <p>
+      Original Price:
+      <del>₹ <%= item.originalPrice.toLocaleString('en-IN') %></del>
+    </p>
+
+    <p>
+      Offer Price:
+      <strong style="color:#16a34a;">
+        ₹ <%= item.price.toLocaleString('en-IN') %>
+      </strong>
+    </p>
+
+    <p style="color:#dc2626; font-weight:600;">
+      Customer Saved ₹
+      <%= ((item.originalPrice - item.price) * item.quantity).toLocaleString('en-IN') %>
+    </p>
+
+  <% } else { %>
+
+    <p>
+      Unit Price:
+      <strong>₹ <%= item.price.toLocaleString('en-IN') %></strong>
+    </p>
+
+  <% } %>
+
+  <p>Quantity: <strong><%= item.quantity %></strong></p>
+
+  <p class="subtotal">
+    Subtotal:
+    <strong>
+      ₹ <%= (item.price * item.quantity).toLocaleString('en-IN') %>
+    </strong>
+  </p>
+</div>
+
 
       <% if (item.reason) { %>
         <div class="reason-box">
@@ -53,7 +88,6 @@
       <% } %>
     </div>
 
-    <!-- Right: Customer & Order Info -->
     <div class="info-section">
       <div class="info-card">
         <h3>Customer Information</h3>
@@ -84,7 +118,6 @@
     </div>
   </div>
 
-  <!-- Admin Actions -->
   <div class="actions-card">
     <h3>Admin Actions — This Item Only</h3>
 
@@ -99,7 +132,6 @@
 
     <div class="action-controls">
 
-      <!-- Status Update Dropdown -->
       <div class="control-group" id="statusUpdateGroup">
         <label>Update Status</label>
         <select id="statusSelect">
@@ -108,7 +140,6 @@
           <% 
             const current = item.itemStatus || "Pending";
 
-            // Full delivery workflow in order
             const deliveryWorkflow = [
               "Pending",
               "Confirmed",
@@ -118,7 +149,6 @@
               "Delivered"
             ];
 
-            // Get all statuses AFTER the current one
             let allowedNext = [];
             const currentIndex = deliveryWorkflow.indexOf(current);
 
@@ -126,12 +156,10 @@
               allowedNext = deliveryWorkflow.slice(currentIndex + 1);
             }
 
-            // Special case: if current is Pending, allow everything from Confirmed onward
             if (current === "Pending") {
-              allowedNext = deliveryWorkflow.slice(1); // Confirmed to Delivered
+              allowedNext = deliveryWorkflow.slice(1); 
             }
 
-            // Allow "Cancelled" for non-final states
             const finalStatuses = ["Delivered", "Cancelled", "ReturnRequested", "ReturnApproved", "Returned"];
             if (!finalStatuses.includes(current)) {
               if (!allowedNext.includes("Cancelled")) {
@@ -139,7 +167,6 @@
               }
             }
 
-            // Remove duplicates
             allowedNext = [...new Set(allowedNext)];
           %>
 
@@ -151,7 +178,6 @@
         <button id="updateStatus" class="btn-update">Update Status</button>
       </div>
 
-      <!-- Helpful Messages -->
       <% if (["Delivered", "Cancelled", "ReturnRequested", "ReturnApproved", "Returned"].includes(item.itemStatus)) { %>
         <div class="info-note" style="margin-top: 1.5rem; padding: 1rem; background: #f3f4f6; border-radius: 8px; text-align: center; font-size: 1rem;">
           <strong>Status is final:</strong> No further updates possible.
@@ -162,7 +188,6 @@
         </div>
       <% } %>
 
-      <!-- Return Actions -->
       <% if (item.itemStatus === 'ReturnRequested') { %>
         <div class="return-controls" style="margin-top: 2rem;">
           <button id="approveReturn" class="btn-approve">Approve Return</button>
@@ -170,7 +195,6 @@
         </div>
       <% } %>
 
-      <!-- Mark as Returned -->
       <% if (item.itemStatus === 'ReturnApproved') { %>
         <div style="margin-top: 2rem;">
           <button id="markReturned" class="btn-mark-returned">
@@ -182,7 +206,6 @@
     </div>
   </div>
 
-  <!-- Bottom Buttons -->
   <div class="bottom-actions">
     <a href="/admin/orders/print/<%= order._id %>" target="_blank" class="btn-print">
       Print Full Invoice
@@ -201,13 +224,12 @@
     Toastify({
       text: msg,
       duration: 4000,
-      gravity: "top",
+      gravity: "bottom",
       position: "right",
       backgroundColor: type === "success" ? "#16a34a" : type === "error" ? "#dc2626" : "#f59e0b"
     }).showToast();
   }
 
-  // Hide status update section if no options available (final status)
   document.addEventListener('DOMContentLoaded', () => {
     const statusUpdateGroup = document.getElementById('statusUpdateGroup');
     const select = document.getElementById('statusSelect');
@@ -217,7 +239,6 @@
     }
   });
 
-  // Update Status
   document.getElementById('updateStatus')?.addEventListener('click', async () => {
     const status = document.getElementById('statusSelect').value;
     if (!status) return toast('Please select a status', 'error');
@@ -237,7 +258,6 @@
     }
   });
 
-  // Approve Return
   document.getElementById('approveReturn')?.addEventListener('click', async () => {
     if (!confirm('Approve this return request?')) return;
     try {
@@ -249,7 +269,6 @@
     }
   });
 
-  // Reject Return
   document.getElementById('rejectReturn')?.addEventListener('click', async () => {
     if (!confirm('Reject this return request?')) return;
     try {
@@ -261,7 +280,6 @@
     }
   });
 
-  // Mark as Returned
   document.getElementById('markReturned')?.addEventListener('click', async () => {
     if (!confirm('Mark as returned and restore stock?')) return;
     try {

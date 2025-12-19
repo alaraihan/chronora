@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
   console.log('Order Detail Page Loaded - Single Item View');
 
-  // Extract orderId from header
   const orderIdElement = document.querySelector('.order-summary-header h1');
   if (!orderIdElement) {
     console.error('Order ID not found');
@@ -11,16 +10,14 @@ document.addEventListener('DOMContentLoaded', function () {
   const orderId = orderIdElement.textContent.replace('Order ', '').trim();
   console.log('Order ID:', orderId);
 
-  // Get the item index from the page (set by EJS)
   const itemIndex = window.ITEM_INDEX !== undefined ? window.ITEM_INDEX : 0;
   console.log('Item Index:', itemIndex);
 
-  // Toast notification using Toastify
   function toast(message, type = 'success') {
     Toastify({
       text: message,
       duration: 3000,
-      gravity: "top",
+      gravity: "bottom",
       position: "right",
       stopOnFocus: true,
       style: {
@@ -32,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }).showToast();
   }
 
-  // Modal controls
   function showModal(id) {
     const modal = document.getElementById(id);
     if (modal && !modal.classList.contains('active')) {
@@ -49,16 +45,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Close modals on backdrop or × click
   document.querySelectorAll('[data-close]').forEach(el => {
     el.addEventListener('click', () => hideModal(el.dataset.close));
   });
 
-  // Global buttons
   document.getElementById('btnTrack')?.addEventListener('click', () => showModal('modalTrack'));
   document.getElementById('btnInvoice')?.addEventListener('click', () => showModal('modalInvoice'));
 
-  // === CANCEL ITEM ===
   document.querySelectorAll('.btn-cancel').forEach(btn => {
     btn.addEventListener('click', () => {
       showModal('modalCancel');
@@ -81,8 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
       reason = otherReason;
     }
 
-    // Disable button to prevent double submission
-    confirmBtn.disabled = true;
+=    confirmBtn.disabled = true;
     confirmBtn.textContent = 'Processing...';
 
     try {
@@ -109,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function () {
       toast(data.message || 'Item cancelled successfully', 'success');
       hideModal('modalCancel');
       
-      // Redirect back to orders page after success
       setTimeout(() => {
         window.location.href = '/profile/orders';
       }, 1500);
@@ -123,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // === RETURN ITEM ===
   document.querySelectorAll('.btn-return').forEach(btn => {
     btn.addEventListener('click', () => {
       showModal('modalReturn');
@@ -140,7 +130,6 @@ document.addEventListener('DOMContentLoaded', function () {
       return toast('Please select a return reason', 'error');
     }
 
-    // Disable button
     submitBtn.disabled = true;
     submitBtn.textContent = 'Processing...';
 
@@ -169,7 +158,6 @@ document.addEventListener('DOMContentLoaded', function () {
       toast(data.message || 'Return request submitted successfully', 'success');
       hideModal('modalReturn');
       
-      // Redirect back to orders page after success
       setTimeout(() => {
         window.location.href = '/profile/orders';
       }, 1500);
@@ -183,10 +171,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // === REVIEW ITEM ===
   document.querySelectorAll('.btn-review').forEach(btn => {
     btn.addEventListener('click', () => {
-      // Reset rating
       document.getElementById('ratingValue').value = 0;
       document.querySelectorAll('#modalReview .star').forEach(s => s.textContent = '☆');
       const submitBtn = document.getElementById('submitReview');
@@ -196,7 +182,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Star rating
   const stars = document.querySelectorAll('#modalReview .star');
   const ratingInput = document.getElementById('ratingValue');
   const submitReviewBtn = document.getElementById('submitReview');
@@ -256,7 +241,6 @@ document.addEventListener('DOMContentLoaded', function () {
       toast('Review submitted successfully!', 'success');
       hideModal('modalReview');
       
-      // Reload page to show "Reviewed" badge
       setTimeout(() => location.reload(), 1500);
 
     } catch (error) {
@@ -268,7 +252,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Toggle "Other" reason input
   document.querySelectorAll('input[name="cancelReason"]').forEach(radio => {
     radio.addEventListener('change', () => {
       const container = document.getElementById('otherReasonContainer');
@@ -278,7 +261,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Invoice download handlers
   document.getElementById('downloadPDF')?.addEventListener('click', async () => {
     try {
       window.open(`/profile/orders/${orderId}/invoice`, '_blank');
