@@ -61,6 +61,15 @@ export const createOffer = async (req, res) => {
       return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
+    let offerPrice=Number(discountValue)
+if (discountType === "percentage" && offerPrice>= 90) {
+  return res.status(400).json({
+    success: false,
+    message: "Discount percentage cannot be 90% or more"
+  });
+}
+
+     
     const offerData = {
       name: name.trim(),
       type,
@@ -94,7 +103,14 @@ export const updateOffer = async (req, res) => {
     if (!name || !type || !targetId || !discountType || !discountValue || !startDate || !endDate) {
       return res.status(400).json({ success: false, message: "All fields are required" });
     }
-
+ 
+    let offerPrice=Number(discountValue)
+if (discountType === "percentage" && offerPrice>= 90) {
+  return res.status(400).json({
+    success: false,
+    message: "Discount percentage cannot be 90% or more"
+  });
+}
     const offerData = {
       name: name.trim(),
       type,

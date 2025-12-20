@@ -246,16 +246,31 @@ export const placeOrder = async (req, res) => {
 
     await orderDoc.save();
 
-    for (const it of orderedItems) {
-      try {
-        if (it.variantId) {
-          await Variant.findByIdAndUpdate(it.variantId, { $inc: { stock: -it.quantity } }).exec();
-        } else if (it.productId) {
-          await Product.findByIdAndUpdate(it.productId, { $inc: { stock: -it.quantity } }).exec();
-        }
-      } catch (e) {
-      }
-    }
+  for (const it of orderedItems) {
+  if (!it.variantId) continue;
+
+  const updatedVariant = await Variant.findOneAndUpdate(
+    {
+      _id: it.variantId,
+      stock: { $gte: it.quantity } 
+      
+    },
+    {
+      $inc: { stock: -it.quantity }
+    },
+    { new: true }
+  );
+
+  if (!updatedVariant) {
+    await Order.findByIdAndDelete(orderDoc._id);
+
+    return res.status(409).json({
+      success: false,
+      message: "Some items went out of stock. Please try again."
+    });
+  }
+}
+
 
     await Cart.deleteMany({ userId });
 
