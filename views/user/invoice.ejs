@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice - <%= order.orderId %></title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-top: 100px;
+      padding: 0;
+      background: #f5f5f5;
+      color: #333;
+    }
+    .invoice-container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #6b46c1, #3399cc);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+    .header p {
+      margin: 10px 0 0;
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+    .content {
+      padding: 40px;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+    .info-box {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 12px;
+    }
+    .info-box h3 {
+      margin: 0 0 15px 0;
+      color: #6b46c1;
+      font-size: 1.3rem;
+    }
+    .info-box p {
+      margin: 8px 0;
+      line-height: 1.6;
+    }
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 40px;
+    }
+    .items-table th {
+      background: #6b46c1;
+      color: white;
+      padding: 15px;
+      text-align: left;
+    }
+    .items-table td {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    .items-table tr:last-child td {
+      border-bottom: none;
+    }
+    .item-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .price-breakdown {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: right;
+    }
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 12px 0;
+      font-size: 1.1rem;
+    }
+    .price-row.total {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #6b46c1;
+      border-top: 2px solid #eee;
+      padding-top: 20px;
+      margin-top: 20px;
+    }
+    .footer {
+      text-align: center;
+      padding: 30px;
+      background: #1a1a1a;
+      color: white;
+      font-size: 1rem;
+    }
+    .footer p {
+      margin: 8px 0;
+    }
+    @media print {
+      body { background: white; }
+      .invoice-container { box-shadow: none; }
+    }
+    .btn-print-invoice {
+  background: #6b46c1;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(107, 70, 193, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-print-invoice:hover {
+  background: #5a38a8;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(107, 70, 193, 0.4);
+}
+
+@media print {
+  .print-button-container {
+    display: none !important; /* Hide button when printing */
+  }
+}
+  </style>
+</head>
+<body>
+  <div class="invoice-container">
+    <div class="header">
+        <div class="print-button-container" style="text-align: right; margin-bottom: 30px;">
+  <button onclick="window.print()" class="btn-print-invoice">
+    🖨️ Print Invoice
+  </button>
+</div>
+      <h1>INVOICE</h1>
+      <p>Order #<%= order.orderId %> • <%= new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) %></p>
+    </div>
+
+    <div class="content">
+      <div class="info-grid">
+        <div class="info-box">
+          <h3>Billing & Shipping Address</h3>
+          <p><strong><%= order.address.fullName %></strong></p>
+          <p><%= order.address.address1 %></p>
+          <% if (order.address.address2) { %><p><%= order.address.address2 %></p><% } %>
+          <p><%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %></p>
+          <p>India</p>
+          <p>Phone: <%= order.address.phone %></p>
+        </div>
+
+        <div class="info-box">
+          <h3>Payment Details</h3>
+          <p>Method: <strong><%= order.paymentMethod.toUpperCase() %></strong></p>
+          <p>Status: <strong><%= order.paymentStatus.toUpperCase() %></strong></p>
+          <% if (order.paymentId) { %>
+            <p>Transaction ID: <%= order.paymentId %></p>
+          <% } %>
+        </div>
+      </div>
+
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Variant</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% order.products.forEach(item => { %>
+            <tr>
+              <td>
+                <img src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" class="item-image" alt="<%= item.productId.name %>">
+                <strong><%= item.productId.name %></strong>
+              </td>
+              <td><%= item.variantId?.colorName || 'Standard' %></td>
+              <td><%= item.quantity %></td>
+              <td>₹<%= item.price.toLocaleString('en-IN') %></td>
+              <td><strong>₹<%= (item.price * item.quantity).toLocaleString('en-IN') %></strong></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <div class="price-breakdown">
+        <div class="price-row">
+          <span>Subtotal</span>
+          <span>₹<%= order.products.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString('en-IN') %></span>
+        </div>
+        <div class="price-row">
+          <span>Delivery Charge</span>
+          <span><%= order.deliveryCharge === 0 ? 'FREE' : '₹' + order.deliveryCharge.toLocaleString('en-IN') %></span>
+        </div>
+        <% if (order.discount > 0) { %>
+          <div class="price-row">
+            <span>Coupon Discount</span>
+            <span style="color:#28a745;">- ₹<%= order.discount.toLocaleString('en-IN') %></span>
+          </div>
+        <% } %>
+        <div class="price-row total">
+          <span>TOTAL PAID</span>
+          <span>₹<%= order.totalAmount.toLocaleString('en-IN') %></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Thank you for shopping with <strong>Chronora</strong>!</p>
+      <p>Your satisfaction is our top priority. Enjoy your luxury timepiece. ⌚</p>
+      <p>© 2026 Chronora. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

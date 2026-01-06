@@ -1,35 +1,24 @@
-// utils/mail.js
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
-/**
- * sendOtp(email, otp)
- * - Development: prints OTP to console (NO Gmail login attempt)
- * - Production: sends real email via Gmail or SMTP
- */
+
 export async function sendOtp(email, otp) {
-  // -----------------------------
-  // DEV MODE — No SMTP Calls
-  // -----------------------------
+
   if (process.env.NODE_ENV !== "production") {
     console.log(`\n[DEV MODE] OTP for ${email}: ${otp}\n`);
-    return true; // pretend mail sent successfully
+    return true; 
   }
 
-  // -----------------------------
-  // PRODUCTION MODE — Real Email
-  // -----------------------------
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: process.env.NODEMAILER_EMAIL,
-        pass: process.env.NODEMAILER_PASSWORD, // must be Gmail App Password
+        pass: process.env.NODEMAILER_PASSWORD, 
       },
     });
 
-    // optional — detects bad credentials early
     await transporter.verify();
 
     const info = await transporter.sendMail({

@@ -61,10 +61,10 @@ export const profileImageEdit = async (req, res) => {
       await cloudinary.uploader.destroy(user.profileImageId);
     }
 
-    // ✅ Save new image details
     user.profileImage = result.secure_url;
     user.profileImageId = result.public_id;
     await user.save();
+  
 
     try {
       fs.unlinkSync(req.file.path);

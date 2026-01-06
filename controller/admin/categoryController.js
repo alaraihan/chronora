@@ -55,7 +55,10 @@ export const addCategory = async (req, res) => {
         const { name, description } = req.body;
         const trimmedName = name?.trim();
         const trimmedDescription = description?.trim();
-
+ const existing=Category.findOne({name});
+    if(existing){
+      return res.status(400).json({success:false,message:'Category with this name already exists!'});
+    };
         if (!trimmedName || !trimmedDescription) {
             return res.status(400).json({ success: false, message: "Please fill all required fields." });
         }

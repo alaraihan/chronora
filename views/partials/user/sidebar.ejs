@@ -1,65 +1,65 @@
 <link rel="stylesheet" href="/css/user/sidebar.css">
 
 <aside class="cs-sidebar" aria-label="User navigation">
-<div class="cs-brand">Chronora</div>
+  <div class="cs-brand">Chronora</div>
 
+  <div class="cs-user">
+    <div class="cs-avatar">
+      <% if (user.profileImage) { %>
+        <img src="<%= user.profileImage %>" alt="<%= user.fullName %>">
+      <% } else { %>
+        <div class="cs-initial"><%= user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U' %></div>
+      <% } %>
+    </div>
+    <div class="cs-usermeta">
+      <div class="cs-name"><%= user.fullName || 'User' %></div>
+      <div class="cs-email"><%= user.email %></div>
+    
+    </div>
+    <button id="csSidebarToggle" class="cs-toggle d-md-none" aria-expanded="false" aria-label="Toggle sidebar">
+      <i class="bi bi-list"></i>
+    </button>
+  </div>
 
-<div class="cs-user">
-<div class="cs-avatar">
-<% if (user.profileImage) { %>
-<img src="<%= user.profileImage %>" alt="<%= user.name %>">
-<% } else { %>
-<div class="cs-initial"><%= user.name ? user.name.charAt(0).toUpperCase() : 'U' %></div>
-<% } %>
-</div>
-<div class="cs-usermeta">
-<div class="cs-name"><%= user.name || 'User' %></div>
-<div class="cs-email"><%= user.email %></div>
-</div>
-<button id="csSidebarToggle" class="cs-toggle d-md-none" aria-expanded="false" aria-label="Toggle sidebar">
-<i class="bi bi-list"></i>
-</button>
-</div>
+  <nav class="cs-nav">
+    <a href="/profile" class="cs-navitem <%= (active==='profile')? 'active' : '' %>">
+      <i class="bi bi-person-circle"></i>
+      <span>My Profile</span>
+    </a>
 
+    <a href="/profile/addresses" class="cs-navitem <%= (active==='addresses')? 'active' : '' %>">
+      <i class="bi bi-geo-alt"></i>
+      <span>My Address</span>
+    </a>
 
-<nav class="cs-nav">
-<a href="/profile" class="cs-navitem <%= (active==='profile')? 'active' : '' %>">
-<i class="bi bi-person-circle"></i>
-<span>My Profile</span>
-</a>
+    <a href="/profile/orders" class="cs-navitem <%= (active==='orders')? 'active' : '' %>">
+      <i class="bi bi-bag"></i>
+      <span>My Orders</span>
+    </a>
 
+    <a href="/wishlist" class="cs-navitem <%= (active==='wishlist')? 'active' : '' %>">
+      <i class="bi bi-heart"></i>
+      <span>My Wishlist</span>
+    </a>
 
-<a href="/profile/addresses" class="cs-navitem <%= (active==='addresses')? 'active' : '' %>">
-<i class="bi bi-geo-alt"></i>
-<span>My Address</span>
-</a>
+    <!-- NEW: Wallet Menu Item -->
+    <a href="/wallet" class="cs-navitem <%= (active==='wallet')? 'active' : '' %>">
+      <i class="bi bi-wallet2"></i>
+      <span>My Wallet</span>
+    </a>
 
+    <a href="/profile/change-password" class="cs-navitem <%= (active==='password')? 'active' : '' %>">
+      <i class="bi bi-lock"></i>
+      <span>Change Password</span>
+    </a>
 
-<a href="/profile/orders" class="cs-navitem <%= (active==='orders')? 'active' : '' %>">
-<i class="bi bi-bag"></i>
-<span>My Orders</span>
-</a>
+    <a href="/logout" class="cs-navitem">
+      <i class="bi bi-box-arrow-right"></i>
+      <span>Logout</span>
+    </a>
+  </nav>
 
-
-<a href="/wishlist" class="cs-navitem <%= (active==='wishlist')? 'active' : '' %>">
-<i class="bi bi-heart"></i>
-<span>My Wishlist</span>
-</a>
-
-
-<a href="/profile/change-password" class="cs-navitem <%= (active==='password')? 'active' : '' %>">
-<i class="bi bi-lock"></i>
-<span>Change Password</span>
-</a>
-
-
-<a href="/logout" class="cs-navitem">
-<i class="bi bi-box-arrow-right"></i>
-<span>Logout</span>
-</a>
-</nav>
-
-
-<div class="cs-footer">© 2024 Chronora</div>
+  <div class="cs-footer">© 2025 Chronora</div>
 </aside>
+
 <script src="/js/user/sidebar.js"></script>

@@ -6,7 +6,7 @@ const sidebarCloseBtn = document.querySelector("#close-sidebar-btn");
 function openSidebar() {
   sidebar.classList.add("active");
   sidebarOverlay.classList.add("active");
-  document.body.style.overflow = "hidden"; // prevent background scroll
+  document.body.style.overflow = "hidden"; 
 }
 
 function closeSidebar() {

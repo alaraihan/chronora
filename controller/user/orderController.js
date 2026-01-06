@@ -121,125 +121,106 @@ export const returnOrderItem = async (req, res) => {
     order.markModified('products');
     await order.save();
 
+ 
+
     res.json({ success: true, message: "Return request submitted" });
   } catch (err) {
     console.error("returnOrderItem ERROR:", err);
     res.json({ success: false, message: "Server error" });
   }
 };
-
 export const reviewOrderItem = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { itemIndex, rating, title = "", text } = req.body;
-    const index = parseInt(itemIndex);
 
-    if (isNaN(index) || !rating || rating < 1 || rating > 5 || !text?.trim()) {
-      return res.json({ success: false, message: "Invalid review data" });
+    const index = parseInt(itemIndex);
+    const numRating = Number(rating);
+
+    if (isNaN(index) || index < 0) {
+      return res.json({ success: false, message: "Invalid item selection" });
+    }
+
+    if (!numRating || numRating < 1 || numRating > 5) {
+      return res.json({ success: false, message: "Please select a rating from 1 to 5 stars" });
+    }
+
+    if (!text || text.trim().length < 5) {
+      return res.json({ success: false, message: "Review must be at least 5 characters" });
     }
 
     const order = await Order.findById(orderId)
       .populate("products.productId")
       .populate("products.variantId");
 
-    if (!order || order.userId.toString() !== req.user._id.toString()) {
-      return res.json({ success: false, message: "Unauthorized" });
+    if (!order) {
+      return res.json({ success: false, message: "Order not found" });
+    }
+
+    if (order.userId.toString() !== req.user._id.toString()) {
+      return res.json({ success: false, message: "Unauthorized access" });
     }
 
     const item = order.products[index];
-    if (!item || item.itemStatus !== "Delivered") {
-      return res.json({ success: false, message: "Item not eligible for review" });
+    if (!item) {
+      return res.json({ success: false, message: "Item not found in this order" });
     }
 
-    if (!order.reviews) order.reviews = [];
+    if (item.itemStatus !== "Delivered") {
+      return res.json({ 
+        success: false, 
+        message: `Cannot review item with status: ${item.itemStatus}. Only Delivered items can be reviewed.` 
+      });
+    }
 
-    const alreadyReviewed = order.reviews.some(r => 
+    const alreadyReviewed = order.reviews?.some(r => 
       r.productId?.toString() === item.productId._id.toString() &&
       r.variantId?.toString() === item.variantId._id.toString()
     );
 
     if (alreadyReviewed) {
-      return res.json({ success: false, message: "Already reviewed" });
+      return res.json({ success: false, message: "You have already reviewed this item" });
     }
 
     order.reviews.push({
       productId: item.productId._id,
       variantId: item.variantId._id,
-      rating: Number(rating),
+      rating: numRating,
       title: title.trim() || null,
       text: text.trim(),
-      reviewedAt: new Date()
+      reviewedAt: new Date(),
     });
 
     await order.save();
-    res.json({ success: true, message: "Review submitted!" });
+
+    res.json({ 
+      success: true, 
+      message: "Thank you! Your review has been submitted successfully." 
+    });
+
   } catch (err) {
     console.error("reviewOrderItem ERROR:", err);
-    res.json({ success: false, message: "Server error" });
+    res.json({ success: false, message: "Server error. Please try again later." });
   }
 };
-
 export const downloadInvoice = async (req, res) => {
   try {
-    const { orderId } = req.params;
-    const { productId, variantId } = req.query;
+    const { orderId } = req.params; 
 
     const order = await Order.findOne({ orderId })
       .populate("products.productId", "name")
-      .populate("products.variantId", "colorName");
+      .populate("products.variantId", "colorName images");
 
     if (!order || order.userId.toString() !== req.user._id.toString()) {
-      return res.status(403).send("Unauthorized");
+      return res.status(404).send("Invoice not found or access denied");
     }
 
-    let itemsToInclude = order.products;
-    if (productId && variantId) {
-      itemsToInclude = order.products.filter(p => 
-        p.productId?._id?.toString() === productId && 
-        p.variantId?._id?.toString() === variantId
-      );
-    }
-
-    const doc = new PDFDocument({ margin: 50 });
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=Invoice-${order.orderId}.pdf`);
-    doc.pipe(res);
-
-    doc.fontSize(25).text('INVOICE', { align: 'center' });
-    doc.moveDown(1.5);
-
-    doc.fontSize(12);
-    doc.text(`Order ID: ${order.orderId}`);
-    doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`);
-    doc.moveDown();
-
-    let total = 0;
-    itemsToInclude.forEach((item, i) => {
-      const subtotal = item.price * item.quantity;
-      total += subtotal;
-      doc.text(`${i+1}. ${item.productId?.name || 'Product'} (${item.variantId?.colorName || 'Standard'}) × ${item.quantity} = ₹${subtotal.toLocaleString('en-IN')}`);
-      doc.text(`   Status: ${item.itemStatus}`, { indent: 20 });
-      doc.moveDown(0.5);
+    res.render("user/invoice", { 
+      order,
+      title: `Invoice - ${order.orderId}`
     });
-
-    doc.moveDown();
-    doc.text(`Subtotal: ₹${total.toLocaleString('en-IN')}`);
-    if (order.deliveryCharge > 0) doc.text(`Delivery: ₹${order.deliveryCharge.toLocaleString('en-IN')}`);
-    if (order.discount > 0) doc.text(`Discount: -₹${order.discount.toLocaleString('en-IN')}`);
-    doc.fontSize(16).text(`Total Paid: ₹${order.totalAmount.toLocaleString('en-IN')}`, { bold: true });
-
-    doc.moveDown(2);
-    doc.fontSize(10).text('Shipping Address:', { underline: true });
-    doc.text(order.address.fullName);
-    doc.text(order.address.address1);
-    if (order.address.address2) doc.text(order.address.address2);
-    doc.text(`${order.address.city}, ${order.address.state} - ${order.address.pincode}`);
-    doc.text(`Phone: ${order.address.phone}`);
-
-    doc.end();
   } catch (err) {
-    console.error("downloadInvoice ERROR:", err);
+    console.error(err);
     res.status(500).send("Server error");
   }
 };
-

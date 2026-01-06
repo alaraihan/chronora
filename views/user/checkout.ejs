@@ -9,134 +9,152 @@
 
         <div class="section-card">
           <h3>Select Delivery Address</h3>
-<div id="addressList">
-  <% if (addresses && addresses.length > 0) { %>
-    <% addresses.forEach((addr, index) => { %>
-      <label class="address-option <%= index === 0 ? 'selected' : '' %>" data-id="<%= addr._id %>">
-        <input 
-          type="radio" 
-          name="selectedAddress" 
-          value="<%= addr._id %>" 
-          <%= index === 0 ? 'checked' : '' %> 
-        />
-        <div class="address-content">
-          <div class="address-header">
-            <strong><%= addr.name || 'No Name' %></strong>
-            <% if (addr.isDefaultShipping) { %>
-              <span class="default-badge">Default</span>
+          <div id="addressList">
+            <% if (addresses && addresses.length > 0) { %>
+              <% addresses.forEach((addr, index) => { %>
+                <label class="address-option <%= index === 0 ? 'selected' : '' %>" data-id="<%= addr._id %>">
+                  <input 
+                    type="radio" 
+                    name="selectedAddress" 
+                    value="<%= addr._id %>" 
+                    <%= index === 0 ? 'checked' : '' %> 
+                  />
+                  <div class="address-content">
+                    <div class="address-header">
+                      <strong><%= addr.name || 'No Name' %></strong>
+                      <% if (addr.isDefaultShipping) { %>
+                        <span class="default-badge">Default</span>
+                      <% } %>
+                    </div>
+                    <p>
+                      <%= addr.street || '' %><%= addr.street ? ',' : '' %>
+                      <%= addr.city || '' %><%= addr.city ? ',' : '' %>
+                      <%= addr.state || '' %> <%= addr.zip || '' %>
+                    </p>
+                    <p>Mobile: <%= addr.phone || 'Not provided' %></p>
+                  </div>
+                </label>
+              <% }) %>
+            <% } else { %>
+              <p style="color:#999; text-align:center; padding:20px;">
+                No saved addresses yet. Add one below.
+              </p>
             <% } %>
           </div>
-          <p>
-            <%= addr.street || '' %><%= addr.street ? ',' : '' %>
-            <%= addr.city || '' %><%= addr.city ? ',' : '' %>
-            <%= addr.state || '' %> <%= addr.zip || '' %>
-          </p>
-          <p>Mobile: <%= addr.phone || 'Not provided' %></p>
-        </div>
-      </label>
-    <% }) %>
-  <% } else { %>
-    <p style="color:#999; text-align:center; padding:20px;">
-      No saved addresses yet. Add one below.
-    </p>
-  <% } %>
-</div>
 
           <button type="button" class="add-address-btn" id="openAddressModal">
             + Add New Address
           </button>
         </div>
 
-        <div class="section-card">
-          <h3>Select Payment Method</h3>
-          <div id="paymentMethods">
-            <label class="payment-option selected">
-              <input type="radio" name="payment" value="cod" checked />
-              <span class="checkmark"></span>
-              <div>
-                <strong>Cash on Delivery</strong>
-                <p>Pay when you receive your order</p>
-              </div>
-            </label>
+<div class="payment-section">
+  <h2>Select Payment Method</h2>
+  
+  <label class="payment-option" data-method="cod">
+    <input type="radio" name="paymentMethod" value="cod" id="cod">
+    <div class="payment-content">
+      <strong>Cash on Delivery</strong>
+      <p>Pay when you receive your order</p>
+    </div>
+  </label>
 
-            <label class="payment-option">
-              <input type="radio" name="payment" value="wallet" />
-              <span class="checkmark"></span>
-              <div>
-                <strong>Wallet</strong>
-                <p>Balance: ₹<%= (user?.wallet?.balance || 0).toLocaleString('en-IN') %></p>
-              </div>
-            </label>
+ <label class="payment-option" data-method="wallet">
+  <input type="radio" name="paymentMethod" value="wallet" id="wallet">
+  <div class="payment-content">
+    <strong>Wallet</strong>
+    <p>Balance: ₹<span id="walletBalanceDisplay"><%= walletBalance.toLocaleString('en-IN') %></span></p>
+  </div>
+</label>
 
-            <label class="payment-option">
-              <input type="radio" name="payment" value="razorpay" />
-              <span class="checkmark"></span>
-              <div>
-                <strong>Razorpay</strong>
-                <p>Card • UPI • Netbanking</p>
-              </div>
-            </label>
-          </div>
-        </div>
+  <label class="payment-option" data-method="razorpay">
+    <input type="radio" name="paymentMethod" value="razorpay" id="razorpay">
+    <div class="payment-content">
+      <strong>Razorpay</strong>
+      <p>Card • UPI • Netbanking</p>
+    </div>
+  </label>
+</div>
       </div>
 
       <div class="checkout-right">
         <div class="section-card order-summary">
           <h3>Order Summary</h3>
           <div class="summary-items">
-  <% (cartItems || []).forEach(item => { %>
-    <div class="summary-item">
-      <img 
-        src="<%= item.variantId?.images?.[0] || '/images/default.jpg' %>" 
-        alt="<%= item.productId?.name || 'Product' %>"
-      >
-      <div class="item-info">
-        <p><%= item.productId?.name || 'Unknown Product' %></p>
-        <small>
-          <%= item.variantId?.colorName || item.variantId?.color || 'Standard' %> × <%= item.quantity %>
-        </small>
+            <% (cartItems || []).forEach(item => { %>
+              <div class="summary-item">
+                <img 
+                  src="<%= item.variantId?.images?.[0] || '/images/default.jpg' %>" 
+                  alt="<%= item.productId?.name || 'Product' %>"
+                >
+                <div class="item-info">
+                  <p><%= item.productId?.name || 'Unknown Product' %></p>
+                  <small>
+                    <%= item.variantId?.colorName || item.variantId?.color || 'Standard' %> × <%= item.quantity %>
+                  </small>
 
-        <div style="margin-top:8px; font-size:14px;">
-          <% if (item.price < item.originalPrice) { %>
-            <del style="color:#999;">₹ <%= item.originalPrice.toLocaleString('en-IN') %></del>
-            <strong style="color:#2ecc71; margin-left:8px;">
-              ₹ <%= item.price.toLocaleString('en-IN') %> each
-            </strong>
-          <% } else { %>
-            <strong style="color:#667eea;">
-              ₹ <%= item.price.toLocaleString('en-IN') %> each
-            </strong>
-          <% } %>
-        </div>
-      </div>
-      <strong style="font-size:16px;">
-        ₹ <%= (item.price * item.quantity).toLocaleString('en-IN') %>
-      </strong>
-    </div>
-  <% }) %>
-</div>
+                  <div style="margin-top:8px; font-size:14px;">
+                    <% if (item.productId?.offerData) { %>
+                      <del style="color:#999;">₹ <%= item.productId.price.toLocaleString('en-IN') %> each</del>
+                      <strong style="color:#2ecc71; margin-left:8px;">
+                        ₹ <%= item.productId.offerData.offerPrice.toLocaleString('en-IN') %> each
+                      </strong>
+                      <div style="color:#e74c3c; font-weight:600; font-size:13px; margin-top:4px;">
+                        You saved ₹ <%= ((item.productId.price - item.productId.offerData.offerPrice) * item.quantity).toLocaleString('en-IN') %>!
+                      </div>
+                    <% } else { %>
+                      <strong style="color:#667eea;">
+                        ₹ <%= item.price.toLocaleString('en-IN') %> each
+                      </strong>
+                    <% } %>
+                  </div>
+                </div>
+                <strong style="font-size:16px;">
+                  ₹ <%= (item.price * item.quantity).toLocaleString('en-IN') %>
+                </strong>
+              </div>
+            <% }) %>
+          </div>
+
+          <hr>
+
+          <div class="coupon-section mt-3">
+            <div class="d-flex gap-2">
+              <input type="text" id="couponCode" class="form-control" placeholder="Enter coupon code" style="text-transform: uppercase;">
+              <button type="button" id="applyCouponBtn" class="btn btn-outline-primary">Apply</button>
+            </div>
+            <small id="couponMessage" class="text-danger mt-1" style="display:none;"></small>
+            <small id="couponSuccess" class="text-success mt-1" style="display:none;"></small>
+          </div>
 
           <hr>
 
           <div class="summary-row">
             <span>Subtotal</span>
-            <span>₹<%= (subtotal || 0).toLocaleString('en-IN') %></span>
+            <span>₹<span id="subtotalDisplay"><%= (subtotal || 0).toLocaleString('en-IN') %></span></span>
           </div>
 
           <div class="summary-row">
             <span>Delivery Charge</span>
-            <span style="color:#4ade80;">
+            <span id="shippingDisplay" style="color:#4ade80;">
               <%= (subtotal || 0) >= 15000 ? 'FREE' : '₹100' %>
             </span>
           </div>
 
-          <div class="summary-total">
-            <span>Grand Total</span>
-            <strong>
-              ₹<%= ((subtotal || 0) + ((subtotal || 0) < 15000 ? 100 : 0)).toLocaleString('en-IN') %>
-            </strong>
+          <div class="summary-row" id="discountRow" style="display:none; color:#2ecc71;">
+            <span>Coupon Discount</span>
+            <span>- ₹<span id="discountAmount">0</span></span>
           </div>
 
+          <div class="summary-total">
+            <span>Grand Total</span>
+            <strong>₹<span id="grandTotalDisplay">
+              <%= ((subtotal || 0) + ((subtotal || 0) < 15000 ? 100 : 0)).toLocaleString('en-IN') %>
+            </span></strong>
+          </div>
+<div class="summary-row text-success fw-bold" id="walletPayable" style="display:none;">
+  <span>Payable from Wallet</span>
+  <span>₹<span id="walletPayableAmount"><%= grandTotal.toLocaleString('en-IN') %></span></span>
+</div>
           <button class="place-order-btn" id="placeOrderBtn">Place Order</button>
         </div>
       </div>
@@ -193,4 +211,5 @@
   </div>
 </div>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="/js/user/checkout.js"></script>

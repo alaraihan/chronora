@@ -1,0 +1,730 @@
+/* ========================================
+   WALLET PAGE - COMPLETE STYLING
+   ======================================== */
+
+/* ========================================
+   BASE & LAYOUT
+   ======================================== */
+.wallet-container {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.wallet-main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: transparent;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ========================================
+   PAGE HEADER
+   ======================================== */
+.wallet-main .text-center.mb-5 {
+  margin-bottom: 3rem !important;
+  padding-top: 2rem;
+}
+
+.wallet-main .display-5 {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -1px;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  margin-bottom: 1rem;
+}
+
+.wallet-main .lead {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+
+/* ========================================
+   BALANCE CARD
+   ======================================== */
+.balance-card {
+  position: relative;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.balance-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 30px 80px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.gradient-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #319795 100%);
+  opacity: 0.95;
+  z-index: 1;
+}
+
+.balance-card .card-body {
+  position: relative;
+  z-index: 2;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.balance-card .text-uppercase {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.balance-card #balance {
+  font-size: 5rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  letter-spacing: -2px;
+  margin-bottom: 1.5rem;
+}
+
+.balance-card #status {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 400;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ========================================
+   CARD COMPONENTS
+   ======================================== */
+.card {
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  box-shadow: 
+    0 15px 40px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.card-body {
+  padding: 3rem 2.5rem;
+}
+
+.card h4 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.5px;
+}
+
+.card h4 i {
+  font-size: 1.5rem;
+  margin-right: 0.75rem;
+}
+
+/* ========================================
+   ADD MONEY SECTION
+   ======================================== */
+#addForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+#addForm .row {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  justify-content: center;
+  align-items: center;
+}
+
+#addForm .input-group {
+  max-width: 400px;
+  width: 100%;
+  height: 75px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+#addForm .input-group:focus-within {
+  border-color: #28a745;
+  box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.2), 0 8px 24px rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+#addForm .input-group-text {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 2rem;
+  font-weight: 700;
+  padding: 0 1.25rem 0 1.5rem;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+#addForm #amount {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 2.25rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0 1rem;
+  outline: none;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+#addForm #amount::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: 500;
+}
+
+#addForm .btn-success {
+  height: 75px;
+  padding: 0 3rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+  border-radius: 20px;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 200px;
+}
+
+#addForm .btn-success:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(40, 167, 69, 0.6);
+  background: linear-gradient(135deg, #2bc256 0%, #24d9a8 100%);
+}
+
+#addForm .btn-success:active {
+  transform: translateY(-1px);
+}
+
+#addForm .btn-success i {
+  margin-right: 0.6rem;
+  font-size: 1.1rem;
+}
+
+/* Quick Select Buttons */
+.quick-amounts-container {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.quick-amounts-container .text-white-60 {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-right: 1rem;
+  display: inline-block;
+}
+
+.quick {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  color: #ffffff;
+  padding: 0.75rem 1.75rem;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0.4rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.quick:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.quick:active {
+  transform: translateY(0);
+}
+
+/* ========================================
+   REFER & EARN SECTION
+   ======================================== */
+.card-body .text-white-70 {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.15rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+.card-body .text-white-70 strong {
+  color: #28a745;
+  font-weight: 800;
+  font-size: 1.25rem;
+}
+
+.referral-box {
+  background: #000000;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 2rem !important;
+  max-width: 550px;
+  margin: 0 auto;
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.referral-box .input-group {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.referral-box #code {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-align: center;
+  padding: 1.5rem;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+}
+
+.referral-box #copy {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  border: none;
+  color: #ffffff;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+}
+
+.referral-box #copy:hover {
+  background: linear-gradient(135deg, #0090ff 0%, #0066cc 100%);
+  box-shadow: 0 6px 25px rgba(0, 123, 255, 0.6);
+  transform: scale(1.05);
+}
+
+.referral-box #copy i {
+  margin-right: 0.5rem;
+}
+
+/* ========================================
+   TRANSACTION HISTORY
+   ======================================== */
+.card-header {
+  background: transparent !important;
+  border: none !important;
+  padding: 2.5rem 2rem 1.5rem !important;
+}
+
+.card-header h4 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-header h4 i {
+  color: #17a2b8;
+  margin-right: 0.75rem;
+  font-size: 1.5rem;
+}
+
+/* Loading State */
+#loading {
+  padding: 5rem 2rem;
+  text-align: center;
+}
+
+#loading .spinner-border {
+  width: 4rem;
+  height: 4rem;
+  border-width: 0.4rem;
+  color: #007bff;
+}
+
+#loading p {
+  margin-top: 2rem;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+/* Transaction Items */
+#list {
+  padding: 0;
+}
+
+.transaction-item {
+  padding: 1.75rem 2.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.transaction-item:first-child {
+  border-top: none;
+}
+
+.transaction-item:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.transaction-item .d-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon-circle {
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.icon-circle.bg-success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.icon-circle.bg-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.transaction-item h6 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.4rem 0;
+  letter-spacing: -0.2px;
+}
+
+.transaction-item small {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 400;
+  display: block;
+  line-height: 1.4;
+}
+
+.transaction-item .fs-4 {
+  font-size: 1.75rem !important;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.transaction-item .text-success {
+  color: #28a745 !important;
+}
+
+.transaction-item .text-danger {
+  color: #dc3545 !important;
+}
+
+#empty {
+  padding: 5rem 2rem;
+  text-align: center;
+}
+
+#empty i {
+  color: rgba(255, 255, 255, 0.15);
+  margin-bottom: 2rem;
+}
+
+#empty p {
+  font-size: 1.4rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+#empty small {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 400;
+}
+
+.bg-black-10 {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.border-333 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.text-white-70 {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.text-white-80 {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.text-white-60 {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.text-white-50 {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.text-white-30 {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.tracking-wider {
+  letter-spacing: 2px;
+}
+
+.z-2 {
+  z-index: 2;
+}
+
+.glow-btn:hover {
+  box-shadow: 0 0 30px rgba(13, 110, 253, 0.7);
+}
+
+
+@media (max-width: 1200px) {
+  .balance-card #balance {
+    font-size: 4rem;
+  }
+  
+  .wallet-main .display-5 {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .wallet-main {
+    margin-left: 0;
+  }
+  
+  .container {
+    padding: 0 1.5rem;
+  }
+  
+  .card-body {
+    padding: 2.5rem 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .wallet-main .display-5 {
+    font-size: 2.5rem;
+  }
+  
+  .wallet-main .lead {
+    font-size: 1.1rem;
+  }
+  
+  .balance-card #balance {
+    font-size: 3.5rem;
+  }
+  
+  .balance-card .card-body {
+    padding: 3rem 1.5rem;
+  }
+  
+  .card-body {
+    padding: 2rem 1.5rem;
+  }
+  
+  #addForm .input-group {
+    height: 65px;
+  }
+  
+  #addForm #amount {
+    font-size: 2rem;
+  }
+  
+  #addForm .btn-success {
+    height: 65px;
+    padding: 0 2.5rem;
+    font-size: 1.1rem;
+  }
+  
+  .quick {
+    display: inline-block;
+    width: calc(50% - 1rem);
+    margin: 0.5rem 0.25rem;
+  }
+  
+  .referral-box #code {
+    font-size: 1.5rem;
+    letter-spacing: 3px;
+    padding: 1.25rem;
+  }
+  
+  .referral-box #copy {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
+  
+  .transaction-item {
+    padding: 1.5rem 1.25rem;
+  }
+  
+  .icon-circle {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    font-size: 1.2rem;
+  }
+  
+  .transaction-item h6 {
+    font-size: 1rem;
+  }
+  
+  .transaction-item small {
+    font-size: 0.8rem;
+  }
+  
+  .transaction-item .fs-4 {
+    font-size: 1.4rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .balance-card #balance {
+    font-size: 3rem;
+  }
+  
+  #addForm .row {
+    flex-direction: column;
+  }
+  
+  #addForm .col-auto {
+    width: 100%;
+  }
+  
+  #addForm .input-group,
+  #addForm .btn-success {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .quick {
+    width: calc(50% - 0.5rem);
+  }
+  
+  .transaction-item .d-flex {
+    flex-wrap: wrap;
+  }
+  
+  .transaction-item .fs-4 {
+    width: 100%;
+    text-align: right;
+    margin-top: 0.75rem;
+  }
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.transaction-item {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Smooth scrolling */
+.wallet-main {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(13, 110, 253, 0.5);
+  outline-offset: 2px;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(13, 110, 253, 0.3);
+  color: #ffffff;
+}

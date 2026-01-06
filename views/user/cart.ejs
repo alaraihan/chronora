@@ -24,6 +24,9 @@
             const isAvailable = item.productId && !item.productId.isBlocked && 
                                 item.variantId && !item.variantId.isBlocked && 
                                 stock >= qty;
+
+            // Check if there's an offer
+            const hasOffer = item.productId?.offerData && currentPrice < originalPrice;
           %>
 
           <div class="cart-item <%= !isAvailable ? 'unavailable' : '' %>" 
@@ -47,14 +50,19 @@
                 <div class="status-badge unavailable">Unavailable</div>
               <% } else { %>
                 <div class="cart-item-price">
-                  <% if (currentPrice < originalPrice) { %>
+                  <% if (hasOffer) { %>
+                    <!-- Offer Active -->
                     <del style="color:#999; font-size:14px;">
                       ₹ <%= originalPrice.toLocaleString('en-IN') %> each
                     </del>
                     <div style="font-size:20px; font-weight:bold; color:#2ecc71;">
                       ₹ <%= currentPrice.toLocaleString('en-IN') %> each
                     </div>
+                    <div style="color:#e74c3c; font-weight:600; font-size:15px; margin-top:6px;">
+                      You saved ₹ <%= ((originalPrice - currentPrice) * qty).toLocaleString('en-IN') %>!
+                    </div>
                   <% } else { %>
+                    <!-- No Offer -->
                     <div style="font-size:20px; font-weight:bold; color:#667eea;">
                       ₹ <%= currentPrice.toLocaleString('en-IN') %> each
                     </div>

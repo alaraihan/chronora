@@ -38,7 +38,22 @@
           <button type="button" class="toggle-btn" data-for="confirm">Show</button>
         </div>
         <div class="error" id="confirmError">Passwords do not match.</div>
-      </div>
+      </div><label for="referralCode" class="form-label">
+        Referral Code <span class="text-muted">(Optional)</span>
+    </label>
+    <input
+        type="text"
+        id="referralCode"
+        name="referralCode"
+        class="form-control"
+        placeholder="e.g. FRIEND10 or ALEX7K9P"
+        maxlength="12"
+        style="text-transform: uppercase;"
+        autocomplete="off"
+    />
+    <small class="form-text text-muted mt-2 d-block">
+        Have a referral code from a friend? Enter it here to get a special discount on your first order! 🎁
+    </small>
 
       <!-- Terms checkbox -->
       <div class="field row" style="align-items:center">

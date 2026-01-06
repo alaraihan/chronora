@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Wishlist | Chronora</title>
+  <link rel="stylesheet" href="/css/user/wishlist.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+<body>
+
+<div class="wishlist-wrapper">
+  <%- include('../partials/user/sidebar') %>
+
+  <main class="main-content">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">My Wishlist</h1>
+        <p class="subtext">Your saved items for later.</p>
+      </header>
+
+      <% if (wishlist && wishlist.length > 0) { %>
+        <div class="wishlist-grid">
+          <% wishlist.forEach(item => { %>
+            <div class="wishlist-card">
+              <div class="image-wrapper">
+                <img 
+                  src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" 
+                  alt="<%= item.productId?.name %>"
+                  class="product-img"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="card-content">
+                <h3 class="product-name"><%= item.productId?.name || 'Unknown Product' %></h3>
+                <p class="variant-info"><%= item.variantId?.colorName || 'Standard' %></p>
+
+                <div class="price-container">
+                  <% if (item.productId?.offerData) { %>
+                    <p class="original-price">₹ <%= item.productId.price.toLocaleString('en-IN') %></p>
+                    <p class="offer-price">₹ <%= item.productId.offerData.offerPrice.toLocaleString('en-IN') %></p>
+                    <span class="save-badge">
+                      <% if (item.productId.offerData.offer.discountType === 'percentage') { %>
+                        <%= item.productId.offerData.offer.discountValue %>% OFF
+                      <% } else { %>
+                        ₹<%= item.productId.offerData.offer.discountValue %> OFF
+                      <% } %>
+                    </span>
+                  <% } else { %>
+                    <p class="price">₹ <%= item.productId?.price?.toLocaleString('en-IN') || 'N/A' %></p>
+                  <% } %>
+                </div>
+
+                <div class="actions">
+                  <button 
+                    class="btn-move-cart"
+                    data-product-id="<%= item.productId._id %>"
+                    data-variant-id="<%= item.variantId._id %>"
+                  >
+                    Move to Cart
+                  </button>
+                  <button 
+                    class="btn-remove"
+                    data-product-id="<%= item.productId._id %>"
+                    data-variant-id="<%= item.variantId._id %>"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="empty-wishlist">
+          <p>Your wishlist is empty.</p>
+          <a href="/products" class="btn-primary">Browse Products</a>
+        </div>
+      <% } %>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="/js/user/wishlist.js"></script>
+
+</body>
+</html>

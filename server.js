@@ -1,6 +1,7 @@
 import express from "express";
 const app = express();
 import dotenv from "dotenv";
+import Razorpay from 'razorpay';
 dotenv.config();
 import {sessions} from "./middlewares/session.js";
 import passport from "./config/passport.js";
@@ -20,7 +21,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 connectDB();
-
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json({limit:'50mb'}));
 app.use(express.urlencoded({ extended: true,limit:'50mb' }));

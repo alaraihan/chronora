@@ -1,119 +1,122 @@
 <link rel="stylesheet" href="/css/user/watch.css">
-   
-   <main>
-        <h1>The Watch Collection</h1>
 
-        
-         <div class="filters-container">
-  <!-- Left: Search Bar -->
-  <form class="search-form" method="GET">
-    <div class="search-input-group">
-      <input 
-        type="text" 
-        name="search" 
-        placeholder="Search by name" 
-        value="<%= searchQuery || '' %>"
-        autocomplete="off"
-      >
-<button type="submit">Search</button>
+<main>
+  <h1>The Watch Collection</h1>
 
-<a href="/watch" class="clear-btn">Clear</a>
+  <div class="filters-container">
+    <form class="search-form" method="GET">
+      <div class="search-input-group">
+        <input 
+          type="text" 
+          name="search" 
+          placeholder="Search by name" 
+          value="<%= searchQuery || '' %>"
+          autocomplete="off"
+        >
+        <button type="submit">Search</button>
+        <a href="/watch" class="clear-btn">Clear</a>
+      </div>
+    </form>
+
+    <div class="controls-right">
+      <form method="GET" class="control-form">
+        <select name="sort" onchange="this.form.submit()">
+          <option value="newest"    <%= sortQuery === 'newest' ? 'selected' : '' %>>Newest</option>
+          <option value="price-low" <%= sortQuery === 'price-low' ? 'selected' : '' %>>Price: Low to High</option>
+          <option value="price-high"<%= sortQuery === 'price-high' ? 'selected' : '' %>>Price: High to Low</option>
+          <option value="a-z"       <%= sortQuery === 'a-z' ? 'selected' : '' %>>A to Z</option>
+          <option value="z-a"       <%= sortQuery === 'z-a' ? 'selected' : '' %>>Z to A</option>
+        </select>
+        <% if (searchQuery) { %><input type="hidden" name="search" value="<%= searchQuery %>"><% } %>
+        <% if (categoryFilter) { %><input type="hidden" name="category" value="<%= categoryFilter %>"><% } %>
+      </form>
+
+      <form method="GET" class="control-form">
+        <select name="category" onchange="this.form.submit()">
+          <option value="">All Categories</option>
+          <% categories.forEach(cat => { %>
+            <option value="<%= cat._id %>" <%= categoryFilter === cat._id.toString() ? 'selected' : '' %>>
+              <%= cat.name %>
+            </option>
+          <% }) %>
+        </select>
+        <% if (searchQuery) { %><input type="hidden" name="search" value="<%= searchQuery %>"><% } %>
+        <% if (sortQuery) { %><input type="hidden" name="sort" value="<%= sortQuery %>"><% } %>
+      </form>
     </div>
-  </form>
-
-  <!-- Right: Sort & Category -->
-  <div class="controls-right">
-    <!-- Sort -->
-    <form method="GET" class="control-form">
-      <select name="sort" onchange="this.form.submit()">
-        <option value="newest"    <%= sortQuery === 'newest' ? 'selected' : '' %>>Newest</option>
-        <option value="price-low" <%= sortQuery === 'price-low' ? 'selected' : '' %>>Price: Low to High</option>
-        <option value="price-high"<%= sortQuery === 'price-high' ? 'selected' : '' %>>Price: High to Low</option>
-        <option value="a-z"       <%= sortQuery === 'a-z' ? 'selected' : '' %>>A to Z</option>
-        <option value="z-a"       <%= sortQuery === 'z-a' ? 'selected' : '' %>>Z to A</option>
-      </select>
-      <% if (searchQuery) { %><input type="hidden" name="search" value="<%= searchQuery %>"><% } %>
-      <% if (categoryFilter) { %><input type="hidden" name="category" value="<%= categoryFilter %>"><% } %>
-    </form>
-
-    <!-- Category -->
-    <form method="GET" class="control-form">
-      <select name="category" onchange="this.form.submit()">
-        <option value="">All Categories</option>
-        <% categories.forEach(cat => { %>
-          <option value="<%= cat._id %>" <%= categoryFilter === cat._id.toString() ? 'selected' : '' %>>
-            <%= cat.name %>
-          </option>
-        <% }) %>
-      </select>
-      <% if (searchQuery) { %><input type="hidden" name="search" value="<%= searchQuery %>"><% } %>
-      <% if (sortQuery) { %><input type="hidden" name="sort" value="<%= sortQuery %>"><% } %>
-    </form>
   </div>
-</div>
-      <div class="watch-grid">
-  <% if (products && products.length > 0) { %>
-    <% products.forEach((product, index) => { %>
-      <% 
-        const variant = product.variant;
-        const image = variant?.images?.[0] || '/images/placeholder-watch.jpg';
-        const stock = variant ? variant.stock : 0;
-      %>
 
-      <!-- CLICKABLE CARD -->
-      <a href="/product/<%= product._id %>" class="watch-card" style="text-decoration:none; color:inherit;">
+  <div class="watch-grid">
+    <% if (products && products.length > 0) { %>
+      <% products.forEach((product, index) => { %>
+        <% 
+          const variant = product.variant;
+          const image = variant?.images?.[0] || '/images/placeholder-watch.jpg';
+          const stock = variant ? variant.stock : 0;
+          const variantId = variant ? variant._id : null;
+        %>
 
-        <div class="watch-image">
-          <img src="<%= image %>" alt="<%= product.name %>" loading="lazy">
+        <div class="watch-card">
+          <a href="/product/<%= product._id %>" class="watch-link">
+            <div class="watch-image">
+              <img src="<%= image %>" alt="<%= product.name %>" loading="lazy">
 
-          <!-- Offer Badge (Only if offer exists) -->
-          <% if (product.offerData) { %>
-            <span class="offer-badge">
-              <% if (product.offerData.offer.discountType === 'percentage') { %>
-                <%= product.offerData.offer.discountValue %>% OFF
-              <% } else { %>
-                ₹<%= product.offerData.offer.discountValue %> OFF
+              <% if (product.offerData) { %>
+                <span class="offer-badge">
+                  <% if (product.offerData.offer.discountType === 'percentage') { %>
+                    <%= product.offerData.offer.discountValue %>% OFF
+                  <% } else { %>
+                    ₹<%= product.offerData.offer.discountValue %> OFF
+                  <% } %>
+                </span>
               <% } %>
-            </span>
-          <% } %>
 
-          <button class="favorite-btn">♡</button>
+              <!-- Wishlist Heart Button -->
+              <button 
+                class="favorite-btn <%= user && user.wishlist?.some(w => w.productId.toString() === product._id.toString() && w.variantId.toString() === variantId?.toString()) ? 'active' : '' %>"
+                data-product-id="<%= product._id %>"
+                data-variant-id="<%= variantId %>"
+                title="Add to Wishlist"
+              >
+                ♥
+              </button>
+            </div>
+
+            <div class="watch-info">
+              <div class="watch-name"><%= product.name %></div>
+
+              <div class="watch-price-container">
+                <% if (product.offerData) { %>
+                  <p class="watch-price-original">₹ <%= product.price.toLocaleString('en-IN') %></p>
+                  <p class="watch-price-discounted">₹ <%= product.offerData.offerPrice.toLocaleString('en-IN') %></p>
+                <% } else { %>
+                  <p class="watch-price">₹ <%= product.price.toLocaleString('en-IN') %></p>
+                <% } %>
+              </div>
+
+              <% if (variant && variant.colorName) { %>
+                <div class="color-info">Color: <%= variant.colorName %></div>
+              <% } %>
+
+              <button class="add-to-cart-btn"
+                      data-product-id="<%= product._id %>"
+                      data-variant-id="<%= variantId %>"
+                      <%= stock <= 0 ? 'disabled' : '' %>>
+                <%= stock <= 0 ? 'Out of Stock' : 'View Product' %>
+              </button>
+            </div>
+          </a>
         </div>
+      <% }) %>
+    <% } else { %>
+      <div class="empty-state">
+        <h2>No watches available</h2>
+        <p>Check back later</p>
+      </div>
+    <% } %>
+  </div>
 
-        <div class="watch-info">
-          <div class="watch-name"><%= product.name %></div>
-
-          <!-- Price Section -->
-          <div class="watch-price-container">
-            <% if (product.offerData) { %>
-              <p class="watch-price-original">₹ <%= product.price.toLocaleString('en-IN') %></p>
-              <p class="watch-price-discounted">₹ <%= product.offerData.offerPrice.toLocaleString('en-IN') %></p>
-            <% } else { %>
-              <p class="watch-price">₹ <%= product.price.toLocaleString('en-IN') %></p>
-            <% } %>
-          </div>
-
-          <% if (variant && variant.colorName) { %>
-            <div class="color-info">Color: <%= variant.colorName %></div>
-          <% } %>
-
-          <button class="add-to-cart-btn"
-                  data-product-id="<%= product._id %>"
-                  data-variant-id="<%= variant ? variant._id : '' %>"
-                  <%= stock <= 0 ? 'disabled' : '' %>>
-            <%= stock <= 0 ? 'Out of Stock' : 'View Product' %>
-          </button>
-        </div>
-      </a>
-    <% }) %>
-  <% } else { %>
-    <div class="empty-state">
-      <h2>No watches available</h2>
-      <p>Check back later</p>
-    </div>
-  <% } %>
-
-  <!-- PAGINATION (unchanged) -->
+  <!-- Pagination (unchanged) -->
   <% if (totalPages > 1) { %>
     <div class="pagination">
       <% if (currentPage > 1) { %>
@@ -138,3 +141,50 @@
     </div>
   <% } %>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script>
+// Wishlist Heart Button Logic
+document.querySelectorAll('.favorite-btn').forEach(btn => {
+  btn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const productId = btn.dataset.productId;
+    const variantId = btn.dataset.variantId;
+
+    if (!productId || !variantId) return;
+
+    try {
+      const res = await axios.post('/add-wishlist', { productId, variantId });
+
+      if (res.data.success) {
+        btn.classList.add('active');
+        toast("Added to wishlist ❤️", "success");
+      } else {
+        if (res.data.message.includes("login")) {
+          toast("Please login to save wishlist", "error");
+          setTimeout(() => window.location.href = "/login", 1500);
+        } else {
+          toast(res.data.message, "error");
+        }
+      }
+    } catch (err) {
+      toast("Please login first", "error");
+      setTimeout(() => window.location.href = "/login", 1000);
+    }
+  });
+});
+
+function toast(msg, type = "info") {
+  Toastify({
+    text: msg,
+    duration: 3000,
+    gravity: "bottom",
+    position: "right",
+    backgroundColor: type === "success" ? "#16a34a" : "#dc2626"
+  }).showToast();
+}
+</script>

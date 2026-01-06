@@ -2,32 +2,51 @@
 
 <div class="chronora-profile container">
   <%- include('../partials/user/sidebar') %>
+
   <main class="main-area">
     <header class="main-header">
       <h1>Edit Profile Image</h1>
-      <p class="subtitle">Upload a new profile picture to update your account.</p>
+      <p class="subtitle">Upload a new profile picture to personalize your account.</p>
     </header>
 
     <div class="profile-card card">
-      <form class="edit-form">
-        <div class="profile-field">
-          <span>Current Image</span>
-          <img src="<%= user.profileImage || '/images/default.png' %>" alt="Profile Image" class="profile-img" id="preview">
+      <form class="edit-form" enctype="multipart/form-data" method="POST" action="/profile/edit/image">
+        <!-- Current / Preview Image -->
+        <div class="profile-field image-preview-field">
+          <span class="field-label">Preview</span>
+          <div class="image-wrapper">
+            <img 
+              src="<%= user.profileImage || '/images/default.png' %>" 
+              alt="Profile Preview" 
+              class="profile-img" 
+              id="preview">
+          </div>
+          <p class="hint">Your new image will appear here instantly</p>
         </div>
 
+        <!-- File Upload -->
         <div class="profile-field">
-          <span>Upload New Image</span>
-          <input type="file" name="profileImage" accept="image/*" id="fileInput">
+          <span class="field-label">Upload New Image</span>
+          <label for="fileInput" class="file-upload-label">
+            <span class="file-upload-text">Choose Image</span>
+            <span class="file-name" id="fileName">No file selected</span>
+          </label>
+          <input 
+            type="file" 
+            name="profileImage" 
+            accept="image/*" 
+            id="fileInput" 
+            class="file-input-hidden">
         </div>
 
+        <!-- Actions -->
         <div class="form-actions action-buttons">
-          <button type="submit" class="btn-primary">Save</button>
-          <a href="/profile" class="btn-ghost">Cancel</a>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <a href="/profile" class="btn btn-ghost">Cancel</a>
         </div>
       </form>
     </div>
   </main>
 </div>
-
 
 <script src="/js/user/profile-image-edit.js"></script>

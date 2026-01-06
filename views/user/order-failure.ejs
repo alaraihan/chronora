@@ -1,0 +1,56 @@
+
+<link rel="stylesheet" href="/css/user/order-failure.css" />
+
+<div class="failure-wrapper">
+  <div class="failure-container">
+    <div class="failure-icon">
+      <i class="fas fa-times-circle"></i>
+    </div>
+
+    <h1 class="failure-title">Payment Failed</h1>
+    
+    <p class="failure-message">
+      Sorry, your payment could not be processed.<br>
+      <strong>No money has been deducted.</strong> Your cart is still saved.
+    </p>
+
+    <div class="error-detail">
+      <strong>Reason:</strong><br>
+      <%= errorMessage || "Payment was declined or cancelled" %>
+    </div>
+
+    <div class="order-summary-card">
+      <h3>Order Summary</h3>
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span>₹ <%= subtotal.toLocaleString('en-IN') %></span>
+      </div>
+      <div class="summary-row">
+        <span>Delivery Charge</span>
+        <span><%= shipping === 0 ? 'FREE' : '₹' + shipping.toLocaleString('en-IN') %></span>
+      </div>
+      <% if (discount > 0) { %>
+        <div class="summary-row discount">
+          <span>Coupon Discount</span>
+          <span>- ₹ <%= discount.toLocaleString('en-IN') %></span>
+        </div>
+      <% } %>
+      <div class="summary-total">
+        <span>Grand Total</span>
+        <strong>₹ <%= totalAmount.toLocaleString('en-IN') %></strong>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <a href="/checkout" class="btn-primary">
+        <i class="fas fa-redo"></i> Retry Payment
+      </a>
+      <a href="/cart" class="btn-secondary">
+        <i class="fas fa-shopping-cart"></i> Back to Cart
+      </a>
+      <a href="/" class="btn-outline">
+        <i class="fas fa-home"></i> Home
+      </a>
+    </div>
+  </div>
+</div>

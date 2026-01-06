@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | Admin</title>
+  <link rel="stylesheet" href="/css/admin/sales-report.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+<body>
+
+<main class="main-content">
+  <header class="content-header">
+    <h1><i class="bi bi-graph-up"></i> Sales Report</h1>
+    <p class="text-muted">Only Delivered Items</p>
+  </header>
+
+  <div class="filters-card">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label>Date From:</label>
+        <input type="date" id="dateFrom" class="date-input">
+      </div>
+      
+      <div class="filter-group">
+        <label>Date To:</label>
+        <input type="date" id="dateTo" class="date-input">
+      </div>
+
+      <div class="filter-group">
+        <input 
+          type="text" 
+          id="searchInput"
+          placeholder="Search by Order ID, Customer..."
+          class="search-input"
+        >
+      </div>
+
+      <div class="filter-actions">
+        <button onclick="applyFilters()" class="btn btn-primary">
+          <i class="bi bi-funnel"></i> Apply Filters
+        </button>
+        <button onclick="clearFilters()" class="btn btn-secondary">
+          <i class="bi bi-x-circle"></i> Clear All
+        </button>
+        <button onclick="downloadReport()" class="btn btn-success">
+          <i class="bi bi-download"></i> Download CSV
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-cards">
+    <div class="summary-card bg-primary">
+      <div class="card-icon"><i class="bi bi-cart-check"></i></div>
+      <div class="card-content">
+        <h6>Total Sold Items</h6>
+        <h3 id="totalOrders">0</h3>
+      </div>
+    </div>
+
+    <div class="summary-card bg-success">
+      <div class="card-icon"><i class="bi bi-currency-rupee"></i></div>
+      <div class="card-content">
+        <h6>Total Revenue</h6>
+        <h3 id="totalRevenue">₹0.00</h3>
+      </div>
+    </div>
+
+    <div class="summary-card bg-warning">
+      <div class="card-icon"><i class="bi bi-tag"></i></div>
+      <div class="card-content">
+        <h6>Total Discount</h6>
+        <h3 id="totalDiscount">₹0.00</h3>
+      </div>
+    </div>
+
+    <div class="summary-card bg-info">
+      <div class="card-icon"><i class="bi bi-box-seam"></i></div>
+      <div class="card-content">
+        <h6>Items Sold (Qty)</h6>
+        <h3 id="totalItemsSold">0</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <div class="card-header">
+      <h5>Delivered Products</h5>
+    </div>
+
+    <table class="sales-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Unit Price</th>
+          <th>Line Total</th>
+          <th>Payment</th>
+        </tr>
+      </thead>
+      <tbody id="salesTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="pagination" id="paginationContainer"></div>
+</main>
+
+<div id="loadingOverlay" class="loading-overlay">
+  <i class="bi bi-hourglass-split" style="font-size: 2.5rem;"></i>
+  <div>Loading sales data...</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script src="/js/admin/salesReport.js"></script>
+
+</body>
+</html>

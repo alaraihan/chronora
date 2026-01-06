@@ -1,0 +1,417 @@
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="/css/admin/coupons.css">
+<style>
+  .select2-container { width: 100% !important; }
+  .select2-search__field { width: 100% !important; }
+  .modal-xl { max-width: 1100px; }
+  .usage-info { font-size: 0.85em; color: #6c757d; }
+
+  /* Select2 Multi-Select - Height & Alignment */
+  .select2-container--default .select2-selection--multiple {
+    min-height: 56px !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    padding: 12px 12px !important;
+    background-color: white !important;
+    line-height: 1.5;
+  }
+
+  .select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: #80bdff !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15) !important;
+  }
+
+  /* Placeholder - Fully Visible */
+  .select2-container--default .select2-selection--multiple .select2-selection__placeholder {
+    color: #6c757d !important;
+    font-size: 0.95rem !important;
+    margin: 0 !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Tags */
+  .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #007bff !important;
+    color: white !important;
+    border-radius: 20px !important;
+    padding: 4px 10px !important;
+    margin: 4px 6px 4px 0 !important;
+    font-size: 0.9em;
+  }
+
+  /* Dropdown */
+  .select2-dropdown {
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Force Dropdown Below + Scrolling */
+  .select2-dropdown--below {
+    top: 100% !important;
+    bottom: auto !important;
+    margin-top: 8px !important;
+  }
+
+  .select2-dropdown--above {
+    display: none !important; /* Hide upward dropdown completely */
+  }
+
+  .select2-results__options {
+    max-height: 200px !important;
+    overflow-y: auto !important;
+  }
+</style>
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2>Coupon Management</h2>
+      <p class="text-muted">Create and manage promotional coupons with advanced restrictions.</p>
+    </div>
+    <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#couponModal" onclick="openCreateModal()">
+      + Add New Coupon
+    </button>
+  </div>
+
+  <div class="card shadow">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Code</th>
+              <th>Name</th>
+              <th>Discount</th>
+              <th>Min Purchase</th>
+              <th>Usage</th>
+              <th>Dates</th>
+              <th>Status</th>
+              <th>Restricted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% coupons.forEach(coupon => { %>
+              <tr>
+                <td><strong><%= coupon.code %></strong></td>
+                <td><%= coupon.name %></td>
+                <td>
+                  <% if (coupon.discountType === 'percentage') { %>
+                    <%= coupon.discountValue %>% OFF <%= coupon.maxDiscountLimit ? `(Max ₹${coupon.maxDiscountLimit})` : '' %>
+                  <% } else { %>
+                    ₹<%= coupon.discountValue %> OFF
+                  <% } %>
+                </td>
+                <td>₹<%= coupon.minPurchase.toFixed(2) %></td>
+                <td>
+                  <div><strong><%= coupon.usedCount %> used</strong></div>
+                  <div class="usage-info">
+                    <%= coupon.perUserLimit %> per user | 
+                    <%= coupon.totalUsageLimit ? coupon.totalUsageLimit + ' total' : 'Unlimited' %>
+                  </div>
+                </td>
+                <td>
+                  <%= coupon.startDate.toISOString().split('T')[0] %> →<br>
+                  <small><%= coupon.expiryDate.toISOString().split('T')[0] %></small>
+                </td>
+                <td>
+                  <span class="badge <%= coupon.status === 'Active' ? 'bg-success' : 'bg-secondary' %>">
+                    <%= coupon.status %>
+                  </span>
+                </td>
+                <td><%= coupon.specificUsers.length > 0 ? coupon.specificUsers.length + ' users' : 'All Users' %></td>
+                <td>
+                  <button class="btn btn-sm btn-info text-white me-1" onclick='viewCoupon(<%- JSON.stringify(coupon) %>)' title="View">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="btn btn-sm btn-warning me-1" onclick='editCoupon(<%- JSON.stringify(coupon) %>)' title="Edit">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger" onclick="deleteCoupon('<%= coupon._id %>')" title="Delete">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Unified Modal (Create & Edit) -->
+<div class="modal fade" id="couponModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <form id="couponForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Add New Coupon</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Coupon Code <span class="text-danger">*</span></label>
+              <input type="text" name="code" class="form-control" required>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label">Coupon Name <span class="text-danger">*</span></label>
+              <input type="text" name="name" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="2"></textarea>
+          </div>
+
+          <div class="row g-3 mt-3">
+            <div class="col-md-4">
+              <label class="form-label">Discount Type <span class="text-danger">*</span></label>
+              <select name="discountType" class="form-select" required>
+                <option value="percentage">Percentage (%)</option>
+                <option value="fixed">Fixed Amount ($)</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Discount Value <span class="text-danger">*</span></label>
+              <input type="number" name="discountValue" class="form-control" min="0" step="0.01" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Max Discount Cap ($) <small>(for % only)</small></label>
+              <input type="number" name="maxDiscountLimit" class="form-control" min="0" step="0.01">
+            </div>
+          </div>
+
+          <div class="row g-3 mt-3">
+            <div class="col-md-4">
+              <label class="form-label">Min Purchase Amount ($)</label>
+              <input type="number" name="minPurchase" class="form-control" min="0" step="0.01" value="0">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Per User Limit</label>
+              <input type="number" name="perUserLimit" class="form-control" min="1" value="1">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Total Usage Limit</label>
+              <input type="number" name="totalUsageLimit" class="form-control" min="1">
+              <small class="text-muted">Leave blank for unlimited</small>
+            </div>
+          </div>
+
+          <div class="row g-3 mt-3">
+            <div class="col-md-6">
+              <label class="form-label">Start Date <span class="text-danger">*</span></label>
+              <input type="date" name="startDate" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Expiry Date <span class="text-danger">*</span></label>
+              <input type="date" name="expiryDate" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="row g-3 mt-3">
+            <div class="col-md-6">
+              <label class="form-label">Status</label>
+              <select name="status" class="form-select">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Restrict to Specific Users</label>
+              <select name="specificUsers" id="specificUsersSelect" class="form-select" multiple>
+                <% users.forEach(user => { %>
+                  <option value="<%= user._id %>"><%= user.name %> (<%= user.email %>)</option>
+                <% }) %>
+              </select>
+              <small class="text-muted d-block mt-2">Search and select multiple users. Leave empty for all.</small>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Coupon</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- View Details Modal -->
+<div class="modal fade" id="viewModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Coupon Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="viewBody">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script>
+  function showSuccess(message) {
+    Toastify({
+      text: message || "Operation successful!",
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      backgroundColor: "#28a745",
+      stopOnFocus: true,
+    }).showToast();
+  }
+
+  function showError(message) {
+    Toastify({
+      text: message || "Something went wrong!",
+      duration: 5000,
+      gravity: "top",
+      position: "right",
+      backgroundColor: "#dc3545",
+      stopOnFocus: true,
+    }).showToast();
+  }
+
+  $('#couponModal').on('hidden.bs.modal', function () {
+    if ($('#specificUsersSelect').hasClass('select2-hidden-accessible')) {
+      $('#specificUsersSelect').select2('destroy');
+    }
+  });
+
+$('#couponModal').on('hidden.bs.modal', function () {
+  if ($('#specificUsersSelect').hasClass('select2-hidden-accessible')) {
+    $('#specificUsersSelect').select2('destroy');
+  }
+});
+
+$('#couponModal').on('shown.bs.modal', function () {
+  $('#specificUsersSelect').select2({
+    placeholder: "Search and select users...",
+    allowClear: true,
+    width: '100%',
+    dropdownParent: $('#couponModal')
+  });
+
+  $('#specificUsersSelect').off('select2:opening').on('select2:opening', function () {
+    setTimeout(() => {
+      $('.select2-dropdown')
+        .removeClass('select2-dropdown--above')
+        .addClass('select2-dropdown--below');
+    }, 1);
+  });
+});
+
+  function openCreateModal() {
+    $('#modalTitle').text('Add New Coupon');
+    $('#couponForm')[0].reset();
+    $('#couponForm').removeAttr('data-id');
+    $('#specificUsersSelect').val(null).trigger('change');
+    $('#couponModal').modal('show');
+  }
+
+ function viewCoupon(coupon) {
+    const usersList = coupon.specificUsers.length 
+      ? coupon.specificUsers.map(u => u.name || u.email || 'User').join(', ') 
+      : 'All Users';
+
+    document.getElementById('viewBody').innerHTML = `
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>Code:</strong> ${coupon.code}</p>
+          <p><strong>Name:</strong> ${coupon.name}</p>
+          <p><strong>Description:</strong> ${coupon.description || '-'}</p>
+          <p><strong>Discount:</strong> 
+            ${coupon.discountType === 'percentage' ? coupon.discountValue + '% OFF' : '₹' + coupon.discountValue + ' OFF'}
+            ${coupon.maxDiscountLimit ? ' <small>(Max ₹${coupon.maxDiscountLimit})</small>' : ''}
+          </p>
+          <p><strong>Min Purchase:</strong> ₹${coupon.minPurchase.toFixed(2)}</p>
+          <p><strong>Per User Limit:</strong> ${coupon.perUserLimit}</p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Used Count:</strong> <strong>${coupon.usedCount}</strong></p>
+          <p><strong>Total Limit:</strong> ${coupon.totalUsageLimit || 'Unlimited'}</p>
+          <p><strong>Valid From:</strong> ${new Date(coupon.startDate).toLocaleDateString()} → ${new Date(coupon.expiryDate).toLocaleDateString()}</p>
+          <p><strong>Status:</strong> <span class="badge bg-${coupon.status === 'Active' ? 'success' : 'secondary'}">${coupon.status}</span></p>
+          <p><strong>Restricted To:</strong> ${usersList}</p>
+        </div>
+      </div>`;
+    $('#viewModal').modal('show');
+  }
+  function editCoupon(coupon) {
+    $('#modalTitle').text('Edit Coupon');
+
+    $('[name="code"]').val(coupon.code);
+    $('[name="name"]').val(coupon.name);
+    $('[name="description"]').val(coupon.description || '');
+    $('[name="discountType"]').val(coupon.discountType);
+    $('[name="discountValue"]').val(coupon.discountValue);
+    $('[name="minPurchase"]').val(coupon.minPurchase);
+    $('[name="maxDiscountLimit"]').val(coupon.maxDiscountLimit || '');
+    $('[name="perUserLimit"]').val(coupon.perUserLimit);
+    $('[name="totalUsageLimit"]').val(coupon.totalUsageLimit || '');
+    $('[name="startDate"]').val(coupon.startDate.split('T')[0]);
+    $('[name="expiryDate"]').val(coupon.expiryDate.split('T')[0]);
+    $('[name="status"]').val(coupon.status);
+
+    const selectedUsers = coupon.specificUsers.map(u => u._id || u);
+    $('#specificUsersSelect').val(selectedUsers).trigger('change');
+
+    $('#couponForm').attr('data-id', coupon._id);
+    $('#couponModal').modal('show');
+  }
+
+  document.getElementById('couponForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    const couponId = this.getAttribute('data-id');
+
+    data.maxDiscountLimit = data.maxDiscountLimit.trim() === '' ? null : parseFloat(data.maxDiscountLimit);
+    data.totalUsageLimit = data.totalUsageLimit.trim() === '' ? null : parseInt(data.totalUsageLimit);
+    data.specificUsers = $('#specificUsersSelect').val() || [];
+
+    try {
+      let response;
+      if (couponId) {
+        response = await axios.put(`/admin/coupons/update/${couponId}`, data);
+      } else {
+        response = await axios.post('/admin/coupons/create', data);
+      }
+
+      if (response.data.success) {
+        showSuccess(response.data.message || "Coupon saved successfully!");
+        setTimeout(() => location.reload(), 1200);
+      }
+    } catch (error) {
+      const msg = error.response?.data?.message || "Operation failed. Please check your input.";
+      showError(msg);
+      console.error("Submit error:", error);
+    }
+  });
+
+  async function deleteCoupon(id) {
+    if (!confirm('Are you sure you want to delete this coupon permanently?')) return;
+
+    try {
+      const response = await axios.delete(`/admin/coupons/delete/${id}`);
+      if (response.data.success) {
+        showSuccess(response.data.message || "Coupon deleted successfully!");
+        setTimeout(() => location.reload(), 1200);
+      }
+    } catch (error) {
+      showError(error.response?.data?.message || "Failed to delete coupon.");
+    }
+  }
+</script>

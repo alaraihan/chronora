@@ -34,7 +34,9 @@ import {
   loadCheckout, 
   addAddressCheck, 
   placeOrder,
-  successPage
+  successPage,
+  failurePage,
+  applyCoupon
 } from "../controller/user/checkoutController.js";
 
 import {
@@ -45,6 +47,22 @@ import {
   downloadInvoice,
   reviewOrderItem
 } from "../controller/user/orderController.js"; 
+
+import{
+  loadWishlist,addToWishlist,moveToCart,removeFromWishlist
+} from "../controller/user/wishlistController.js";
+
+import {
+  loadWallet,
+  getWalletData,
+  createWalletOrder,
+  verifyAndAddMoney,
+} from "../controller/user/walletController.js";
+
+import {
+  createRazorpayOrder,
+  verifyRazorpayPayment,
+} from "../controller/user/paymentController.js";
 
 router.get("/pageNotfound", userController.pageNotfound);
 router.get("/about", userController.loadAboutpage);
@@ -121,8 +139,8 @@ router.get("/checkout", isLoggedIn, loadCheckout);
 router.post('/address/add', isLoggedIn, addAddressCheck);
 router.post('/checkout/place-order', isLoggedIn, placeOrder);
 router.get("/checkout/success", isLoggedIn, successPage);
-
-
+router.get("/checkout/failure", isLoggedIn, failurePage);
+router.post('/checkout/apply-coupon', isLoggedIn, applyCoupon)
 router.get("/profile/orders", isLoggedIn, getOrdersPage);
 
 router.get("/profile/orders/:orderId", isLoggedIn, getOrderDetails);
@@ -137,6 +155,19 @@ router.post("/order/:orderId/review-item", isLoggedIn, reviewOrderItem);
 
 router.get("/profile/orders/:orderId/invoice", isLoggedIn, downloadInvoice);
 router.post("/profile/orders/:orderId/review-item", isLoggedIn, reviewOrderItem);
+
+router.get("/wishlist", isLoggedIn, loadWishlist);
+router.post("/add-wishlist", isLoggedIn, addToWishlist);
+router.post("/remove-wishlist", isLoggedIn, removeFromWishlist);
+router.post("/move-to-cart", isLoggedIn, moveToCart);
+
+router.get("/wallet", isLoggedIn, loadWallet);
+router.get("/wallet/data",isLoggedIn, getWalletData);
+router.post("/wallet/create-order", isLoggedIn, createWalletOrder);
+router.post("/wallet/verify-add", isLoggedIn, verifyAndAddMoney);
+
+router.post("/create-order", isLoggedIn, createRazorpayOrder);
+router.post("/verify", isLoggedIn, verifyRazorpayPayment);
 
 
 

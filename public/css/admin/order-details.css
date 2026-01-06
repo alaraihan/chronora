@@ -12,6 +12,21 @@ body {
   margin: 0 auto;
   padding: 1.5rem;          /* Reduced from 2rem */
 }
+.btn-refund {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-refund:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
+}
 
 /* Header */
 .header {

@@ -55,88 +55,236 @@ export const getOfferTargets = async (req, res) => {
 
 export const createOffer = async (req, res) => {
   try {
-    const { name, type, targetId, discountType, discountValue, startDate, endDate } = req.body;
+    const {
+      name,
+      type,
+      targetId,
+      discountType,
+      discountValue,
+      startDate,
+      endDate
+    } = req.body;
 
     if (!name || !type || !targetId || !discountType || !discountValue || !startDate || !endDate) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required"
+      });
     }
 
-    let offerPrice=Number(discountValue)
-if (discountType === "percentage" && offerPrice>= 90) {
-  return res.status(400).json({
-    success: false,
-    message: "Discount percentage cannot be 90% or more"
-  });
-}
+    const normalizedName = name.trim();
 
-     
-    const offerData = {
-      name: name.trim(),
-      type,
-      discountType,
-      discountValue: Number(discountValue),
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      active: true,
-    };
+    const existing = await Offer.findOne({
+      name: { $regex: `^${normalizedName}$`, $options: "i" }
+    });
+
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: "Offer already exists!"
+      });
+    }
+
+    const discount = Number(discountValue);
+    if (discount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Discount value must be greater than 0"
+      });
+    }
+
+    if (discountType === "percentage" && discount >= 90) {
+      return res.status(400).json({
+        success: false,
+        message: "Discount percentage cannot be 90% or more"
+      });
+    }
+
+    let originalPrice;
 
     if (type === "product") {
-      offerData.productId = targetId;
-    } else if (type === "category") {
-      offerData.categoryId = targetId;
+      const product = await Product.findById(targetId);
+      if (!product) {
+        return res.status(404).json({ success: false, message: "Product not found" });
+      }
+      originalPrice = product.price;
     }
 
-    const offer = await Offer.create(offerData);
+    if (type === "category") {
+      const category = await Category.findById(targetId);
+      if (!category) {
+        return res.status(404).json({ success: false, message: "Category not found" });
+      }
+      originalPrice = category.price; 
+    }
 
-    res.json({ success: true, message: "Offer created successfully" });
+    if (discountType === "fixed" && discount >= originalPrice) {
+      return res.status(400).json({
+        success: false,
+        message: "Fixed discount cannot be equal to or greater than original price"
+      });
+    }
+
+    const finalPrice =
+      discountType === "percentage"
+        ? originalPrice - (originalPrice * discount) / 100
+        : originalPrice - discount;
+
+    if (finalPrice <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Discount results in zero or negative price"
+      });
+    }
+
+    const offerData = {
+      name: normalizedName,
+      type,
+      discountType,
+      discountValue: discount,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      active: true
+    };
+
+    if (type === "product") offerData.productId = targetId;
+    if (type === "category") offerData.categoryId = targetId;
+
+    await Offer.create(offerData);
+
+    res.status(201).json({
+      success: true,
+      message: "Offer created successfully"
+    });
+
   } catch (error) {
     console.error("CREATE OFFER ERROR:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
+
 export const updateOffer = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, type, targetId, discountType, discountValue, startDate, endDate } = req.body;
+    const {
+      name,
+      type,
+      targetId,
+      discountType,
+      discountValue,
+      startDate,
+      endDate
+    } = req.body;
 
     if (!name || !type || !targetId || !discountType || !discountValue || !startDate || !endDate) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required"
+      });
     }
- 
-    let offerPrice=Number(discountValue)
-if (discountType === "percentage" && offerPrice>= 90) {
-  return res.status(400).json({
-    success: false,
-    message: "Discount percentage cannot be 90% or more"
-  });
-}
-    const offerData = {
-      name: name.trim(),
-      type,
-      discountType,
-      discountValue: Number(discountValue),
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-    };
 
-    offerData.productId = null;
-    offerData.categoryId = null;
+    const existingOffer = await Offer.findById(id);
+    if (!existingOffer) {
+      return res.status(404).json({
+        success: false,
+        message: "Offer not found"
+      });
+    }
+
+    const normalizedName = name.trim();
+
+    const duplicate = await Offer.findOne({
+      _id: { $ne: id },
+      name: { $regex: `^${normalizedName}$`, $options: "i" }
+    });
+
+    if (duplicate) {
+      return res.status(400).json({
+        success: false,
+        message: "Another offer with this name already exists"
+      });
+    }
+
+    const discount = Number(discountValue);
+    if (discount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Discount value must be greater than 0"
+      });
+    }
+
+    if (discountType === "percentage" && discount >= 90) {
+      return res.status(400).json({
+        success: false,
+        message: "Discount percentage cannot be 90% or more"
+      });
+    }
+
+    let originalPrice;
 
     if (type === "product") {
-      offerData.productId = targetId;
-    } else if (type === "category") {
-      offerData.categoryId = targetId;
+      const product = await Product.findById(targetId);
+      if (!product) {
+        return res.status(404).json({ success: false, message: "Product not found" });
+      }
+      originalPrice = product.price;
     }
 
-    await Offer.findByIdAndUpdate(id, offerData);
+    if (type === "category") {
+      const category = await Category.findById(targetId);
+      if (!category) {
+        return res.status(404).json({ success: false, message: "Category not found" });
+      }
+      originalPrice = category.price; 
+    }
 
-    res.json({ success: true, message: "Offer updated successfully" });
+    if (discountType === "fixed" && discount >= originalPrice) {
+      return res.status(400).json({
+        success: false,
+        message: "Fixed discount cannot be equal to or greater than original price"
+      });
+    }
+
+    const finalPrice =
+      discountType === "percentage"
+        ? originalPrice - (originalPrice * discount) / 100
+        : originalPrice - discount;
+
+    if (finalPrice <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Discount results in zero or negative price"
+      });
+    }
+
+    const offerData = {
+      name: normalizedName,
+      type,
+      discountType,
+      discountValue: discount,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      productId: null,
+      categoryId: null
+    };
+
+    if (type === "product") offerData.productId = targetId;
+    if (type === "category") offerData.categoryId = targetId;
+
+    await Offer.findByIdAndUpdate(id, offerData, { new: true });
+
+    res.json({
+      success: true,
+      message: "Offer updated successfully"
+    });
+
   } catch (error) {
     console.error("UPDATE OFFER ERROR:", error);
-    res.status(500).json({ success: false });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 export const deleteOffer = async (req, res) => {
   try {

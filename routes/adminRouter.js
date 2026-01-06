@@ -29,8 +29,6 @@ import {
   approveItemReturn,
   rejectItemReturn,
   markItemAsReturned,
-getAdminOrdersPage,
-  updateOrderStatus
 } from "../controller/admin/orderController.js";
 
 import {
@@ -42,9 +40,20 @@ import {
   deleteOffer,
   toggleOfferActive
  
-} from '../controller/admin/offerController.js'
+} from '../controller/admin/offerController.js';
 import upload from "../middlewares/uploadImage.js";
 
+import {
+  getCouponsPage,createCoupon,updateCoupon,deleteCoupon
+} from '../controller/admin/couponController.js';
+
+import { processRefund } from "../controller/admin/refundController.js";
+import { 
+  getSalesReportPage, 
+  getSalesReportData, 
+  downloadSalesReport 
+} from '../controller/admin/salesReport.js';
+router.post("/orders/:orderId/refund-item", isAdmin, processRefund);
 
 router.get("/login", adminController.loadLogin);
 router.post("/login", adminController.login);
@@ -78,11 +87,9 @@ router.get("/orders/:orderId/:itemIndex/detail", isAdmin, getOrderDetails);
 
 router.get("/orders/print/:orderId", isAdmin, printOrder);
 
-router.get("/orders", isAdmin, getAdminOrdersPage);
 
 router.get("/orders/data", isAdmin, getAdminOrdersData);
 
-router.post("/orders/update-status/:orderId", isAdmin, updateOrderStatus);
 
 router.post("/orders/:orderId/update-item", isAdmin, updateItemStatus);
 
@@ -101,5 +108,12 @@ router.put("/offers/:id",isAdmin, updateOffer);
 router.delete("/offers/:id",isAdmin, deleteOffer);
 router.patch('/offers/:id/toggle', toggleOfferActive);
 
+router.get("/coupons",isAdmin,getCouponsPage);
+router.post("/coupons/create",isAdmin,createCoupon);
+router.put("/coupons/update/:id", isAdmin, updateCoupon);
+router.delete("/coupons/delete/:id", isAdmin, deleteCoupon);
 
+router.get('/sales-report', isAdmin, getSalesReportPage);
+router.get('/sales-report/data', isAdmin, getSalesReportData);
+router.get('/sales-report/download', isAdmin, downloadSalesReport);
 export default router;

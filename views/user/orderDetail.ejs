@@ -163,11 +163,11 @@
       </div>
     </div>
 
-    <!-- Price Breakdown -->
+    <!-- Price Breakdown (UPDATED to show discount & final total) -->
     <div class="price-breakdown-card">
       <h3>Price Details</h3>
       <div class="price-row">
-        <span>Item Total (×<%= item.quantity %>):</span>
+        <span>Subtotal (×<%= item.quantity %>):</span>
         <span>₹<%= (item.price * item.quantity).toLocaleString('en-IN') %></span>
       </div>
       <div class="price-row">
@@ -176,61 +176,78 @@
       </div>
       <% if (order.discount > 0) { %>
         <div class="price-row discount">
-          <span>Discount:</span>
-          <span>-₹<%= order.discount.toLocaleString('en-IN') %></span>
+          <span>Coupon Discount:</span>
+          <span style="color:#2ecc71;">- ₹<%= order.discount.toLocaleString('en-IN') %></span>
         </div>
       <% } %>
       <div class="price-row total">
         <span><strong>Amount Paid:</strong></span>
-        <span><strong>₹<%= order.totalAmount.toLocaleString('en-IN') %></strong></span>
+        <span><strong style="color:#00ff9d;">₹<%= order.totalAmount.toLocaleString('en-IN') %></strong></span>
       </div>
     </div>
   </main>
 </div>
 
-<!-- MODALS (Beautiful & Functional) -->
 <div id="modalTrack" class="modal">
   <div class="modal-backdrop" data-close="modalTrack"></div>
-  <div class="modal-box">
+  <div class="modal-box track-modal">
     <div class="modal-header">
       <h2>Track Your Item</h2>
       <span class="close" data-close="modalTrack">×</span>
     </div>
     <div class="modal-body">
+      <!-- Current Status -->
+      <div class="current-status-box">
+        <span class="status-badge-large <%= item.itemStatus.toLowerCase().replace(/\s+/g, '-') %>">
+          <%= item.itemStatus %>
+        </span>
+        <% if (item.itemTimeline?.deliveredAt) { %>
+          <p class="delivered-date">Delivered on <%= new Date(item.itemTimeline.deliveredAt).toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+        <% } else if (item.itemTimeline?.outForDeliveryAt) { %>
+          <p class="delivery-info">Out for delivery — arriving soon!</p>
+        <% } else if (item.itemTimeline?.shippedAt) { %>
+          <p class="delivery-info">Shipped — on its way!</p>
+        <% } %>
+      </div>
+
+      <!-- Timeline -->
       <div class="tracking-timeline">
-        <div class="timeline-status-current">
-          <span class="status-badge <%= item.itemStatus.toLowerCase().replace(/\s+/g, '-') %>">
-            Current Status: <%= item.itemStatus %>
-          </span>
-        </div>
-        <div class="timeline-events">
-          <% 
-            const timeline = item.itemTimeline || {};
-            const events = [
-              { key: 'confirmedAt', label: 'Order Confirmed' },
-              { key: 'processedAt', label: 'Processing' },
-              { key: 'shippedAt', label: 'Shipped' },
-              { key: 'outForDeliveryAt', label: 'Out for Delivery' },
-              { key: 'deliveredAt', label: 'Delivered' }
-            ];
-            events.forEach(event => {
-              if (timeline[event.key]) { %>
-                <div class="timeline-event completed">
-                  <div class="event-dot"></div>
-                  <div class="event-content">
-                    <span class="event-title"><%= event.label %></span>
-                    <span class="event-date"><%= new Date(timeline[event.key]).toLocaleDateString('en-GB') %></span>
-                  </div>
+        <% 
+          const timeline = item.itemTimeline || {};
+          const events = [
+            { key: 'confirmedAt', label: 'Order Confirmed', icon: '✓' },
+            { key: 'processedAt', label: 'Processing', icon: '⚙️' },
+            { key: 'shippedAt', label: 'Shipped', icon: '🚚' },
+            { key: 'outForDeliveryAt', label: 'Out for Delivery', icon: '📦' },
+            { key: 'deliveredAt', label: 'Delivered', icon: '🏠' }
+          ];
+
+          let hasAnyEvent = false;
+          events.forEach(event => {
+            if (timeline[event.key]) {
+              hasAnyEvent = true;
+        %>
+              <div class="timeline-event <%= timeline.deliveredAt && event.key === 'deliveredAt' ? 'current' : 'completed' %>">
+                <div class="event-icon"><%= event.icon %></div>
+                <div class="event-content">
+                  <span class="event-title"><%= event.label %></span>
+                  <span class="event-date"><%= new Date(timeline[event.key]).toLocaleDateString('en-GB') %></span>
                 </div>
-              <% }
-            });
-          %>
-        </div>
+              </div>
+        <%
+            }
+          });
+
+          if (!hasAnyEvent) { %>
+            <div class="no-timeline">
+              <p>No tracking information available yet.</p>
+              <p>Your order is being prepared.</p>
+            </div>
+          <% } %>
       </div>
     </div>
   </div>
 </div>
-
 <div id="modalCancel" class="modal">
   <div class="modal-backdrop" data-close="modalCancel"></div>
   <div class="modal-box">
@@ -285,35 +302,47 @@
     </div>
   </div>
 </div>
-
 <div id="modalReview" class="modal">
   <div class="modal-backdrop" data-close="modalReview"></div>
-  <div class="modal-box">
+  <div class="modal-box review-modal">
     <div class="modal-header">
       <h2>Write a Review</h2>
       <span class="close" data-close="modalReview">×</span>
     </div>
     <div class="modal-body">
+      <!-- Product Preview -->
       <div class="review-product-preview">
-        <img src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" alt="<%= item.productId?.name %>">
-        <div>
-          <strong><%= item.productId?.name %></strong><br>
-          <small><%= item.variantId?.colorName || 'Standard' %></small>
+        <img src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" alt="<%= item.productId?.name %>" class="review-product-img">
+        <div class="review-product-info">
+          <strong class="review-product-name"><%= item.productId?.name %></strong>
+          <small class="review-variant"><%= item.variantId?.colorName || 'Standard' %></small>
         </div>
       </div>
-      <p class="modal-subtitle">Rate this product</p>
-      <div class="star-rating">
-        <span class="star" data-value="1">★</span>
-        <span class="star" data-value="2">★</span>
-        <span class="star" data-value="3">★</span>
-        <span class="star" data-value="4">★</span>
-        <span class="star" data-value="5">★</span>
+
+      <!-- Star Rating -->
+      <div class="review-rating-section">
+        <p class="rating-label">Your Rating</p>
+        <div class="star-rating">
+          <span class="star" data-value="1">★</span>
+          <span class="star" data-value="2">★</span>
+          <span class="star" data-value="3">★</span>
+          <span class="star" data-value="4">★</span>
+          <span class="star" data-value="5">★</span>
+        </div>
+        <p class="rating-text" id="ratingText">Tap a star to rate</p>
       </div>
-      <input type="hidden" id="ratingInput" value="0">
-      <textarea id="reviewText" class="form-input" rows="5" placeholder="Share your experience..."></textarea>
-      <button id="submitReviewBtn" class="btn-confirm" disabled>Submit Review</button>
+<input type="hidden" id="ratingInput" value="0">
+      <!-- Review Text -->
+      <div class="review-text-section">
+        <label for="reviewText" class="review-label">Your Review</label>
+        <textarea id="reviewText" class="review-textarea" rows="5" placeholder="Share your experience with this watch... What did you like? Quality, design, comfort?"></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <button id="submitReviewBtn" class="btn-review-submit" disabled>Submit Review</button>
     </div>
   </div>
+</div>
 </div>
 
 <div id="modalInvoice" class="modal">
@@ -325,11 +354,10 @@
     </div>
     <div class="modal-body text-center">
       <p>Download your invoice</p>
-      <a href="/order/<%= order._id %>/invoice" target="_blank" class="btn-confirm">Download PDF</a>
+<a href="/profile/orders/<%= order.orderId %>/invoice" target="_blank" class="btn-confirm">View & Print Invoice</a>
     </div>
   </div>
 </div>
-
 <script>
   const ORDER_ID = "<%= order._id %>";
   const ITEM_INDEX = <%= itemIndex %>;
@@ -337,90 +365,109 @@
   function toast(message, type = "info") {
     Toastify({
       text: message,
-      duration: 4000,
-      gravity: "bottom",
+      duration: 5000,
+      gravity: "top",
       position: "right",
-      backgroundColor: type === "success" ? "#16a34a" : type === "error" ? "#dc2626" : "#f59e0b"
+      backgroundColor: type === "success" ? "#16a34a" : type === "error" ? "#dc2626" : "#f59e0b",
+      stopOnFocus: true,
     }).showToast();
   }
 
-  // Open Modal
   function openModal(id) {
-    document.getElementById(id).classList.add('active');
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.add('active');
   }
 
-  // Close Modal
-  document.querySelectorAll('[data-close], .modal-backdrop').forEach(el => {
+  document.querySelectorAll('.modal-backdrop, [data-close]').forEach(el => {
     el.addEventListener('click', () => {
-      el.closest('.modal').classList.remove('active');
+      el.closest('.modal')?.classList.remove('active');
     });
   });
 
-  // Track
-  document.getElementById('btnTrack')?.addEventListener('click', () => openModal('modalTrack'));
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('btnTrack')?.addEventListener('click', () => openModal('modalTrack'));
+    document.getElementById('btnInvoice')?.addEventListener('click', () => openModal('modalInvoice'));
 
-  // Invoice
-  document.getElementById('btnInvoice')?.addEventListener('click', () => openModal('modalInvoice'));
+    document.querySelector('.btn-cancel')?.addEventListener('click', () => openModal('modalCancel'));
+    document.querySelector('.btn-return')?.addEventListener('click', () => openModal('modalReturn'));
+    document.querySelector('.btn-review')?.addEventListener('click', () => openModal('modalReview'));
 
-  // Cancel
-  document.querySelector('.btn-cancel')?.addEventListener('click', () => openModal('modalCancel'));
+    document.getElementById('submitCancel')?.addEventListener('click', async () => {
+      const reason = document.querySelector('input[name="cancelReason"]:checked')?.value || 'No reason';
+      try {
+        const res = await axios.post(`/order/${ORDER_ID}/cancel-item`, { itemIndex: ITEM_INDEX, reason });
+        toast(res.data.success ? 'Item cancelled!' : res.data.message, res.data.success ? 'success' : 'error');
+        if (res.data.success) setTimeout(() => location.reload(), 2000);
+      } catch (err) {
+        toast('Server error', 'error');
+      }
+    });
 
-  // Return
-  document.querySelector('.btn-return')?.addEventListener('click', () => openModal('modalReturn'));
+    document.getElementById('submitReturn')?.addEventListener('click', async () => {
+      const reason = document.querySelector('input[name="returnReason"]:checked')?.value;
+      if (!reason) return toast('Please select a reason', 'error');
 
-  // Review
-  document.querySelector('.btn-review')?.addEventListener('click', () => openModal('modalReview'));
+      try {
+        const res = await axios.post(`/order/${ORDER_ID}/return-item`, { itemIndex: ITEM_INDEX, reason });
+        toast(res.data.success ? 'Return requested!' : res.data.message, res.data.success ? 'success' : 'error');
+        if (res.data.success) setTimeout(() => location.reload(), 2000);
+      } catch (err) {
+        toast('Failed to submit return', 'error');
+      }
+    });
 
-  // Cancel Submit
-  document.getElementById('submitCancel')?.addEventListener('click', async () => {
-    const reason = document.querySelector('input[name="cancelReason"]:checked')?.value || 'No reason';
-    try {
-      const res = await axios.post(`/order/${ORDER_ID}/cancel-item`, { itemIndex: ITEM_INDEX, reason });
-      toast(res.data.success ? 'Cancelled!' : res.data.message || 'Failed', res.data.success ? 'success' : 'error');
-      if (res.data.success) setTimeout(() => location.reload(), 1500);
-    } catch (err) {
-      toast('Server error', 'error');
-    }
-  });
+    const ratingInput = document.getElementById('ratingInput');
+    const submitReviewBtn = document.getElementById('submitReviewBtn');
+    const reviewText = document.getElementById('reviewText');
+    const ratingTextEl = document.getElementById('ratingText');
 
-  // Return Submit
-  document.getElementById('submitReturn')?.addEventListener('click', async () => {
-    const reason = document.querySelector('input[name="returnReason"]:checked')?.value || 'No reason';
-    try {
-      const res = await axios.post(`/order/${ORDER_ID}/return-item`, { itemIndex: ITEM_INDEX, reason });
-      toast(res.data.success ? 'Return requested!' : res.data.message || 'Failed', res.data.success ? 'success' : 'error');
-      if (res.data.success) setTimeout(() => location.reload(), 1500);
-    } catch (err) {
-      toast('Server error', 'error');
-    }
-  });
+    document.querySelectorAll('.star').forEach(star => {
+      star.addEventListener('click', () => {
+        const value = parseInt(star.dataset.value);
 
-  // Review Submit
-  document.getElementById('submitReviewBtn')?.addEventListener('click', async () => {
-    const rating = document.getElementById('ratingInput').value;
-    const text = document.getElementById('reviewText').value.trim();
-    if (!text) return toast('Write your review', 'error');
+        if (ratingInput) ratingInput.value = value;
 
-    try {
-      const res = await axios.post(`/order/${ORDER_ID}/review-item`, { itemIndex: ITEM_INDEX, rating: Number(rating), text });
-      toast(res.data.success ? 'Review submitted!' : res.data.message || 'Failed', res.data.success ? 'success' : 'error');
-      if (res.data.success) setTimeout(() => location.reload(), 1500);
-    } catch (err) {
-      toast('Server error', 'error');
-    }
-  });
+        document.querySelectorAll('.star').forEach((s, i) => {
+          s.style.color = i < value ? '#fbbf24' : '#e2e8f0';
+        });
 
-  // Star Rating
-  document.querySelectorAll('.star').forEach(star => {
-    star.addEventListener('click', () => {
-      const value = star.dataset.value;
-      document.getElementById('ratingInput').value = value;
-      document.querySelectorAll('.star').forEach(s => s.style.color = '#e5e7eb');
-      document.querySelectorAll(`.star[data-value="${value}"]`).forEach((s, i) => {
-        s.style.color = i < value ? '#f59e0b' : '#e5e7eb';
+        const texts = ["", "Very Bad", "Poor", "Average", "Good", "Excellent!"];
+        if (ratingTextEl) ratingTextEl.textContent = texts[value];
+
+        if (submitReviewBtn) submitReviewBtn.disabled = false;
       });
-      document.getElementById('submitReviewBtn').disabled = false;
     });
+
+    if (submitReviewBtn) {
+      submitReviewBtn.addEventListener('click', async () => {
+        const rating = ratingInput?.value || 0;
+        const text = reviewText?.value.trim() || '';
+
+        if (rating == 0) return toast('Please rate with stars', 'error');
+        if (!text) return toast('Please write your review', 'error');
+
+        try {
+          const res = await axios.post(`/order/${ORDER_ID}/review-item`, {
+            itemIndex: ITEM_INDEX,
+            rating: Number(rating),
+            text
+          });
+
+          toast(res.data.success ? 'Review submitted successfully! 🎉' : res.data.message || 'Failed', res.data.success ? 'success' : 'error');
+          if (res.data.success) setTimeout(() => location.reload(), 2000);
+        } catch (err) {
+          toast('Server error', 'error');
+        }
+      });
+    }
+
+    if (reviewText && submitReviewBtn) {
+      reviewText.addEventListener('input', () => {
+        const hasText = reviewText.value.trim().length > 0;
+        const hasRating = ratingInput?.value > 0;
+        submitReviewBtn.disabled = !(hasText || hasRating);
+      });
+    }
   });
 </script>
 </body>

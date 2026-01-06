@@ -28,6 +28,9 @@ const orderedItemSchema = new mongoose.Schema({
     required: true,
     min: 0,
   }, 
+ 
+  refundId: { type: String }, 
+refundProcessedAt: { type: Date },
   itemStatus: {
     type: String,
     enum: [
@@ -94,26 +97,26 @@ const orderSchema = new mongoose.Schema(
     deliveryDate: Date,
 
     status: {
-      type: String,
-      enum: [
-        "Pending",
-        "Confirmed",
-        "Processing",
-        "Shipped",
-        "Out for Delivery",
-        "Delivered",
-        "CancelRequested",
-        "ReturnRequested",
-        "ReturnRejected",
-        "ReturnApproved",
-        "Cancelled",
-        "Returned",
-        "Partially Delivered",
-        "Partially Cancelled",
-        "Partially Returned",
-      ],
-      default: "Pending",
-    },
+  type: String,
+  enum: [
+    "Pending",
+    "Confirmed",
+    "Processing",
+    "Shipped",
+    "Out for Delivery",
+    "Delivered",
+    "CancelRequested",
+    "ReturnRequested",
+    "ReturnRejected",
+    "ReturnApproved",
+    "Cancelled",
+    "Returned",
+    "Partially Delivered",
+    "Partially Cancelled",
+    "Partially Returned",  
+  ],
+  default: "Pending",
+},
 
     cancelReason: { type: String, default: "" },
     returnReason: { type: String, default: "" },
@@ -151,11 +154,11 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
-    paymentStatus: {
-      type: String,
-      enum: ["Pending", "Paid", "Failed", "Refunded"],
-      default: "Pending",
-    },
+   paymentStatus: {
+  type: String,
+  enum: ["Pending", "Paid", "Failed", "Refunded", "Partially Refunded"],
+  default: "Pending",
+},
 
     paymentId: String,
 

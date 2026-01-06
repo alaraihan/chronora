@@ -74,20 +74,22 @@ export const getAdminOrdersData = async (req, res) => {
       })).filter(order => order.products.length > 0);
     }
 
-    let lineItems = [];
-    filteredOrders.forEach(order => {
-      order.products.forEach((prod, idx) => {
-        lineItems.push({
-          orderId: order.orderId,
-          _id: order._id,
-          createdAt: order.createdAt,
-          address: order.address,
-          products: [prod],
-          itemIndex: idx
-        });
-      });
+  let lineItems = [];
+filteredOrders.forEach(order => {
+  order.products.forEach((prod, idx) => {
+    lineItems.push({
+      orderId: order.orderId,
+      _id: order._id,
+      createdAt: order.createdAt,
+      address: order.address,
+      products: [prod],
+      itemIndex: idx,
+      totalAmount: order.totalAmount,
+      discount: order.discount || 0,
+      deliveryCharge: order.deliveryCharge || 0
     });
-
+  });
+});
     const totalLineItems = lineItems.length;
     const totalPages = Math.ceil(totalLineItems / limit);
     const start = (page - 1) * limit;
@@ -110,28 +112,7 @@ export const getAdminOrdersData = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-export const getAdminOrdersPage = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 10;
 
-    const totalOrders = await Order.countDocuments();
-
-    res.render("admin/orders", {
-      title: "Order Management",
-      currentPage: page,
-      totalPages: Math.ceil(totalOrders / limit),
-      totalOrders,
-      search: "",
-      status: "",
-      page: "order"
-    });
-
-  } catch (error) {
-    console.error("ORDERS PAGE ERROR:", error);
-    res.status(500).send("Server Error");
-  }
-};
 
 export const getOrderDetails = async (req, res) => {
   try {

@@ -35,6 +35,7 @@ form.addEventListener("submit", async (e) => {
 
       const sidebarImg = document.querySelector(".sidebar .profile-img");
       if (sidebarImg) sidebarImg.src = res.data.image + "?t=" + new Date().getTime();
+      
     }
   } catch (err) {
     showToast(err.response?.data?.message || "Something went wrong", "error");

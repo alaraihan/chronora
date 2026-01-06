@@ -38,48 +38,21 @@
       </div>
 
       <div class="pricing">
-
-  <% if (item.price < item.originalPrice) { %>
-    <div class="offer-badge-admin">
-      🎉 BOUGHT ON OFFER
-    </div>
-
-    <p>
-      Original Price:
-      <del>₹ <%= item.originalPrice.toLocaleString('en-IN') %></del>
-    </p>
-
-    <p>
-      Offer Price:
-      <strong style="color:#16a34a;">
-        ₹ <%= item.price.toLocaleString('en-IN') %>
-      </strong>
-    </p>
-
-    <p style="color:#dc2626; font-weight:600;">
-      Customer Saved ₹
-      <%= ((item.originalPrice - item.price) * item.quantity).toLocaleString('en-IN') %>
-    </p>
-
-  <% } else { %>
-
-    <p>
-      Unit Price:
-      <strong>₹ <%= item.price.toLocaleString('en-IN') %></strong>
-    </p>
-
-  <% } %>
-
-  <p>Quantity: <strong><%= item.quantity %></strong></p>
-
-  <p class="subtotal">
-    Subtotal:
-    <strong>
-      ₹ <%= (item.price * item.quantity).toLocaleString('en-IN') %>
-    </strong>
-  </p>
-</div>
-
+        <% if (item.price < item.originalPrice) { %>
+          <div class="offer-badge-admin">
+            🎉 BOUGHT ON OFFER
+          </div>
+          <p>Original Price: <del>₹ <%= (item.originalPrice * item.quantity).toLocaleString('en-IN') %></del></p>
+          <p>Offer Price: <strong style="color:#16a34a;">₹ <%= (item.price * item.quantity).toLocaleString('en-IN') %></strong></p>
+          <p style="color:#dc2626; font-weight:600;">
+            Customer Saved ₹ <%= ((item.originalPrice - item.price) * item.quantity).toLocaleString('en-IN') %>
+          </p>
+        <% } else { %>
+          <p>Unit Price: <strong>₹ <%= item.price.toLocaleString('en-IN') %></strong></p>
+        <% } %>
+        <p>Quantity: <strong><%= item.quantity %></strong></p>
+        <p class="subtotal">Item Subtotal: <strong>₹ <%= (item.price * item.quantity).toLocaleString('en-IN') %></strong></p>
+      </div>
 
       <% if (item.reason) { %>
         <div class="reason-box">
@@ -93,7 +66,6 @@
         <h3>Customer Information</h3>
         <p><strong><%= order.userId.name %></strong></p>
         <p><%= order.userId.email %></p>
-        <p><%= order.userId.phone || 'N/A' %></p>
       </div>
 
       <div class="info-card">
@@ -110,10 +82,20 @@
         <p>Total Amount: <strong>₹<%= order.totalAmount.toLocaleString('en-IN') %></strong></p>
         <p>Payment Method: <strong><%= order.paymentMethod.toUpperCase() %></strong></p>
         <p>Payment Status: 
-          <span class="payment-badge <%= order.paymentStatus === 'Paid' ? 'paid' : 'pending' %>">
+          <span class="payment-badge <%= order.paymentStatus === 'Paid' || order.paymentStatus === 'Refunded' ? 'paid' : 'pending' %>">
             <%= order.paymentStatus.toUpperCase() %>
           </span>
         </p>
+      </div>
+
+      <div class="info-card">
+        <h3>Price Breakdown</h3>
+        <div class="price-row"><span>Item Subtotal:</span><span>₹<%= (item.price * item.quantity).toLocaleString('en-IN') %></span></div>
+        <div class="price-row"><span>Delivery Charge:</span><span><%= order.deliveryCharge === 0 ? 'FREE' : '₹' + order.deliveryCharge.toLocaleString('en-IN') %></span></div>
+        <% if (order.discount > 0) { %>
+          <div class="price-row discount"><span>Coupon Discount:</span><span style="color:#16a34a;">- ₹<%= order.discount.toLocaleString('en-IN') %></span></div>
+        <% } %>
+        <div class="price-row total"><span><strong>Final Amount Paid:</strong></span><span><strong style="color:#00ff9d;">₹<%= order.totalAmount.toLocaleString('en-IN') %></strong></span></div>
       </div>
     </div>
   </div>
@@ -124,66 +106,41 @@
     <div class="current-status <%= item.itemStatus.toLowerCase().replace(/ /g, '-') %>">
       <%= 
         item.itemStatus === 'ReturnRequested' ? 'RETURN REQUESTED' :
-        item.itemStatus === 'ReturnApproved' ? 'RETURN APPROVED' :
+        item.itemStatus === 'ReturnApproved' ? 'RETURN APPROVED – Awaiting Product Return' :
+        item.itemStatus === 'Returned' ? 'RETURN COMPLETED & REFUNDED' :
         item.itemStatus === 'Out for Delivery' ? 'OUT FOR DELIVERY' :
         item.itemStatus.toUpperCase()
       %>
     </div>
 
     <div class="action-controls">
-
       <div class="control-group" id="statusUpdateGroup">
         <label>Update Status</label>
         <select id="statusSelect">
           <option value="">-- Select New Status --</option>
-
           <% 
             const current = item.itemStatus || "Pending";
-
-            const deliveryWorkflow = [
-              "Pending",
-              "Confirmed",
-              "Processing",
-              "Shipped",
-              "Out for Delivery",
-              "Delivered"
-            ];
-
+            const deliveryWorkflow = ["Pending", "Confirmed", "Processing", "Shipped", "Out for Delivery", "Delivered"];
             let allowedNext = [];
             const currentIndex = deliveryWorkflow.indexOf(current);
-
-            if (currentIndex !== -1 && currentIndex < deliveryWorkflow.length - 1) {
-              allowedNext = deliveryWorkflow.slice(currentIndex + 1);
-            }
-
-            if (current === "Pending") {
-              allowedNext = deliveryWorkflow.slice(1); 
-            }
-
+            if (currentIndex !== -1 && currentIndex < deliveryWorkflow.length - 1) allowedNext = deliveryWorkflow.slice(currentIndex + 1);
+            if (current === "Pending") allowedNext = deliveryWorkflow.slice(1);
             const finalStatuses = ["Delivered", "Cancelled", "ReturnRequested", "ReturnApproved", "Returned"];
-            if (!finalStatuses.includes(current)) {
-              if (!allowedNext.includes("Cancelled")) {
-                allowedNext.push("Cancelled");
-              }
-            }
-
+            if (!finalStatuses.includes(current) && !allowedNext.includes("Cancelled")) allowedNext.push("Cancelled");
             allowedNext = [...new Set(allowedNext)];
-          %>
-
-          <% allowedNext.forEach(status => { %>
-            <option value="<%= status %>"><%= status %></option>
-          <% }); %>
+            allowedNext.forEach(status => { %>
+              <option value="<%= status %>"><%= status %></option>
+            <% }); %>
         </select>
-
         <button id="updateStatus" class="btn-update">Update Status</button>
       </div>
 
       <% if (["Delivered", "Cancelled", "ReturnRequested", "ReturnApproved", "Returned"].includes(item.itemStatus)) { %>
-        <div class="info-note" style="margin-top: 1.5rem; padding: 1rem; background: #f3f4f6; border-radius: 8px; text-align: center; font-size: 1rem;">
+        <div class="info-note" style="margin-top: 1.5rem; padding: 1rem; background: #f3f4f6; border-radius: 8px; text-align: center;">
           <strong>Status is final:</strong> No further updates possible.
         </div>
       <% } else if (item.itemStatus === "Out for Delivery") { %>
-        <div class="info-note" style="margin-top: 1.5rem; padding: 1rem; background: #fffbeb; border-radius: 8px; border-left: 4px solid #f59e0b; font-size: 1rem;">
+        <div class="info-note" style="margin-top: 1.5rem; padding: 1rem; background: #fffbeb; border-radius: 8px; border-left: 4px solid #f59e0b;">
           <strong>Next step:</strong> Mark as Delivered when handed to the customer.
         </div>
       <% } %>
@@ -196,27 +153,39 @@
       <% } %>
 
       <% if (item.itemStatus === 'ReturnApproved') { %>
-        <div style="margin-top: 2rem;">
-          <button id="markReturned" class="btn-mark-returned">
-            Mark as Returned & Restore Stock
+        <div style="margin-top: 2rem; text-align: center;">
+          <p style="margin-bottom: 1rem; color: #92400e; background: #fffbeb; padding: 1rem; border-radius: 8px; border-left: 4px solid #f59e0b;">
+            <strong>Return Approved</strong><br>
+            Customer must return the product. Once received, click below to process refund.
+          </p>
+          <button 
+            id="processRefund" 
+            class="btn-refund"
+            data-order-id="<%= order._id %>"
+            data-item-index="<%= itemIndex %>"
+          >
+            Process Refund via Razorpay
           </button>
         </div>
+      <% } else if (item.itemStatus === 'Returned') { %>
+        <div style="margin-top: 2rem; text-align: center; padding: 1.5rem; background: #f0fdf4; border: 2px solid #16a34a; border-radius: 8px;">
+          <strong style="color: #16a34a; font-size: 1.2rem;">Refund Processed Successfully</strong>
+          <p style="margin: 0.5rem 0 0;">Money refunded via Razorpay + credited to customer wallet.</p>
+        </div>
       <% } %>
-
     </div>
   </div>
 
   <div class="bottom-actions">
-    <a href="/admin/orders/print/<%= order._id %>" target="_blank" class="btn-print">
-      Print Full Invoice
-    </a>
-    <a href="/admin/orders" class="btn-back-large">
-      Back to Orders
-    </a>
+    <a href="/admin/orders/print/<%= order._id %>" target="_blank" class="btn-print">Print Full Invoice</a>
+    <a href="/admin/orders" class="btn-back-large">Back to Orders</a>
   </div>
 </div>
 
 <script>
+  // === IMMEDIATELY REMOVE ANY OLD/GHOST TOASTS ===
+  document.querySelectorAll('.toastify').forEach(el => el.remove());
+
   const ORDER_ID = "<%= order._id %>";
   const ITEM_INDEX = <%= itemIndex %>;
 
@@ -230,65 +199,77 @@
     }).showToast();
   }
 
+  // Hide status dropdown if no options
   document.addEventListener('DOMContentLoaded', () => {
     const statusUpdateGroup = document.getElementById('statusUpdateGroup');
     const select = document.getElementById('statusSelect');
-
     if (statusUpdateGroup && select && select.options.length <= 1) {
       statusUpdateGroup.style.display = 'none';
     }
   });
 
+  // Update Status
   document.getElementById('updateStatus')?.addEventListener('click', async () => {
     const status = document.getElementById('statusSelect').value;
     if (!status) return toast('Please select a status', 'error');
 
     try {
-      const res = await axios.post(`/admin/orders/${ORDER_ID}/update-item`, {
-        itemIndex: ITEM_INDEX,
-        status
-      });
-      toast(res.data.success ? 'Status updated successfully!' : res.data.message || 'Update failed', 
+      const res = await axios.post(`/admin/orders/${ORDER_ID}/update-item`, { itemIndex: ITEM_INDEX, status });
+      toast(res.data.success ? 'Status updated successfully!' : res.data.message || 'Update failed',
             res.data.success ? 'success' : 'error');
-      if (res.data.success) {
-        setTimeout(() => location.reload(), 1500);
-      }
+      if (res.data.success) setTimeout(() => location.reload(), 1500);
     } catch (err) {
       toast('Server error. Please try again.', 'error');
     }
   });
 
+  // Approve Return
   document.getElementById('approveReturn')?.addEventListener('click', async () => {
     if (!confirm('Approve this return request?')) return;
     try {
       const res = await axios.post(`/admin/orders/${ORDER_ID}/approve-return`, { itemIndex: ITEM_INDEX });
-      toast(res.data.success ? 'Return approved!' : 'Failed to approve', res.data.success ? 'success' : 'error');
-      if (res.data.success) setTimeout(() => location.reload(), 1500);
-    } catch (err) {
-      toast('Server error', 'error');
-    }
-  });
-
-  document.getElementById('rejectReturn')?.addEventListener('click', async () => {
-    if (!confirm('Reject this return request?')) return;
-    try {
-      const res = await axios.post(`/admin/orders/${ORDER_ID}/reject-return`, { itemIndex: ITEM_INDEX });
-      toast(res.data.success ? 'Return rejected' : 'Failed to reject', res.data.success ? 'success' : 'error');
-      if (res.data.success) setTimeout(() => location.reload(), 1500);
-    } catch (err) {
-      toast('Server error', 'error');
-    }
-  });
-
-  document.getElementById('markReturned')?.addEventListener('click', async () => {
-    if (!confirm('Mark as returned and restore stock?')) return;
-    try {
-      const res = await axios.post(`/admin/orders/${ORDER_ID}/mark-returned-item`, { itemIndex: ITEM_INDEX });
-      toast(res.data.success ? 'Item marked as returned!' : res.data.message || 'Failed', 
+      toast(res.data.success ? 'Return approved!' : res.data.message || 'Failed', 
             res.data.success ? 'success' : 'error');
       if (res.data.success) setTimeout(() => location.reload(), 1500);
     } catch (err) {
       toast('Server error', 'error');
+    }
+  });
+
+  // Reject Return
+  document.getElementById('rejectReturn')?.addEventListener('click', async () => {
+    if (!confirm('Reject this return request?')) return;
+    try {
+      const res = await axios.post(`/admin/orders/${ORDER_ID}/reject-return`, { itemIndex: ITEM_INDEX });
+      toast(res.data.success ? 'Return rejected' : res.data.message || 'Failed', 
+            res.data.success ? 'success' : 'error');
+      if (res.data.success) setTimeout(() => location.reload(), 1500);
+    } catch (err) {
+      toast('Server error', 'error');
+    }
+  });
+
+  // Process Refund (MAIN ACTION)
+  document.getElementById('processRefund')?.addEventListener('click', async function () {
+    if (!confirm('Process refund for this item?\n\n• Amount will be refunded via Razorpay\n• Money instantly credited to customer wallet\n• Stock will be restored\n\nContinue?')) {
+      return;
+    }
+
+    const orderId = this.dataset.orderId;
+    const itemIndex = parseInt(this.dataset.itemIndex);
+
+    try {
+      const res = await axios.post(`/admin/orders/${orderId}/refund-item`, { orderId, itemIndex });
+
+      toast(res.data.message || (res.data.success ? 'Refund processed successfully!' : 'Refund failed'),
+            res.data.success ? 'success' : 'error');
+
+      if (res.data.success) {
+        setTimeout(() => location.reload(), 2000);
+      }
+    } catch (err) {
+      toast('Server error during refund. Check console.', 'error');
+      console.error(err);
     }
   });
 </script>

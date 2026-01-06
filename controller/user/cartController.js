@@ -33,10 +33,28 @@ export const loadCart = async (req, res) => {
   try {
     if (!req.user) return res.redirect("/login");
 
-    const items = await Cart.find({ userId: req.user._id })
-      .populate("productId", "name price isBlocked")
+    let items = await Cart.find({ userId: req.user._id })
+      .populate({
+        path: "productId",
+        populate: { path: "category" } 
+      })
       .populate("variantId", "colorName stock images isBlocked")
       .lean();
+
+    items = await Promise.all(
+      items.map(async (item) => {
+        if (item.productId) {
+          const offerData = await getBestOfferForProduct(item.productId);
+          item.productId.offerData = offerData;
+
+          if (offerData) {
+            item.price = offerData.offerPrice;
+            item.originalPrice = item.productId.price; 
+          }
+        }
+        return item;
+      })
+    );
 
     const totals = calcTotals(items);
 
@@ -51,7 +69,7 @@ export const loadCart = async (req, res) => {
       stockIssue: !totals.canCheckout
     });
   } catch (err) {
-    console.error(err);
+    console.error("Cart load error:", err);
     res.redirect("/");
   }
 };

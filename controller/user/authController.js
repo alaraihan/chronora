@@ -2,7 +2,7 @@ import User from "../../models/userSchema.js";
 import { sendOtp, generateOtp } from "../../utils/mail.js";
 import bcrypt from "bcrypt";
 import { setFlash ,getFlash} from "../../utils/flash.js";  
-
+import { generateReferralCode } from '../../helpers/referralHelper.js';
 const render = (req, res, view, options = {}) => {
   const flash = getFlash(req); 
   return res.render(view, { flash, ...options });
@@ -17,7 +17,7 @@ const loadSignUp = (req, res) => {
 
 const signUp = async (req, res) => {
   try {
-    const { fullName, email, password, confirm } = req.body;
+    const { fullName, email, password, confirm, referralCode } = req.body;
 
     if (!fullName || !email || !password || !confirm) {
       setFlash(req, "error", "All fields are required");
@@ -29,35 +29,67 @@ const signUp = async (req, res) => {
       return res.redirect("/signup");
     }
 
-    const existing = await User.findOne({ email: email.toLowerCase().trim() });
+    const trimmedEmail = email.toLowerCase().trim();
+    const existing = await User.findOne({ email: trimmedEmail });
     if (existing) {
       setFlash(req, "error", "User already exists with this email");
       return res.redirect("/signup");
     }
 
+    let referredBy = null;
+    if (referralCode) {
+      const enteredCode = referralCode.trim().toUpperCase();
+
+      if (enteredCode.length < 6 || enteredCode.length > 12) {
+        setFlash(req, "error", "Referral code must be between 6-12 characters");
+        return res.redirect("/signup");
+      }
+
+      const referrer = await User.findOne({ referralCode: enteredCode });
+      if (!referrer) {
+        setFlash(req, "error", "Invalid referral code. Please check and try again.");
+        return res.redirect("/signup");
+      }
+
+      if (referrer.email === trimmedEmail) {
+        setFlash(req, "error", "You cannot use your own referral code!");
+        return res.redirect("/signup");
+      }
+
+      referredBy = enteredCode;
+      console.log(`Valid referral: ${referrer.fullName} invited ${fullName} (Code: ${enteredCode})`);
+    }
+
     const otp = generateOtp(6);
     console.log("Signup OTP (dev):", otp);
 
-    const emailSent = await sendOtp(email, otp);
+    const emailSent = await sendOtp(trimmedEmail, otp);
     if (!emailSent) {
       setFlash(req, "error", "Failed to send verification email.");
       return res.redirect("/signup");
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    const generatedReferralCode = await generateReferralCode();
+
+    // Store all data in session
     req.session.pendingUser = {
-      fullName,
-      email: email.toLowerCase().trim(),
+      fullName: fullName.trim(),
+      email: trimmedEmail,
       password: hashedPassword,
       otp,
-      otpExpires: Date.now() +  1000*30,
+      otpExpires: Date.now() + 1000 * 30,
+      referralCode: generatedReferralCode,
+      referredBy,
     };
 
-    setFlash(req, "success", "OTP sent to your email!");
+    setFlash(req, "success", "OTP sent to your email! Check spam if not received.");
     return res.redirect("/verifyOtp");
+
   } catch (error) {
-    console.error("signup error", error);
-    setFlash(req, "error", "Server error");
+    console.error("signup error:", error);
+    setFlash(req, "error", "Server error. Please try again later.");
     return res.redirect("/signup");
   }
 };
@@ -66,7 +98,7 @@ export const loadVerifyOtp = (req, res) => {
   const pending = req.session.pendingUser;
 
   if (!pending) {
-    setFlash(req, "error", "No signup in progress");
+    setFlash(req, "error", "No signup in progress. Please start again.");
     return res.redirect("/signup");
   }
 
@@ -74,10 +106,15 @@ export const loadVerifyOtp = (req, res) => {
   const expiresAt = pending.otpExpires || 0;
   const remainingSeconds = Math.max(0, Math.ceil((expiresAt - now) / 1000));
 
+  const referralInfo = pending.referredBy
+    ? `Referred by code: <strong>${pending.referredBy}</strong>`
+    : null;
+
   return render(req, res, "user/verifyOtp", {
     title: "Chronora - Verify OTP",
     layout: "layouts/userLayouts/auth",
-    timeLeft: remainingSeconds, 
+    timeLeft: remainingSeconds,
+    referralInfo, 
     flash: getFlash(req),
   });
 };
@@ -88,78 +125,91 @@ export const verifyOtp = async (req, res) => {
       ? req.body.otp.join("")
       : (req.body.otp || "").trim();
 
-    console.log("[verifyOtp] received otp:", providedOtp);
     const pending = req.session.pendingUser;
+    
     if (!pending) {
-      console.log("verifyOtp no pendingUser in session");
-      setFlash(req, "error", "No signup in progress");
-      return res.redirect("/signup");
+      return res.json({ success: false, message: "No signup in progress" });
     }
-
-    const remainingSeconds = Math.max(0, Math.ceil((pending.otpExpires - Date.now()) / 1000));
 
     if (Date.now() > pending.otpExpires) {
       delete req.session.pendingUser;
-      setFlash(req, "error", "OTP expired. Please sign up again.");
-      return res.redirect("/signup");
+      return res.json({ success: false, message: "OTP expired. Please sign up again." });
     }
 
     if (!providedOtp || !/^\d{6}$/.test(providedOtp)) {
-      setFlash(req, "error", "Enter a 6-digit OTP");
-      return render(req, res, "user/verifyOtp", {
-        title: "Chronora - Verify OTP",
-        layout: "layouts/userLayouts/auth",
-        timeLeft: remainingSeconds,
-        flash: getFlash(req),
-      });
+      return res.json({ success: false, message: "Enter a valid 6-digit OTP" });
     }
 
     if (providedOtp !== String(pending.otp)) {
-      setFlash(req, "error", "Incorrect OTP. Please try again.");
+      return res.json({ success: false, message: "Incorrect OTP. Please try again." });
+    }
 
-      return render(req, res, "user/verifyOtp", {
-        title: "Chronora - Verify OTP",
-        layout: "layouts/userLayouts/auth",
-        timeLeft: remainingSeconds,
-        flash: getFlash(req),
+    const initialWallet = pending.referredBy ? 50 : 0;
+    const transactions = [];
+
+    if (pending.referredBy) {
+      transactions.push({
+        amount: 50,
+        type: "credit",
+        description: "Signup bonus via referral code",
+        date: new Date(),
       });
     }
 
-    console.log("verifyOtp OTP correct. Creating user for:", pending.email);
     const newUser = await User.create({
       fullName: pending.fullName,
       email: pending.email,
       password: pending.password,
       isVerified: true,
+      referralCode: pending.referralCode,
+      referredBy: pending.referredBy || null,
+      wallet: initialWallet,
+      walletTransactions: transactions,
     });
 
-delete req.session.pendingUser;
-setFlash(req, "success", "Account created successfully! Please log in.");
+    console.log(`✅ User created: ${newUser.email} | Wallet: ₹${initialWallet}`);
 
-console.log("verifyOtp about to save session and redirect to /login; sessionID:", req.sessionID, "session:", req.session);
+    if (pending.referredBy) {
+      try {
+        const referrer = await User.findOne({ referralCode: pending.referredBy });
+        
+        if (referrer) {
+          referrer.wallet = (referrer.wallet || 0) + 100;
+          referrer.walletTransactions.push({
+            amount: 100,
+            type: "credit",
+            description: `Referral bonus: ${newUser.fullName} joined using your code`,
+            date: new Date(),
+          });
+          await referrer.save();
+          
+          console.log(`✅ Referrer credited: ${referrer.email} +₹100`);
+        }
+      } catch (refError) {
+        console.error("❌ Referrer credit failed:", refError);
+      }
+    }
 
-return req.session.save(err => {
-  if (err) console.error("verifyOtp session.save error:", err);
-  console.log("verifyOtp session saved -> redirecting to /login");
-  return res.redirect("/login");
-});
+    delete req.session.pendingUser;
+
+    const message = pending.referredBy 
+      ? "Account created! ₹50 added to your wallet 🎉" 
+      : "Account created successfully!";
+
+    return res.json({ 
+      success: true, 
+      message: message,
+      redirect: "/login"
+    });
 
   } catch (err) {
-    console.error("verify otp error", err);
-    setFlash(req, "error", "Server error. Please try again.");
-
-    const pending = req.session.pendingUser || {};
-    const remainingSeconds = pending.otpExpires ? Math.max(0, Math.ceil((pending.otpExpires - Date.now()) / 1000)) : 0;
-
-    return render(req, res, "user/verifyOtp", {
-      title: "Chronora - Verify OTP",
-      layout: "layouts/userLayouts/auth",
-      timeLeft: remainingSeconds,
-      flash: getFlash(req),
+    console.error("❌ verifyOtp error:", err);
+    return res.json({ 
+      success: false, 
+      message: "Server error. Please try again." 
     });
   }
 };
-
 const loadLogin = (req, res) => {
 
   return render(req, res, "user/login", {

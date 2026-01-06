@@ -1,0 +1,146 @@
+.failure-wrapper {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+  padding: 20px;
+}
+
+.failure-container {
+  background: #16213e;
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid #3399cc44;
+}
+
+.failure-icon {
+  font-size: 80px;
+  color: #e74c3c;
+  margin-bottom: 20px;
+}
+
+.failure-title {
+  font-size: 36px;
+  color: #e74c3c;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.failure-message {
+  font-size: 18px;
+  color: #bdc3c7;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.error-detail {
+  background: #2c3e50;
+  color: #e74c3c;
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+  font-size: 15px;
+  border-left: 4px solid #e74c3c;
+}
+
+.order-summary-card {
+  background: #1e2a47;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 30px 0;
+  text-align: left;
+}
+
+.order-summary-card h3 {
+  text-align: center;
+  color: #3399cc;
+  margin-bottom: 20px;
+  font-size: 22px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #ecf0f1;
+}
+
+.summary-row.discount {
+  color: #2ecc71;
+}
+
+.summary-total {
+  border-top: 1px solid #3399cc44;
+  padding-top: 15px;
+  margin-top: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.btn-primary, .btn-secondary, .btn-outline {
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-primary {
+  background: #3399cc;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #287aa9;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: #2c3e50;
+  color: white;
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  background: #34495e;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #3399cc;
+  border: 2px solid #3399cc;
+  text-decoration: none;
+}
+
+.btn-outline:hover {
+  background: #3399cc22;
+}
+
+@media (max-width: 600px) {
+  .failure-container {
+    padding: 30px 20px;
+  }
+  .action-buttons {
+    gap: 12px;
+  }
+}

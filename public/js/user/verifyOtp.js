@@ -1,4 +1,3 @@
-
 const inputs = Array.from(document.querySelectorAll('.code-inputs input'));
 const form = document.getElementById('otpForm');
 const countdownEl = document.getElementById('countdown');
@@ -9,7 +8,6 @@ let timeLeft = (typeof window.INITIAL_OTP_TIME === 'number')
   ? Math.max(0, Math.floor(window.INITIAL_OTP_TIME))
   : 60;
 
-
 function updateTimerDisplay() {
   const mins = Math.floor(Math.max(0, timeLeft) / 60);
   const secs = Math.floor(Math.max(0, timeLeft) % 60);
@@ -17,7 +15,6 @@ function updateTimerDisplay() {
   const ss = String(secs).padStart(2, '0');
   countdownEl.textContent = `${mm}:${ss}`;
 }
-
 
 function showExpiredUI() {
   updateTimerDisplay();
@@ -59,7 +56,6 @@ function startTimer() {
     }
   }, 1000);
 }
-
 
 inputs.forEach(input => {
   input.setAttribute('inputmode', 'numeric');
@@ -112,7 +108,6 @@ inputs.forEach((input, index) => {
   });
 });
 
-
 resendLink.addEventListener('click', async (e) => {
   e.preventDefault();
   if (resendLink.classList.contains('disabled')) return;
@@ -128,9 +123,9 @@ resendLink.addEventListener('click', async (e) => {
       headers: { 'Accept': 'application/json' }
     });
 
-    const data = await res.json().catch(() => ({}));
+    const data = await res.json();
 
-    if (data && data.success) {
+    if (data.success) {
       inputs.forEach(i => i.value = '');
       if (inputs[0]) inputs[0].focus();
 
@@ -138,44 +133,77 @@ resendLink.addEventListener('click', async (e) => {
         clearInterval(timer);
         timer = null;
       }
-      timeLeft = (typeof data.timeLeft === 'number') ? Math.max(0, Math.floor(data.timeLeft)) : 60;
+      timeLeft = data.timeLeft || 180;
       updateTimerDisplay();
       startTimer();
 
+      alert('New OTP sent to your email!');
     } else {
-      alert(data && data.message ? data.message : 'Failed to resend');
+      alert(data.message || 'Failed to resend OTP');
       resendLink.classList.remove('disabled');
     }
   } catch (err) {
-    console.error('Network error while resending OTP', err);
+    console.error('Network error:', err);
     alert('Network error. Try again.');
     resendLink.classList.remove('disabled');
   } finally {
-    resendLink.textContent = previousText || 'Resend code';
+    resendLink.textContent = previousText;
   }
 });
 
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-form.addEventListener('submit', (e) => {
   if (timeLeft <= 0) {
-    e.preventDefault();
     alert('OTP expired. Please click resend to get a new code.');
     return;
   }
 
   const otp = inputs.map(i => i.value).join('');
   if (otp.length !== inputs.length) {
-    e.preventDefault();
     alert(`Enter all ${inputs.length} digits`);
     return;
   }
 
-  let hidden = document.getElementById('otpHidden') || document.createElement('input');
-  hidden.type = 'hidden';
-  hidden.name = 'otp';
-  hidden.id = 'otpHidden';
-  hidden.value = otp;
-  form.appendChild(hidden);
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const originalText = submitBtn ? submitBtn.textContent : '';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Verifying...';
+  }
+
+  try {
+    const response = await fetch('/verifyOtp', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({ otp })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      alert(data.message);
+      
+      window.location.href = data.redirect || '/login';
+    } else {
+      alert(data.message || 'Verification failed');
+      
+      inputs.forEach(i => i.value = '');
+      if (inputs[0]) inputs[0].focus();
+    }
+  } catch (err) {
+    console.error('Verification error:', err);
+    alert('Network error. Please try again.');
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  }
 });
 
 if (timeLeft <= 0) {

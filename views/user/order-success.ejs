@@ -1,35 +1,88 @@
+<link rel="stylesheet" href="/css/user/order-success.css" />
 
-  <link rel="stylesheet" href="/css/user/order-success.css" />
+<main class="success-page">
+  <section class="card">
+    <div class="illustration">
+      <svg width="180" height="180" viewBox="0 0 220 180" aria-labelledby="success-title">
+        <title id="success-title">Order Confirmed</title>
+        <rect x="10" y="40" width="200" height="110" rx="14" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+        <path d="M40 80 L70 110 L110 60" fill="none" stroke="#22c55e" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="170" cy="70" r="22" fill="#fef3c7" stroke="#fbbf24" stroke-width="2"/>
+        <path d="M158 68 L172 82 L188 55" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+    </div>
 
-  <main class="success-page">
-    <section class="card">
-      <div class="illustration">
-        <svg width="220" height="160" viewBox="0 0 220 160">
-          <rect x="10" y="40" width="200" height="100" rx="12" fill="#F3FBF6" stroke="#C8EDE0" />
-          <path d="M30 75 L55 105 L90 55" fill="none" stroke="#2FA47A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="170" cy="60" r="18" fill="#FFEFD6" stroke="#FFD7A6" />
-          <path d="M160 58 L174 72" stroke="#FF9E3B" stroke-width="3" stroke-linecap="round"/>
-        </svg>
-      </div>
+    <div class="content">
+      <h1>Thank you — your order is confirmed!</h1>
+      <p class="sub">We've received your order and a confirmation email has been sent to your inbox. Your luxury timepiece is being prepared with care.</p>
 
-      <div class="content">
-        <h1>Thank you — your order is confirmed!</h1>
-        <p class="sub">We’ve received your order. A confirmation email has been sent.</p>
-
-        <div class="order-summary">
+      <div class="order-summary">
+        <div class="order-header">
           <p><strong>Order ID:</strong> <%= orderId %></p>
-          <% if (orderTotal) { %>
-            <p><strong>Total:</strong> ₹<%= orderTotal %></p>
-          <% } %>
+          <p><strong>Estimated Delivery:</strong> 3-5 business days</p>
         </div>
 
-        <div class="actions">
-          <a class="btn btn-primary" href="/profile/orders/<%= orderId %>">View Order</a>
-          <a class="btn btn-ghost" href="/watch">Continue Shopping</a>
-        </div>
+        <% if (order && order.products) { %>
+          <div class="items-list">
+            <% order.products.forEach(item => { %>
+              <div class="item-row">
+                <div class="item-info">
+                  <% if (item.productId?.image) { %>
+                    <img src="<%= item.productId.image %>" alt="<%= item.productId.name %>" class="item-thumbnail">
+                  <% } %>
+                  <div class="item-details">
+                    <div class="item-name"><%= item.productId?.name %> × <%= item.quantity %></div>
+                    <small><%= item.variantId?.colorName || 'Standard' %></small>
+                  </div>
+                </div>
+                <div class="item-price">
+                  <% if (item.offerData || item.originalPrice > item.price) { %>
+                    <del>₹ <%= (item.originalPrice * item.quantity).toLocaleString('en-IN') %></del>
+                    <div class="price-highlight">₹ <%= (item.price * item.quantity).toLocaleString('en-IN') %></div>
+                    <div class="savings">You saved ₹ <%= ((item.originalPrice - item.price) * item.quantity).toLocaleString('en-IN') %></div>
+                  <% } else { %>
+                    <div class="price-highlight">₹ <%= (item.price * item.quantity).toLocaleString('en-IN') %></div>
+                  <% } %>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+
+          <div class="total-breakdown">
+            <div class="row">
+              <span>Delivery Charge</span>
+              <span><%= order.deliveryCharge === 0 ? 'FREE' : '₹' + order.deliveryCharge.toLocaleString('en-IN') %></span>
+            </div>
+
+            <% if (order.discount > 0) { %>
+              <div class="row discount">
+                <span>Coupon Discount</span>
+                <span>- ₹<%= order.discount.toLocaleString('en-IN') %></span>
+              </div>
+            <% } %>
+
+            <div class="row grand-total">
+              <span><strong>Amount Paid</strong></span>
+              <strong>₹<%= order.totalAmount.toLocaleString('en-IN') %></strong>
+            </div>
+          </div>
+        <% } %>
       </div>
-    </section>
-  </main>
 
-  <script src="/js/order-success.js"></script>
+      <div class="actions">
+        <a class="btn btn-primary" href="/profile/orders/<%= orderId %>">Track Order & View Details</a>
+        <a class="btn btn-ghost" href="/watches">Continue Shopping</a>
+      </div>
 
+      <div class="extra-info">
+        <p class="note">Need help? <a href="/contact" class="link">Contact our support team</a> or check our <a href="/faq" class="link">FAQ</a>.</p>
+        <p class="note">Follow us for exclusive offers: 
+          <a href="#" class="social">Instagram</a> • 
+          <a href="#" class="social">Twitter</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="/js/order-success.js"></script>
