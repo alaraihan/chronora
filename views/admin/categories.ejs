@@ -45,8 +45,9 @@
         <% categories.forEach(category => { %>
             <tr data-category-id="<%= category._id %>">
                 <td>
-                    <img src="<%= category.image || '/images/default-category.png' %>" 
-                         alt="<%= category.name %>" class="category-logo">
+                    <img src="<%= category.image?.url || category.image||'/images/default-category.png' %>" 
+     alt="<%= category.name %>" class="category-logo">
+
                 </td>
                 <td><strong><%= category.name %></strong></td>
                 <td><%= category.description || 'No description' %></td>

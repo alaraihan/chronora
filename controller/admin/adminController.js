@@ -64,16 +64,10 @@ const dashboard = (req, res) => {
 };
 
 const logout = (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error("Logout error:", err);
-      return res.status(500).json({ success: false, message: "Logout failed" });
-    }
-    res.clearCookie("sid");
-    res.json({
-      success: true,
-      message: "Logged out successfully!",
-    });
+  req.session.admin = null;
+  res.json({
+    success: true,
+    message: "Logged out successfully!",
   });
 };
 

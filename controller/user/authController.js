@@ -460,18 +460,8 @@ const loadLogout=async(req,res)=>{
 }
 const performLogout = async (req, res) => {
   try {
-    req.session.destroy((err) => {
-      if (err) {
-        console.error("Session destroy error:", err);
-        return res.status(500).render("user/pageNotfound", {
-          title: "Error - Chronora",
-          message: "Unable to logout. Try again.",
-          layout: 'layouts/userLayouts/auth'
-        });
-      }
-      res.clearCookie("connect.sid");
-      return res.redirect("/login");
-    });
+    req.session.user=null;
+    return res.redirect("/login");
   } catch (error) {
     console.error("performLogout error:", error);
     return res.status(500).send("Server error");

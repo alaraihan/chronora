@@ -51,111 +51,142 @@ export const listCategories = async (req, res) => {
 };
 
 export const addCategory = async (req, res) => {
-    try {
-        const { name, description } = req.body;
-        const trimmedName = name?.trim();
-        const trimmedDescription = description?.trim();
- const existing=Category.findOne({name});
-    if(existing){
-      return res.status(400).json({success:false,message:'Category with this name already exists!'});
-    };
-        if (!trimmedName || !trimmedDescription) {
-            return res.status(400).json({ success: false, message: "Please fill all required fields." });
-        }
+  try {
+    const { name, description } = req.body;
+    const trimmedName = name?.trim();
+    const trimmedDescription = description?.trim();
 
-        if (!req.file) {
-            return res.status(400).json({
-                success: false,
-                message: "Please upload a category image."
-            });
-        }
-
-        const exists = await Category.findOne({
-            name: { $regex: `^${trimmedName}$`, $options: "i" },
-            isListed: true, 
-        });
-        
-        if (exists) {
-            return res.status(409).json({ success: false, message: "Category already exists!" });
-        }
-
-        const result = await cloudinary.uploader.upload(req.file.path, {
-            folder: "chronora/categories",
-            transformation: { width: 500, height: 500, crop: "limit" },
-        });
-
-        fs.unlinkSync(req.file.path); 
-
-        const category = await Category.create({
-            name: trimmedName,
-            description: trimmedDescription,
-            image: result.secure_url,
-        });
-        
-        return res.status(201).json({
-            success: true,
-            message: 'Category created successfully',
-            category
-        });
-
-    } catch (err) {
-        if (err.name === 'ValidationError') {
-            return res.status(400).json({ success: false, message: err.message });
-        }
-
-        console.error("addCategory error:", err);
-        return res.status(500).json({ success: false, message: "Internal server error: Failed to add Category" });
+    if (!trimmedName || !trimmedDescription) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fill all required fields."
+      });
     }
-};
 
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload a category image."
+      });
+    }
+
+    const exists = await Category.findOne({
+      name: { $regex: `^${trimmedName}$`, $options: "i" }
+    });
+
+    if (exists) {
+      return res.status(409).json({
+        success: false,
+        message: "Category already exists!"
+      });
+    }
+
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: "chronora/categories",
+      transformation: { width: 500, height: 500, crop: "limit" }
+    });
+
+    if (fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+
+    const category = await Category.create({
+      name: trimmedName,
+      description: trimmedDescription,
+      image: {
+        url: result.secure_url,
+        public_id: result.public_id
+      }
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Category created successfully",
+      category
+    });
+
+  } catch (err) {
+    console.error("addCategory error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error: Failed to add Category"
+    });
+  }
+};
 export const editCategory = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { name, description,isListed } = req.body;
-        const trimmedName = name?.trim();
-        const trimmedDescription = description?.trim();
+  try {
+    const { id } = req.params;
+    const { name, description, isListed } = req.body;
 
-        if (!trimmedName || !trimmedDescription) {
-            return res.status(400).json({ success: false, message: "Please fill all required fields." });
-        }
+    const trimmedName = name?.trim();
+    const trimmedDescription = description?.trim();
 
-        const updateData = {
-            name: trimmedName,
-            description: trimmedDescription,
-            isListed: isListed === 'true'
-        };
-
-        if (req.file) {
-            const result = await cloudinary.uploader.upload(req.file.path, {
-                folder: "chronora/categories",
-            });
-
-            updateData.image = result.secure_url;
-            fs.unlinkSync(req.file.path);
-        }
-
-        
-        const updated = await Category.findByIdAndUpdate(id, updateData, { new: true });
-        
-        if (!updated) {
-            return res.status(404).json({ success: false, message: "Category not found" });
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: "Category updated successfully!",
-            category: updated.toObject()
-        });
-
-    } catch (err) {
-        if (err.code === 11000) {
-             return res.status(409).json({ success: false, message: "Category name already taken." });
-        }
-        
-        console.log("editCategory error:", err);
-        return res.status(500).json({ success: false, message: "Failed to update Category" });
+    if (!trimmedName || !trimmedDescription) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fill all required fields."
+      });
     }
+
+    const category = await Category.findById(id);
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found"
+      });
+    }
+
+    const updateData = {
+      name: trimmedName,
+      description: trimmedDescription,
+      isListed: isListed === "true"
+    };
+
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "chronora/categories"
+      });
+
+      if (category.image?.public_id) {
+        await cloudinary.uploader.destroy(category.image.public_id);
+      }
+
+      updateData.image = {
+        url: result.secure_url,
+        public_id: result.public_id
+      };
+
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+    }
+
+    const updated = await Category.findByIdAndUpdate(id, updateData, {
+      new: true
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Category updated successfully!",
+      category: updated
+    });
+
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "Category name already taken."
+      });
+    }
+
+    console.error("editCategory error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update Category"
+    });
+  }
 };
+
 
 export const getCategory = async (req, res) => {
     try {

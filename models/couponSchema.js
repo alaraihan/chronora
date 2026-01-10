@@ -127,7 +127,6 @@ couponSchema.pre('save', function (next) {
   next();
 });
 
-couponSchema.index({ code: 1 });
 couponSchema.index({ startDate: 1, expiryDate: 1, status: 1 });
 
 const Coupon = model('Coupon', couponSchema);

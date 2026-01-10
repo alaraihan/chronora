@@ -47,8 +47,8 @@ async function openEditModal(id) {
         document.getElementById('categoryDescription').value = c.description || '';
         document.getElementById('categoryStatus').value = c.isListed;
 
-        document.getElementById('currentLogoImg').src = c.image || '';
-        document.getElementById('currentLogo').style.display = c.image ? 'block' : 'none';
+        document.getElementById('currentLogoImg').src = c.image || ''||c.image.url;
+        document.getElementById('currentLogo').style.display = c.image ||c.image.url? 'block' : 'none';
 
         new bootstrap.Modal(document.getElementById('categoryModal')).show();
     } catch (err) {
