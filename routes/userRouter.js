@@ -72,13 +72,13 @@ router.get("/", userController.loadHomepage);
 router.get("/product/:id", userController.productDetails);
 router.get("/watch", userController.loadWatchPage);
 
-router.get("/login", checkLogin, authController.loadLogin);
+router.get("/login",  authController.loadLogin);
 router.post("/login", authController.login);
 
-router.get("/signup", checkLogin, authController.loadSignUp);
+router.get("/signup", authController.loadSignUp);
 router.post("/signup", authController.signUp);
 
-router.get("/verifyOtp", checkLogin, authController.loadVerifyOtp);
+router.get("/verifyOtp", authController.loadVerifyOtp);
 router.post("/verifyOtp", authController.verifyOtp);
 router.post("/resendOtp", authController.resendOtp);
 

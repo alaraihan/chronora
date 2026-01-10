@@ -1,6 +1,7 @@
 import Order from "../../models/orderSchema.js";
 import Variant from "../../models/variantSchema.js";
 import PDFDocument from "pdfkit";
+import User from '../../models/userSchema.js'
 
 export const getOrdersPage = async (req, res) => {
   try {
@@ -52,42 +53,141 @@ export const getOrderDetails = async (req, res) => {
     res.status(500).render('user/error', { message: 'Server error' });
   }
 };
-
 export const cancelOrderItem = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { itemIndex, reason } = req.body;
-    const index = parseInt(itemIndex);
 
-    if (isNaN(index) || !reason?.trim()) {
-      return res.json({ success: false, message: "Invalid data" });
+    const index = parseInt(itemIndex);
+    if (isNaN(index) || index < 0 || !reason?.trim()) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid item index or reason is required" 
+      });
     }
 
-    const order = await Order.findById(orderId);
-    if (!order || order.userId.toString() !== req.user._id.toString()) {
-      return res.json({ success: false, message: "Unauthorized" });
+    const order = await Order.findById(orderId)
+      .populate("userId", "wallet")
+      .populate("products.variantId");
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    if (order.userId._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
     const item = order.products[index];
-    if (!item) return res.json({ success: false, message: "Item not found" });
+    if (!item) {
+      return res.status(404).json({ success: false, message: "Item not found in order" });
+    }
 
-    const allowed = ["Pending", "Confirmed", "Processing"];
-    if (!allowed.includes(item.itemStatus)) {
-      return res.json({ success: false, message: `Cannot cancel (${item.itemStatus})` });
+    const allowedStatuses = ["Pending", "Confirmed", "Processing"];
+    if (!allowedStatuses.includes(item.itemStatus)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Cannot cancel item in status: ${item.itemStatus}` 
+      });
+    }
+
+    let refundableAmount = 0;
+    let refundMessage = "";
+
+    if (order.paymentMethod === "razorpay") {
+      const itemsTotalBeforeDiscount = order.products.reduce(
+        (sum, p) => sum + p.price * p.quantity, 
+        0
+      );
+      
+      const couponDiscount = order.discount || 0;
+      const itemSubtotal = item.price * item.quantity;
+      
+      const itemShareOfDiscount = itemsTotalBeforeDiscount > 0
+        ? (itemSubtotal / itemsTotalBeforeDiscount) * couponDiscount
+        : 0;
+
+      refundableAmount = Math.round((itemSubtotal - itemShareOfDiscount) * 100) / 100; 
+      
+      if (refundableAmount > 0) {
+        refundMessage = `₹${refundableAmount.toFixed(2)} credited to wallet`;
+      }
+    } else {
+      refundMessage = "No refund (Cash on Delivery)";
+    }
+
+    if (item.variantId?._id || item.variantId) {
+      await Variant.findByIdAndUpdate(
+        item.variantId._id || item.variantId,
+        { $inc: { stock: item.quantity } },
+        { new: true, runValidators: true }
+      );
     }
 
     item.itemStatus = "Cancelled";
     item.reason = reason.trim();
-    item.itemTimeline ||= {};
+    item.itemTimeline = item.itemTimeline || {};
     item.itemTimeline.cancelledAt = new Date();
 
-    order.markModified('products');
+    if (refundableAmount > 0) {
+      await User.updateOne(
+        { _id: order.userId._id },
+        {
+          $inc: { wallet: refundableAmount },
+          $push: {
+            walletTransactions: {
+              amount: refundableAmount,
+              type: "credit",
+              description: `Cancellation refund - Order #${order.orderId} (Item ${index + 1})`,
+              date: new Date(),
+              relatedItemIndex: index
+            }
+          }
+        }
+      );
+    }
+
+    order.markModified("products");
+
+    const allCancelled = order.products.every(p => p.itemStatus === "Cancelled");
+  if (allCancelled) {
+  order.status = "Cancelled";
+  
+  if (order.paymentMethod === "razorpay") {
+    order.paymentStatus = "Refunded";           
+  } else {
+    order.paymentStatus = "Pending";            
+  }
+} 
+else if (order.products.some(p => p.itemStatus === "Cancelled")) {
+  order.status = "Partially Cancelled";
+  
+  if (order.paymentMethod === "razorpay") {
+    order.paymentStatus = "Partially Refunded";
+  } else {
+    order.paymentStatus = "Pending";           
+  }
+}
+
     await order.save();
 
-    res.json({ success: true, message: "Item cancelled successfully" });
-  } catch (err) {
-    console.error("cancelOrderItem ERROR:", err);
-    res.json({ success: false, message: "Server error" });
+    const response = {
+      success: true,
+      message: "Item cancelled successfully",
+      refund: refundableAmount > 0 ? refundableAmount.toFixed(2) : null,
+      refundMessage,
+      newItemStatus: item.itemStatus,
+      orderStatus: order.status
+    };
+
+    return res.json(response);
+
+  } catch (error) {
+    console.error("cancelOrderItem ERROR:", error);
+    return res.status(500).json({ 
+      success: false, 
+      message: "Server error while cancelling item" 
+    });
   }
 };
 

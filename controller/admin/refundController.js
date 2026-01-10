@@ -62,9 +62,9 @@ export const processRefund = async (req, res) => {
 
     if (order.paymentMethod === "razorpay" && order.paymentId) {
       try {
-        const refundAmountPaise = Math.round(refundableAmount * 100);
+        const refundAmountMoney = Math.round(refundableAmount * 100);
         const refund = await razorpay.payments.refund(order.paymentId, {
-          amount: refundAmountPaise,
+          amount: refundAmountMoney,
           speed: "optimum",
           notes: {
             order_id: order.orderId,

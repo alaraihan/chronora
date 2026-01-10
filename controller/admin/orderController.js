@@ -22,98 +22,88 @@ export const renderAdminOrdersPage = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
 export const getAdminOrdersData = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
-    const status = req.query.status?.trim() || "";
-    const search = req.query.search?.trim() || "";
+    const status = (req.query.status || "").trim();
+    const search = (req.query.search || "").trim();
 
-    let query = {};
-
+    const query = {};
     if (status) {
       query["products.itemStatus"] = status;
     }
 
-    if (search) {
-      const regex = new RegExp(search, "i");
-      query.$or = [
-        { orderId: regex },
-        { "address.fullName": regex },
-        { "address.phone": regex }
-      ];
-    }
-
     const orders = await Order.find(query)
       .populate("userId", "name email")
-      .populate("products.productId", "name images price")
-      .populate("products.variantId", "colorName size stock images")
+      .populate("products.productId", "name price images")
+      .populate("products.variantId", "colorName size images")
       .sort({ createdAt: -1 })
+      .limit(100) 
       .lean();
 
-    let filteredOrders = orders.map(order => ({ ...order })); 
+    const lineItems = [];
 
-    if (status) {
-      filteredOrders = filteredOrders.map(order => ({
-        ...order,
-        products: order.products.filter(p => p.itemStatus === status)
-      })).filter(order => order.products.length > 0);
+    for (const order of orders) {
+      if (!order.products?.length) continue;
+
+      for (let i = 0; i < order.products.length; i++) {
+        const prod = order.products[i];
+
+        if (status && prod.itemStatus !== status) continue;
+
+        lineItems.push({
+          _id: order._id.toString(),
+          orderId: order.orderId,
+          createdAt: order.createdAt,
+          address: order.address || {},
+          products: [prod],           
+          itemIndex: i,
+          totalAmount: order.totalAmount || 0
+        });
+      }
     }
 
+    let filtered = lineItems;
     if (search) {
-      const lowerSearch = search.toLowerCase();
-      filteredOrders = filteredOrders.map(order => ({
-        ...order,
-        products: order.products.filter(p =>
-          order.orderId.toLowerCase().includes(lowerSearch) ||
-          (order.address?.fullName || "").toLowerCase().includes(lowerSearch) ||
-          (order.address?.phone || "").includes(lowerSearch) ||
-          (p.productId?.name || "").toLowerCase().includes(lowerSearch)
-        )
-      })).filter(order => order.products.length > 0);
+      const term = search.toLowerCase();
+      filtered = lineItems.filter(item => {
+        const prod = item.products[0] || {};
+        const p = prod.productId || {};
+        return (
+          item.orderId?.toLowerCase().includes(term) ||
+          item.address?.fullName?.toLowerCase().includes(term) ||
+          item.address?.phone?.includes(term) ||
+          p.name?.toLowerCase().includes(term)
+        );
+      });
     }
 
-  let lineItems = [];
-filteredOrders.forEach(order => {
-  order.products.forEach((prod, idx) => {
-    lineItems.push({
-      orderId: order.orderId,
-      _id: order._id,
-      createdAt: order.createdAt,
-      address: order.address,
-      products: [prod],
-      itemIndex: idx,
-      totalAmount: order.totalAmount,
-      discount: order.discount || 0,
-      deliveryCharge: order.deliveryCharge || 0
-    });
-  });
-});
-    const totalLineItems = lineItems.length;
-    const totalPages = Math.ceil(totalLineItems / limit);
+    const total = filtered.length;
     const start = (page - 1) * limit;
-    const paginatedItems = lineItems.slice(start, start + limit);
+    const paginated = filtered.slice(start, start + limit);
 
     res.json({
       success: true,
-      orders: paginatedItems,
+      orders: paginated,
       pagination: {
         currentPage: page,
-        totalPages: totalPages || 1,
-        totalOrders: totalLineItems,
-        hasNextPage: page < totalPages,
+        totalPages: Math.ceil(total / limit) || 1,
+        totalOrders: total,
+        hasNextPage: page < Math.ceil(total / limit),
         hasPrevPage: page > 1
       }
     });
 
-  } catch (error) {
-    console.error("GET ORDERS DATA ERROR:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+  } catch (err) {
+    console.error("GET ADMIN ORDERS DATA CRASH:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error - see console for details",
+      error: err.message
+    });
   }
 };
-
-
 export const getOrderDetails = async (req, res) => {
   try {
     const { orderId, itemIndex } = req.params;

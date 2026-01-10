@@ -132,46 +132,44 @@ function updateURLAndLoad() {
   window.history.replaceState({}, "", `/admin/orders?${params.toString()}`);
   loadOrders();
 }
-
 function renderTable(lineItems) {
   const tbody = document.getElementById("ordersTableBody");
   tbody.innerHTML = "";
 
-  if (lineItems.length === 0) {
+  if (!lineItems?.length) {
     tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:50px; color:#888; font-size:1.1rem;">No matching line items found</td></tr>`;
     return;
   }
 
   lineItems.forEach(item => {
-    const prod = item.products[0];
+    const prod = item.products?.[0] || {};                    // ← safe
     const product = prod.productId || {};
     const variant = prod.variantId || {};
 
-    const unitPrice = prod.price || 0;
-
+    const unitPrice = prod.price || product.price || 0;
     const amountPaid = item.totalAmount || 0;
+    const quantity = prod.quantity || 0;
+    const status = prod.itemStatus || "Unknown";
 
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td><strong>${item.orderId}</strong></td>
+      <td><strong>${item.orderId || '—'}</strong></td>
       <td>${item.address?.fullName || "Guest"}</td>
-      <td>${new Date(item.createdAt).toLocaleDateString('en-GB', { 
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric' 
-      })}</td>
+      <td>${item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-GB', { 
+        day: '2-digit', month: '2-digit', year: 'numeric' 
+      }) : '—'}</td>
       <td>
         <div>
           <div><strong>${product.name || 'Unknown Product'}</strong></div>
-          <small>${variant.colorName || ''} ${variant.size ? '· ' + variant.size : ''}</small>
+          <small>${variant.colorName || ''}${variant.size ? ' · ' + variant.size : ''}</small>
         </div>
       </td>
-      <td>${prod.quantity}</td>
+      <td>${quantity}</td>
       <td>₹${unitPrice.toLocaleString('en-IN')}</td>
       <td style="font-weight:bold; color:#00ff9d;">
         ₹${amountPaid.toLocaleString('en-IN')}
       </td>
-      <td><span class="status-badge status-${prod.itemStatus.toLowerCase().replace(/ /g, '-')}">${prod.itemStatus}</span></td>
+      <td><span class="status-badge status-${status.toLowerCase().replace(/ /g, '-')}">${status}</span></td>
       <td>
         <a href="/admin/orders/${item._id}/${item.itemIndex}/detail" class="btn-small btn-primary">View Detail</a>
       </td>
