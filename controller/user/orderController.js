@@ -281,11 +281,14 @@ export const reviewOrderItem = async (req, res) => {
     if (alreadyReviewed) {
       return res.json({ success: false, message: "You have already reviewed this item" });
     }
+const user = await User.findById(order.userId).select("fullName");
 
     order.reviews.push({
       productId: item.productId._id,
       variantId: item.variantId._id,
       rating: numRating,
+      reviewedBy: order.userId,
+reviewerName: order.customerName,
       title: title.trim() || null,
       text: text.trim(),
       reviewedAt: new Date(),

@@ -1,4 +1,5 @@
 import Order from '../../models/orderSchema.js';
+import PDFDocument from 'pdfkit';
 export const getSalesReportPage = async (req, res) => {
   try {
     res.render('admin/salesReport', { 
@@ -174,10 +175,9 @@ export const getSalesReportData = async (req, res) => {
     });
   }
 };
-
 export const downloadSalesReport = async (req, res) => {
   try {
-    const { search, dateFrom, dateTo } = req.query;
+    const { search, dateFrom, dateTo, format = 'csv' } = req.query;
 
     const matchConditions = {};
 
@@ -253,6 +253,103 @@ export const downloadSalesReport = async (req, res) => {
     ];
 
     const lineItems = await Order.aggregate(pipeline);
+
+    if (format === 'pdf') {
+      const doc = new PDFDocument({
+        size: 'A4',
+        layout: 'landscape',
+        margin: 35
+      });
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="sales-report-${new Date().toISOString().split('T')[0]}.pdf"`
+      );
+
+      doc.pipe(res);
+
+      doc
+        .fontSize(18)
+        .font('Helvetica-Bold')
+        .text('Sales Report - Delivered Items Only', { align: 'center' });
+
+      doc.moveDown(0.7);
+      doc
+        .fontSize(11)
+        .font('Helvetica')
+        .text(`Generated: ${new Date().toLocaleString('en-IN')}`, { align: 'center' });
+
+      doc.moveDown(2);
+
+      if (lineItems.length === 0) {
+        doc
+          .fontSize(12)
+          .text('No delivered items found for the selected period/filters.', 50, doc.y);
+      } else {
+        const tableTop = doc.y;
+        const rowHeight = 18;
+        const colWidths = [58, 78, 105, 115, 85, 32, 68, 78, 75];
+        const headers = [
+          'Date', 'Order ID', 'Customer', 'Product', 'Variant',
+          'Qty', 'Unit Price', 'Line Total', 'Payment'
+        ];
+
+        doc.font('Helvetica-Bold').fontSize(10);
+        let x = 35;
+
+        headers.forEach((header, i) => {
+          doc.text(header, x, tableTop, {
+            width: colWidths[i],
+            align: 'center'
+          });
+          x += colWidths[i];
+        });
+
+        doc
+          .moveTo(35, tableTop + 15)
+          .lineTo(765, tableTop + 15)
+          .lineWidth(1)
+          .stroke();
+
+        doc.font('Helvetica').fontSize(9);
+        let y = tableTop + 22;
+
+        lineItems.forEach(item => {
+          x = 35;
+          const rowData = [
+            new Date(item.orderDate).toLocaleDateString('en-IN'),
+            item.orderId || '-',
+            (item.customerName || item.customerEmail || 'Guest').slice(0, 38),
+            (item.productName || '-').slice(0, 38),
+            (item.variant || '-').slice(0, 32),
+            item.quantity.toString(),
+            '₹' + Number(item.price || 0).toFixed(2),
+            '₹' + Number(item.lineTotal || 0).toFixed(2),
+            (item.paymentMethod || 'N/A').toUpperCase()
+          ];
+
+          rowData.forEach((text, i) => {
+            const align = (i === 6 || i === 7) ? 'right' : 'left';
+            doc.text(text, x, y, {
+              width: colWidths[i],
+              align
+            });
+            x += colWidths[i];
+          });
+
+          y += rowHeight;
+
+          if (y > 520) {
+            doc.addPage();
+            y = 50;
+          }
+        });
+      }
+
+      doc.end();
+      return; 
+    }
 
     let csv = 'Date,Order ID,Customer Name,Customer Email,Product,Variant,Quantity,Unit Price,Line Total,Payment Method\n';
 

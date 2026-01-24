@@ -6,7 +6,34 @@
   background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
   padding: 20px;
 }
+/* Add to your order-failure.css */
+#retryPaymentBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
 
+#retryPaymentBtn.loading {
+  position: relative;
+  color: transparent;
+}
+
+#retryPaymentBtn.loading::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 .failure-container {
   background: #16213e;
   border-radius: 16px;

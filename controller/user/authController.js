@@ -9,6 +9,10 @@ const render = (req, res, view, options = {}) => {
 };
 
 const loadSignUp = (req, res) => {
+  if (req.session?.userId) {
+    return res.redirect("/");
+  }
+
   return render(req, res, "user/signup", {
     title: "Chronora - Signup",
     layout: "layouts/userLayouts/auth",
@@ -210,6 +214,9 @@ export const verifyOtp = async (req, res) => {
   }
 };
 const loadLogin = (req, res) => {
+  if (req.session?.userId) {
+    return res.redirect("/");
+  }
 
   return render(req, res, "user/login", {
     title: "Chronora - Login",
@@ -269,86 +276,10 @@ const loadForgotPassword = (req, res) => {
   return render(req, res, "user/forgetPassword", {
     title: "Chronora - Forgot Password",
     layout: "layouts/userLayouts/auth",
+     
   });
 };
 
-const sendResetOtp = async (req, res) => {
-  const { email } = req.body;
-  if (!email) {
-    setFlash(req, "error", "Please enter your email");
-    return res.redirect("/forgetPassword");
-  }
-
-  try {
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
-    if (!user) {
-      setFlash(req, "error", "No account found with this email");
-      return res.redirect("/forgetPassword");
-    }
-
-    const otp = generateOtp(6);
-    console.log("Reset OTP (dev):", otp);
-
-    req.session.resetOtpData = {
-      userId: user._id,
-      email: user.email,
-      otp,
-      otpExpires: Date.now() + 10 * 60 * 1000,
-    };
-
-    const sent = await sendOtp(user.email, otp);
-    if (!sent) {
-      setFlash(req, "error", "Failed to send OTP");
-      return res.redirect("/forgetPassword");
-    }
-
-    setFlash(req, "success", "OTP sent to your email");
-    return res.redirect("/resetOtp");
-  } catch (error) {
-    console.error("sendResetOtp error:", error);
-    setFlash(req, "error", "Server error");
-    return res.redirect("/forgetPassword");
-  }
-};
-
-const loadResetOtp = (req, res) => {
-  if (!req.session.resetOtpData) {
-    setFlash(req, "error", "No OTP session found");
-    return res.redirect("/forgetPassword");
-  }
-  return render(req, res, "user/resetOtp", {
-    title: "Chronora - Verify Reset OTP",
-    layout: "layouts/userLayouts/auth",
-    email: req.session.resetOtpData.email,
-  });
-};
-
-const verifyResetOtp = async (req, res) => {
-  const providedOtp = Array.isArray(req.body.otp) ? req.body.otp.join("") : req.body.otp?.trim() || "";
-  const data = req.session.resetOtpData;
-
-  if (!data) {
-    setFlash(req, "error", "Session expired");
-    return res.redirect("/forgetPassword");
-  }
-
-  if (Date.now() > data.otpExpires) {
-    delete req.session.resetOtpData;
-    setFlash(req, "error", "OTP expired");
-    return res.redirect("/forgetPassword");
-  }
-
-  if (providedOtp !== data.otp) {
-    setFlash(req, "error", "Incorrect OTP");
-    return res.redirect("/resetOtp");
-  }
-
-  req.session.resetUserId = data.userId;
-  delete req.session.resetOtpData;
-
-  setFlash(req, "success", "OTP verified! Set your new password");
-  return res.redirect("/resetPassword");
-};
 
 const loadResetPassword = (req, res) => {
   if (!req.session.resetUserId) {
@@ -358,6 +289,7 @@ const loadResetPassword = (req, res) => {
   return render(req, res, "user/resetPassword", {
     title: "Chronora - Reset Password",
     layout: "layouts/userLayouts/auth",
+     newOtp: true 
   });
 };
 
@@ -398,7 +330,7 @@ const resendOtp = async (req, res) => {
     const newOtp = generateOtp(6);
     console.log("Resend OTP:", newOtp);
     pending.otp = newOtp;
-    pending.otpExpires = Date.now() + 3 * 60 * 1000; 
+    pending.otpExpires = Date.now() + 30* 1000; 
     req.session.pendingUser = pending;
 
     const sent = await sendOtp(pending.email, newOtp);
@@ -407,6 +339,95 @@ const resendOtp = async (req, res) => {
   } catch (err) {
     console.error("resendOtp error", err);
     return res.json({ success: false });
+  }
+};
+const verifyResetOtp = async (req, res) => {
+  const providedOtp = Array.isArray(req.body.otp) ? req.body.otp.join("") : req.body.otp?.trim() || "";
+  const data = req.session.resetOtpData;
+
+  if (!data) {
+    setFlash(req, "error", "Session expired");
+    return res.redirect("/forgetPassword");
+  }
+
+  if (Date.now() > data.otpExpires) {
+    delete req.session.resetOtpData;
+    setFlash(req, "error", "OTP expired");
+    return res.redirect("/forgetPassword");
+  }
+
+  if (providedOtp !== data.otp) {
+    setFlash(req, "error", "Incorrect OTP");
+    // ✅ Don't pass newOtp when redirecting after wrong OTP
+    return res.redirect("/resetOtp");
+  }
+
+  req.session.resetUserId = data.userId;
+  delete req.session.resetOtpData;
+
+  setFlash(req, "success", "OTP verified! Set your new password");
+  return res.redirect("/resetPassword");
+};
+
+const loadResetOtp = (req, res) => {
+  if (!req.session.resetOtpData) {
+    setFlash(req, "error", "No OTP session found");
+    return res.redirect("/forgetPassword");
+  }
+  
+  // ✅ Check if this is a fresh OTP (just sent) or a reload (wrong OTP)
+  const isNewOtp = req.session.resetOtpData.isNew || false;
+  
+  // Clear the flag after reading it
+  if (req.session.resetOtpData.isNew) {
+    req.session.resetOtpData.isNew = false;
+  }
+  
+  return render(req, res, "user/resetOtp", {
+    title: "Chronora - Verify Reset OTP",
+    layout: "layouts/userLayouts/auth",
+    email: req.session.resetOtpData.email,
+    newOtp: isNewOtp, // ✅ Only true on first load after sending OTP
+  });
+};
+
+const sendResetOtp = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    setFlash(req, "error", "Please enter your email");
+    return res.redirect("/forgetPassword");
+  }
+
+  try {
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) {
+      setFlash(req, "error", "No account found with this email");
+      return res.redirect("/forgetPassword");
+    }
+
+    const otp = generateOtp(6);
+    console.log("Reset OTP (dev):", otp);
+
+    req.session.resetOtpData = {
+      userId: user._id,
+      email: user.email,
+      otp,
+      otpExpires: Date.now() + 60 * 1000,
+      isNew: true, // ✅ Mark as new OTP
+    };
+
+    const sent = await sendOtp(user.email, otp);
+    if (!sent) {
+      setFlash(req, "error", "Failed to send OTP");
+      return res.redirect("/forgetPassword");
+    }
+
+    setFlash(req, "success", "OTP sent to your email");
+    return res.redirect("/resetOtp");
+  } catch (error) {
+    console.error("sendResetOtp error:", error);
+    setFlash(req, "error", "Server error");
+    return res.redirect("/forgetPassword");
   }
 };
 
@@ -418,7 +439,9 @@ const resendResetOtp = async (req, res) => {
     console.log("Resend reset OTP:", newOtp);
 
     req.session.resetOtpData.otp = newOtp;
-    req.session.resetOtpData.otpExpires = Date.now() + 10 * 60 * 1000; 
+    req.session.resetOtpData.otpExpires = Date.now() + 60 * 1000; // ✅ 60 seconds
+    req.session.resetOtpData.isNew = false; // ✅ Don't clear timer on resend
+    
     const sent = await sendOtp(email, newOtp);
     const timeLeftSeconds = Math.max(0, Math.ceil((req.session.resetOtpData.otpExpires - Date.now()) / 1000));
     return res.json({ success: !!sent, timeLeft: timeLeftSeconds });
@@ -427,8 +450,6 @@ const resendResetOtp = async (req, res) => {
     return res.json({ success: false });
   }
 };
-
-
 const googleCallback = (req, res) => {
   if (!req.user) {
     setFlash(req, "error", "Google login failed");
@@ -446,36 +467,30 @@ const googleCallback = (req, res) => {
   return res.redirect("/");
 };
 
-const loadLogout=async(req,res)=>{
-  try{
-    return res.render("user/logout", { title: "Chronora-Logout",layout: 'layouts/userLayouts/auth'} )
-    
-  }catch(error){
-    console.log("logout page is not found");
-    res.status(500).render("user/pageNotfound",{ title: "Error - Chronora",
-      message: "Something went wrong. Please try again later.",
-})
-  }
-}
-const performLogout = async (req, res) => {
+const loadLogout = async (req, res) => {
   try {
-    req.session.destroy((err) => {
-      if (err) {
-        console.error("Session destroy error:", err);
-        return res.status(500).render("user/pageNotfound", {
-          title: "Error - Chronora",
-          message: "Unable to logout. Try again.",
-          layout: 'layouts/userLayouts/auth'
-        });
-      }
-      res.clearCookie("connect.sid");
+    if (!req.session?.userId) {
       return res.redirect("/login");
+    }
+
+    return res.render("user/logout", {
+      title: "Chronora-Logout",
+      layout: "layouts/userLayouts/auth",
     });
   } catch (error) {
-    console.error("performLogout error:", error);
-    return res.status(500).send("Server error");
+    console.log("logout page is not found");
+    res.status(500).render("user/pageNotfound", {
+      title: "Error - Chronora",
+      message: "Something went wrong. Please try again later.",
+    });
   }
 };
+
+const performLogout = async (req, res) => {
+delete req.session.userId;
+delete req.session.user;
+      return res.redirect("/login");
+}
 
 
 export default {

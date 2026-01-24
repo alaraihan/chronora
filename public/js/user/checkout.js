@@ -114,24 +114,28 @@ document.getElementById('applyCouponBtn')?.addEventListener('click', async () =>
   try {
     const response = await axios.post('/checkout/apply-coupon', { couponCode: code });
 
-    if (response.data.success) {
-      msgSuccess.textContent = `Coupon "${code}" applied! ₹${response.data.discount} off`;
-      msgSuccess.style.display = 'block';
+if (response.data.success) {
+  msgSuccess.textContent = `Coupon "${code}" applied! ₹${response.data.discount} off`;
+  msgSuccess.style.display = 'block';
 
-      discountAmount.textContent = response.data.discount.toLocaleString('en-IN');
-      discountRow.style.display = 'flex';
+  discountAmount.textContent = response.data.discount.toLocaleString('en-IN');
+  discountRow.style.display = 'flex';
 
-      const subtotal = parseFloat(document.getElementById('subtotalDisplay').textContent.replace(/,/g, ''));
-      const shipping = subtotal < 15000 ? 100 : 0;
-      const newGrandTotal = subtotal + shipping - response.data.discount;
-      grandTotalDisplay.textContent = newGrandTotal.toLocaleString('en-IN');
+  const subtotal = parseFloat(document.getElementById('subtotalDisplay').textContent.replace(/,/g, ''));
+  const shipping = subtotal < 15000 ? 100 : 0;
+  const newGrandTotal = subtotal + shipping - response.data.discount;
+  grandTotalDisplay.textContent = newGrandTotal.toLocaleString('en-IN');
 
-      document.getElementById('placeOrderBtn').dataset.discount = response.data.discount;
-      document.getElementById('placeOrderBtn').dataset.appliedCoupon = code;
+  document.getElementById('placeOrderBtn').dataset.discount = response.data.discount;
+  document.getElementById('placeOrderBtn').dataset.appliedCoupon = code;
 
-      codeInput.disabled = true;
-      document.getElementById('applyCouponBtn').textContent = "Applied ✓";
-    } else {
+  codeInput.disabled = true;
+  const applyBtn = document.getElementById('applyCouponBtn');
+  applyBtn.textContent = "Applied ✓";
+  applyBtn.disabled = true;
+  
+  document.getElementById('removeCouponBtn').style.display = 'block';
+}else {
       msgError.textContent = response.data.message || "Invalid coupon";
       msgError.style.display = 'block';
     }
@@ -141,7 +145,40 @@ document.getElementById('applyCouponBtn')?.addEventListener('click', async () =>
     console.error(err);
   }
 });
+document.getElementById('removeCouponBtn')?.addEventListener('click', function() {
+  const codeInput = document.getElementById('couponCode');
+  const msgSuccess = document.getElementById('couponSuccess');
+  const msgError = document.getElementById('couponMessage');
+  const discountRow = document.getElementById('discountRow');
+  const discountAmount = document.getElementById('discountAmount');
+  const grandTotalDisplay = document.getElementById('grandTotalDisplay');
+  const placeOrderBtn = document.getElementById('placeOrderBtn');
+  const applyBtn = document.getElementById('applyCouponBtn');
 
+  codeInput.value = '';
+  codeInput.disabled = false;
+
+  msgSuccess.style.display = 'none';
+  msgError.style.display = 'none';
+
+  discountRow.style.display = 'none';
+  discountAmount.textContent = '0';
+
+  const subtotal = parseFloat(document.getElementById('subtotalDisplay').textContent.replace(/,/g, ''));
+  const shipping = subtotal < 15000 ? 100 : 0;
+  const newGrandTotal = subtotal + shipping;
+  grandTotalDisplay.textContent = newGrandTotal.toLocaleString('en-IN');
+
+  delete placeOrderBtn.dataset.discount;
+  delete placeOrderBtn.dataset.appliedCoupon;
+
+  applyBtn.textContent = "Apply";
+  applyBtn.disabled = false;
+
+  this.style.display = 'none';
+
+  toast("Coupon removed successfully", "success");
+});
 document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
   radio.addEventListener('change', function() {
     console.log('✅ Payment method changed to:', this.value);
@@ -167,7 +204,90 @@ document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
     }
   });
 });
+document.getElementById('viewCouponsBtn')?.addEventListener('click', async function() {
+  const modal = document.getElementById('couponsModal');
+  const container = document.getElementById('couponsContainer');
+  
+  modal.style.display = 'flex';
+  container.innerHTML = '<div class="text-center" style="padding: 40px;"><p>Loading coupons...</p></div>';
+  
+  try {
+    const response = await fetch('/coupons/available');
+    const data = await response.json();
+    
+    if (data.success && data.coupons.length > 0) {
+      container.innerHTML = data.coupons.map(coupon => `
+        <div class="coupon-card" style="border: 2px dashed #667eea; border-radius: 12px; padding: 16px; margin-bottom: 16px; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+            <div>
+              <h4 style="margin: 0; color: #667eea; font-size: 18px; font-weight: 700;">${coupon.code}</h4>
+              <p style="margin: 4px 0 0 0; color: #666; font-size: 14px;">${coupon.name}</p>
+            </div>
+            <button class="apply-coupon-btn" data-code="${coupon.code}" style="background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;">
+              APPLY
+            </button>
+          </div>
+          
+          ${coupon.description ? `<p style="margin: 8px 0; color: #555; font-size: 13px;">${coupon.description}</p>` : ''}
+          
+          <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px;">
+            <div style="font-size: 13px;">
+              <strong style="color: #2ecc71;">
+                ${coupon.discountType === 'percentage' 
+                  ? `${coupon.discountValue}% OFF${coupon.maxDiscountLimit ? ` (Max ₹${coupon.maxDiscountLimit})` : ''}`
+                  : `₹${coupon.discountValue} OFF`
+                }
+              </strong>
+            </div>
+            
+            ${coupon.minPurchase > 0 ? `
+              <div style="font-size: 13px; color: #666;">
+                Min: ₹${coupon.minPurchase.toLocaleString('en-IN')}
+              </div>
+            ` : ''}
+            
+            <div style="font-size: 13px; color: #666;">
+              Valid till: ${new Date(coupon.expiryDate).toLocaleDateString('en-IN')}
+            </div>
+          </div>
+          
+          ${coupon.totalUsageLimit ? `
+            <div style="margin-top: 8px; font-size: 12px; color: #999;">
+              ${coupon.totalUsageLimit - coupon.usedCount} uses remaining
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+      
+      document.querySelectorAll('.apply-coupon-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const code = this.dataset.code;
+          document.getElementById('couponCode').value = code;
+          document.getElementById('applyCouponBtn').click();
+          modal.style.display = 'none';
+        });
+      });
+      
+    } else {
+      container.innerHTML = `
+        <div class="text-center" style="padding: 40px;">
+          <p style="color: #999; font-size: 16px;">No coupons available at the moment</p>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Error fetching coupons:', error);
+    container.innerHTML = `
+      <div class="text-center" style="padding: 40px;">
+        <p style="color: #ef4444;">Failed to load coupons. Please try again.</p>
+      </div>
+    `;
+  }
+});
 
+document.getElementById('closeCouponsModal')?.addEventListener('click', function() {
+  document.getElementById('couponsModal').style.display = 'none';
+});
 document.getElementById('placeOrderBtn')?.addEventListener('click', async function() {
   console.log('🔵 Place Order Button Clicked');
   

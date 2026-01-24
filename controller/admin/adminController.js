@@ -1,5 +1,8 @@
 import Admin from "../../models/adminSchema.js";
 import User from "../../models/userSchema.js";
+import Order from "../../models/orderSchema.js";
+import Product from "../../models/productSchema.js"
+
 import bcrypt from "bcrypt";
 import { setFlash, getFlash } from "../../utils/flash.js";
 const render = (req, res, view, options = {}) => {
@@ -49,22 +52,165 @@ const login = async (req, res) => {
       .json({ success: false, message: "Server error. Try again later." });
   }
 };
-const dashboard = (req, res) => {
-  if (!req.session.admin) {
-    return res
-      .status(403)
-      .json({ success: false, message: "Unauthorized Admin" });
-  }
 
-  return render(req, res, "admin/dashboard", {
-    title: "Dashboard - Chronora Admin",
-    page: "dashboard",
-    admin: req.session.admin,
-  });
+
+export const getDashboardPage = async (req, res) => {
+  try {
+    res.render('admin/dashboard', { 
+      title: 'Dashboard',
+      page: 'dashboard',  
+    });
+  } catch (error) {
+    console.error('Dashboard page error:', error);
+    res.status(500).send('Server Error');
+  }
 };
 
+export const getDashboardData = async (req, res) => {
+  try {
+    const totalOrders = await Order.countDocuments();
+    const totalUsers = await User.countDocuments();
+    const totalProducts = await Product.countDocuments();
+    
+    const revenueResult = await Order.aggregate([
+      { $unwind: '$products' },
+      { $match: { 'products.itemStatus': 'Delivered' } },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: { $multiply: ['$products.quantity', '$products.price'] } }
+        }
+      }
+    ]);
+    const totalRevenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
+
+    const recentOrders = await Order.find()
+      .populate('userId', 'email')
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .select('orderId userId totalAmount status createdAt paymentMethod');
+
+    const statusDistribution = await Order.aggregate([
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+    const last7Days = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      date.setHours(0, 0, 0, 0);
+      last7Days.push(date);
+    }
+
+    const salesChartData = await Promise.all(
+      last7Days.map(async (date) => {
+        const nextDay = new Date(date);
+        nextDay.setDate(nextDay.getDate() + 1);
+
+        const dailyRevenue = await Order.aggregate([
+          {
+            $match: {
+              createdAt: { $gte: date, $lt: nextDay }
+            }
+          },
+          { $unwind: '$products' },
+          { $match: { 'products.itemStatus': 'Delivered' } },
+          {
+            $group: {
+              _id: null,
+              revenue: { $sum: { $multiply: ['$products.quantity', '$products.price'] } },
+              orders: { $sum: 1 }
+            }
+          }
+        ]);
+
+        return {
+          date: date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }),
+          revenue: dailyRevenue.length > 0 ? dailyRevenue[0].revenue : 0,
+          orders: dailyRevenue.length > 0 ? dailyRevenue[0].orders : 0
+        };
+      })
+    );
+
+    const topProducts = await Order.aggregate([
+      { $unwind: '$products' },
+      { $match: { 'products.itemStatus': 'Delivered' } },
+      {
+        $group: {
+          _id: '$products.productId',
+          totalSold: { $sum: '$products.quantity' },
+          revenue: { $sum: { $multiply: ['$products.quantity', '$products.price'] } },
+          orderCount: { $sum: 1 }
+        }
+      },
+      { $sort: { totalSold: -1 } },
+      { $limit: 5 },
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'productInfo'
+        }
+      },
+      { $unwind: '$productInfo' },
+      {
+        $project: {
+          name: '$productInfo.name',
+          totalSold: 1,
+          revenue: 1,
+          orderCount: 1
+        }
+      }
+    ]);
+
+    const paymentDistribution = await Order.aggregate([
+      {
+        $group: {
+          _id: '$paymentMethod',
+          count: { $sum: 1 },
+          revenue: { $sum: '$totalAmount' }
+        }
+      }
+    ]);
+
+    res.json({
+      success: true,
+      overview: {
+        totalOrders,
+        totalUsers,
+        totalProducts,
+        totalRevenue
+      },
+      recentOrders: recentOrders.map(order => ({
+        orderId: order.orderId,
+        customer: order.userId?.email || 'Guest',
+        amount: order.totalAmount,
+        status: order.status,
+        date: order.createdAt,
+        paymentMethod: order.paymentMethod
+      })),
+      statusDistribution,
+      salesChartData,
+      topProducts,
+      paymentDistribution
+    });
+
+  } catch (error) {
+    console.error('Dashboard data error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error loading dashboard data'
+    });
+  }
+};
 const logout = (req, res) => {
-  req.session.admin = null;
+  delete req.session.adminId;
+  delete req.session.admin;
   res.json({
     success: true,
     message: "Logged out successfully!",
@@ -141,8 +287,8 @@ const toggleBlockCustomer = async (req, res) => {
 export default {
   loadLogin,
   login,
-  dashboard,
   logout,
   loadCustomers,
   toggleBlockCustomer,
 };
+

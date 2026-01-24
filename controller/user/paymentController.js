@@ -65,6 +65,11 @@ export const verifyRazorpayPayment = (req, res) => {
     if (isValid) {
       res.json({ success: true, message: "Payment verified successfully" });
     } else {
+req.session.checkoutFailure = {
+  totalAmount: req.session.checkoutSummary?.totalAmount || 0,
+  errorMessage: "Your payment was declined or cancelled. You can retry below."
+};
+
       res.status(400).json({ success: false, message: "Invalid payment signature" });
     }
   } catch (error) {

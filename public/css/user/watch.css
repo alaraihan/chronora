@@ -13,7 +13,42 @@ body {
   background-color: #0a0a0a;
   color: #ffffff;
 }
+.favorite-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.4rem;
+  color: #666;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
 
+.favorite-btn:hover {
+  background: rgba(255, 255, 255, 1);
+  color: #ff4d4d;
+  transform: scale(1.1);
+}
+
+.favorite-btn.active {
+  color: #ff4d4d; /* red filled */
+}
+
+.favorite-btn.active i {
+  font-weight: 900; /* ensures solid */
+}
+
+.favorite-btn i {
+  transition: all 0.3s ease;
+}
 /* Main Layout */
 main {
   max-width: 1400px;

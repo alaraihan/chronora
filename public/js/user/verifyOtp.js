@@ -133,7 +133,7 @@ resendLink.addEventListener('click', async (e) => {
         clearInterval(timer);
         timer = null;
       }
-      timeLeft = data.timeLeft || 180;
+      timeLeft = data.timeLeft || 60;
       updateTimerDisplay();
       startTimer();
 

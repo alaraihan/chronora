@@ -1,34 +1,36 @@
+<link rel="stylesheet" href="./css/user/resetOtp.css">
+<div class="container">
+  <h2>Verify OTP</h2>
+  <p>Enter the 6-digit code sent to <span class="email"><%= email %></span></p>
 
- <link rel="stylesheet" href="./css/user/resetOtp.css">
-  <div class="container">
-    <h2>Verify OTP</h2>
-    <p>Enter the 6-digit code sent to <span class="email"><%= email %></span></p>
+  <form action="/resetOtp" method="POST">
+    <div class="otp-container">
+      <% for(let i = 0; i < 6; i++) { %>
+        <input 
+          type="text" 
+          name="otp" 
+          class="otp-input" 
+          maxlength="1" 
+          required 
+          data-index="<%= i %>"
+          oninput="handleInput(this)"
+        />
+      <% } %>
+    </div>
+    <button type="submit" class="btn">Verify OTP</button>
+  </form>
 
-  
-
-    <form action="/resetOtp" method="POST">
-      <div class="otp-container">
-        <% for(let i = 0; i < 6; i++) { %>
-          <input 
-            type="text" 
-            name="otp" 
-            class="otp-input" 
-            maxlength="1" 
-            required 
-            data-index="<%= i %>"
-            oninput="handleInput(this)"
-          />
-        <% } %>
-      </div>
-      <button type="submit" class="btn">Verify OTP</button>
-    </form>
-<button id="resendBtn" type="button" class="back-link" style="background:none;border:0;cursor:pointer;padding:0;">
-  Request new OTP
-</button>
-<span id="resendMsg" style="display:block;margin-top:10px;font-size:0.9rem;"></span>
-
+  <div style="margin-top: 20px; text-align: center;">
+    <div id="timerDisplay" style="font-size: 0.95rem; color: #666; margin-bottom: 10px;">
+      Time remaining: <span id="timer" style="font-weight: 600; color: #4CAF50;">01:00</span>
+    </div>
+    
+    <button id="resendBtn" type="button" class="back-link" style="background:none;border:0;cursor:pointer;padding:0;color:#999;" disabled>
+      Request new OTP
+    </button>
+    <span id="resendMsg" style="display:block;margin-top:10px;font-size:0.9rem;"></span>
   </div>
+</div>
 
 </body>
- <script src="/js/user/resetOtp.js"></script>
-
+<script src="/js/user/resetOtp.js"></script>

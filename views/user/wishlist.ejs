@@ -22,7 +22,11 @@
       <% if (wishlist && wishlist.length > 0) { %>
         <div class="wishlist-grid">
           <% wishlist.forEach(item => { %>
-            <div class="wishlist-card">
+            <div 
+              class="wishlist-card" 
+              data-product-id="<%= item.productId._id %>"
+              style="cursor: pointer;"
+            >
               <div class="image-wrapper">
                 <img 
                   src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" 
@@ -75,7 +79,7 @@
       <% } else { %>
         <div class="empty-wishlist">
           <p>Your wishlist is empty.</p>
-          <a href="/products" class="btn-primary">Browse Products</a>
+          <a href="/watch" class="btn-primary">Add Products</a>
         </div>
       <% } %>
     </div>
@@ -85,6 +89,26 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script src="/js/user/wishlist.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const wishlistCards = document.querySelectorAll('.wishlist-card');
+
+    wishlistCards.forEach(card => {
+      card.addEventListener('click', (e) => {
+        // Prevent navigation if user clicked the action buttons
+        if (e.target.closest('.btn-move-cart') || e.target.closest('.btn-remove')) {
+          return;
+        }
+
+        const productId = card.dataset.productId;
+        if (productId) {
+          window.location.href = `/product/${productId}`;
+        }
+      });
+    });
+  });
+</script>
 
 </body>
 </html>

@@ -3,7 +3,6 @@ const router = express.Router();
 
 import adminController from "../controller/admin/adminController.js";
 import { isAdmin } from "../middlewares/authMiddleware.js";
-
 import {
   listCategories,
   addCategory,
@@ -53,13 +52,17 @@ import {
   getSalesReportData, 
   downloadSalesReport 
 } from '../controller/admin/salesReport.js';
+
+import { getDashboardPage, getDashboardData } from '../controller/admin/adminController.js';
+
+router.get('/dashboard', getDashboardPage);
+router.get('/dashboard/data', getDashboardData);
 router.post("/orders/:orderId/refund-item", isAdmin, processRefund);
 
 router.get("/login", adminController.loadLogin);
 router.post("/login", adminController.login);
 router.get("/logout", adminController.logout);
 
-router.get("/dashboard", isAdmin, adminController.dashboard);
 
 
 router.get("/customers", isAdmin, adminController.loadCustomers);

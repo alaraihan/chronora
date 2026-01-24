@@ -141,7 +141,7 @@ export async function getProduct(req, res) {
 export async function addProduct(req, res) {
   try {
    
-    const { name, category, description, price } = req.body;
+    const { name, category, description, price} = req.body;
     const variants = JSON.parse(req.body.variants || '[]'); 
     const files = req.files || [];
     if (!name || !category ||!price) return res.status(400).json({ success: false, message: 'Name & price required' });
@@ -180,7 +180,8 @@ export async function addProduct(req, res) {
         product: product._id,
         colorName: v.name || '',
         stock: Number(v.stock || 0),
-        images: imgs
+        images: imgs,
+        strapColor:v.strapColor,
       });
 
       savedVariantIds.push(newV._id);
@@ -235,7 +236,8 @@ export async function updateProduct(req, res) {
         await Variant.findByIdAndUpdate(v.id, {
           colorName: v.name || '',
           stock: Number(v.stock || 0),
-          images: existing
+          images: existing,
+          strapColor:v.strapColor,
         }, { new: true });
         newVariantIds.push(v.id);
       } else {
@@ -243,7 +245,8 @@ export async function updateProduct(req, res) {
           product: product._id,
           colorName: v.name || '',
           stock: Number(v.stock || 0),
-          images: existing
+          images: existing,
+          strapColor:v.strapColor,
         });
         newVariantIds.push(created._id);
       }

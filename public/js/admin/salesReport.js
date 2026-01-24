@@ -1,4 +1,3 @@
-
 const params = new URLSearchParams(window.location.search);
 const overlay = document.getElementById("loadingOverlay");
 
@@ -22,10 +21,42 @@ function toast(message, type = "error") {
   }).showToast();
 }
 
+function setQuickPeriodDates(period) {
+  const today = new Date();
+  let from = new Date(today);
+  let to = new Date(today);
+
+  if (period === 'today') {
+    from.setHours(0, 0, 0, 0);
+  } 
+  else if (period === 'week') {
+    const day = today.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    from.setDate(today.getDate() + diff);
+    from.setHours(0, 0, 0, 0);
+  } 
+  else if (period === 'month') {
+    from = new Date(today.getFullYear(), today.getMonth(), 1);
+  } 
+  else if (period === 'year') {
+    from = new Date(today.getFullYear(), 0, 1);
+  }
+
+  document.getElementById("dateFrom").value = from.toISOString().split('T')[0];
+  document.getElementById("dateTo").value = to.toISOString().split('T')[0];
+}
+
 function applyFilters() {
+  const quick = document.getElementById("quickPeriod")?.value || "custom";
   const search = document.getElementById("searchInput").value.trim();
-  const dateFrom = document.getElementById("dateFrom").value;
-  const dateTo = document.getElementById("dateTo").value;
+  let dateFrom = document.getElementById("dateFrom").value;
+  let dateTo = document.getElementById("dateTo").value;
+
+  if (quick !== "custom") {
+    setQuickPeriodDates(quick);
+    dateFrom = document.getElementById("dateFrom").value;
+    dateTo = document.getElementById("dateTo").value;
+  }
 
   if (dateFrom && dateTo && new Date(dateFrom) > new Date(dateTo)) {
     toast("'Date From' cannot be later than 'Date To'", "error");
@@ -33,23 +64,9 @@ function applyFilters() {
   }
 
   params.set("page", "1");
-  if (search) {
-    params.set("search", search);
-  } else {
-    params.delete("search");
-  }
-  
-  if (dateFrom) {
-    params.set("dateFrom", dateFrom);
-  } else {
-    params.delete("dateFrom");
-  }
-  
-  if (dateTo) {
-    params.set("dateTo", dateTo);
-  } else {
-    params.delete("dateTo");
-  }
+  if (search) params.set("search", search); else params.delete("search");
+  if (dateFrom) params.set("dateFrom", dateFrom); else params.delete("dateFrom");
+  if (dateTo) params.set("dateTo", dateTo); else params.delete("dateTo");
 
   updateURLAndLoad();
 }
@@ -58,6 +75,9 @@ function clearFilters() {
   document.getElementById("searchInput").value = "";
   document.getElementById("dateFrom").value = "";
   document.getElementById("dateTo").value = "";
+  if (document.getElementById("quickPeriod")) {
+    document.getElementById("quickPeriod").value = "custom";
+  }
   
   params.delete("search");
   params.delete("dateFrom");
@@ -115,23 +135,18 @@ function renderTable(lineItems) {
     const row = document.createElement("tr");
     
     const orderDate = new Date(item.orderDate).toLocaleDateString('en-IN', { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: 'numeric' 
+      day: '2-digit', month: '2-digit', year: 'numeric' 
     });
 
     const customerName = item.customer?.fullName || item.customer?.email || 'Guest';
-
     const productName = item.productName || 'Unknown Product';
     const variantInfo = item.variantInfo || '';
 
     const unitPrice = (item.price || 0).toLocaleString('en-IN', { 
-      minimumFractionDigits: 2, 
-      maximumFractionDigits: 2 
+      minimumFractionDigits: 2, maximumFractionDigits: 2 
     });
     const lineTotal = (item.lineTotal || 0).toLocaleString('en-IN', { 
-      minimumFractionDigits: 2, 
-      maximumFractionDigits: 2 
+      minimumFractionDigits: 2, maximumFractionDigits: 2 
     });
 
     const paymentMethod = (item.paymentMethod || 'N/A').toUpperCase();
@@ -148,9 +163,7 @@ function renderTable(lineItems) {
       </td>
       <td style="text-align:center;">${item.quantity}</td>
       <td>₹${unitPrice}</td>
-      <td style="font-weight:bold; color:#28a745;">
-        ₹${lineTotal}
-      </td>
+      <td style="font-weight:bold; color:#28a745;">₹${lineTotal}</td>
       <td><span class="payment-badge">${paymentMethod}</span></td>
     `;
     tbody.appendChild(row);
@@ -198,14 +211,11 @@ function loadSalesData() {
       const data = response.data;
       
       updateSummary(data.summary || {});
-      
       renderTable(data.lineItems || []);
-      
       renderPagination(data.pagination || {});
     })
     .catch(error => {
       console.error("Load error:", error);
-      
       if (error.response) {
         toast(`Error: ${error.response.data.message || 'Failed to load data'}`, "error");
       } else if (error.request) {
@@ -214,45 +224,59 @@ function loadSalesData() {
         toast("Error loading data from server", "error");
       }
     })
-    .finally(() => {
-      hideLoading();
-    });
+    .finally(() => hideLoading());
 }
 
-function downloadReport() {
+function downloadReport(type = 'csv') {
   showLoading();
-  
-  axios.get(`/admin/sales-report/download?${params.toString()}`, {
-    responseType: 'blob'
+
+  const url = `/admin/sales-report/download?${params.toString()}&format=${type}`;
+
+  axios.get(url, {
+    responseType: 'blob'  
   })
-    .then(response => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      
-      const filename = `sales-report-${new Date().toISOString().split('T')[0]}.csv`;
-      link.setAttribute('download', filename);
-      
-      document.body.appendChild(link);
-      link.click();
-      
-      link.remove();
-      window.URL.revokeObjectURL(url);
-      
-      toast("Report downloaded successfully!", "success");
-    })
-    .catch(error => {
-      console.error("Download error:", error);
-      
-      if (error.response) {
-        toast(`Download failed: ${error.response.data.message || 'Unknown error'}`, "error");
-      } else {
-        toast("Error downloading report. Please try again.", "error");
-      }
-    })
-    .finally(() => {
-      hideLoading();
-    });
+  .then(response => {
+    const contentType = response.headers['content-type'] || '';
+    let blobType = 'text/csv';
+    let extension = 'csv';
+
+    if (contentType.includes('pdf') || type === 'pdf') {
+      blobType = 'application/pdf';
+      extension = 'pdf';
+    }
+
+    const blob = new Blob([response.data], { type: blobType });
+    const downloadUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `sales-report-${new Date().toISOString().split('T')[0]}.${extension}`;
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
+
+    toast(`${type.toUpperCase()} downloaded successfully!`, "success");
+  })
+  .catch(err => {
+    console.error("Download failed:", err);
+    let message = `Failed to download ${type.toUpperCase()}`;
+
+    if (err.response) {
+      err.response.data.text().then(text => {
+        try {
+          const json = JSON.parse(text);
+          message = json.message || message;
+        } catch {}
+        toast(message, "error");
+      }).catch(() => toast(message, "error"));
+    } else {
+      toast(message, "error");
+    }
+  })
+  .finally(() => hideLoading());
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -260,21 +284,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const dateFromVal = params.get("dateFrom");
   const dateToVal = params.get("dateTo");
 
-  if (searchVal) {
-    document.getElementById("searchInput").value = searchVal;
-  }
-  if (dateFromVal) {
-    document.getElementById("dateFrom").value = dateFromVal;
-  }
-  if (dateToVal) {
-    document.getElementById("dateTo").value = dateToVal;
-  }
+  if (searchVal) document.getElementById("searchInput").value = searchVal;
+  if (dateFromVal) document.getElementById("dateFrom").value = dateFromVal;
+  if (dateToVal) document.getElementById("dateTo").value = dateToVal;
 
   loadSalesData();
 
   document.getElementById("searchInput").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      applyFilters();
-    }
+    if (e.key === "Enter") applyFilters();
   });
 });

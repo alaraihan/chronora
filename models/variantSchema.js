@@ -17,6 +17,11 @@ const variantSchema = new mongoose.Schema({
         default: 0,
         min: 0
     },
+    strapColor:{
+        type:String,
+        required:true,
+        trim:true,
+    },
     images: [{
         type: String,
         required: true

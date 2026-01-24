@@ -17,17 +17,14 @@ export const loadOfferPage = async (req, res) => {
 export const getOffersData = async (req, res) => {
   try {
     const { type, status } = req.query;  
-
     let query = {};
     if (type) query.type = type;
     if (status) query.active = status === 'active';  
-
     const offers = await Offer.find(query)
-      .populate("productId", "name")
-      .populate("categoryId", "name")
+      .populate("productId","name")
+      .populate("categoryId","name")
       .sort({ createdAt: -1 })
       .lean();
-
     res.json({ success: true, offers });
   } catch (error) {
     console.error("GET OFFERS DATA ERROR:", error);
@@ -39,13 +36,11 @@ export const getOfferTargets = async (req, res) => {
   try {
     const { type } = req.query;
     let targets = [];
-
     if (type === "product") {
       targets = await Product.find({}).select("_id name").lean();
     } else if (type === "category") {
       targets = await Category.find({}).select("_id name").lean();
     }
-
     res.json({ success: true, targets });
   } catch (error) {
     console.error("GET TARGETS ERROR:", error);

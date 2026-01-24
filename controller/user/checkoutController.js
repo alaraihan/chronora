@@ -302,7 +302,10 @@ export const placeOrder = async (req, res) => {
     if (finalAmount <= 0) {
       return res.status(400).json({ success: false, message: "Invalid order amount" });
     }
-
+     if(paymentMethod==='cod' && finalAmount>1000){
+      return res.status(400).json({success:false,message:"Orders above 1000 is not allowed for cod"})
+     }
+     
     let walletTransactionId = null; 
 
     if (paymentMethod === "wallet") {
@@ -411,15 +414,23 @@ export const placeOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: "Shipping address required" });
     }
 
-    const orderedItems = cartItems.map((ci) => ({
-      productId: ci.productId._id,
-      variantId: ci.variantId?._id || null,
-      quantity: Number(ci.quantity || 1),
-      price: Number(ci.price || 0),
-      originalPrice: Number(ci.originalPrice || ci.productId?.price || 0),
-      itemStatus: "Pending",
-      offerData: ci.productId?.offerData || null,
-    }));
+   const orderedItems = cartItems.map((ci) => {
+  const originalPrice = Number(ci.productId?.price || ci.variantId?.price || 0);
+  let finalPrice = Number(ci.price || originalPrice); 
+  if (ci.productId?.offerData?.offerPrice) {
+    finalPrice = Number(ci.productId.offerData.offerPrice);
+  }
+
+  return {
+    productId: ci.productId._id,
+    variantId: ci.variantId?._id || null,
+    quantity: Number(ci.quantity || 1),
+    price: finalPrice,                   
+    originalPrice: originalPrice,         
+    itemStatus: "Pending",
+    offerData: ci.productId?.offerData || null,
+  };
+});
 
     const appliedCouponCode = (appliedCoupon || req.body.couponCode || "").trim().toUpperCase() || null;
 
@@ -533,6 +544,51 @@ export const placeOrder = async (req, res) => {
   }
 };
 
+export const getAvailableCoupons = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const today = new Date();
+
+    const coupons = await Coupon.find({
+      status: "Active",
+      startDate: { $lte: today },
+      expiryDate: { $gte: today },
+      $or: [
+        { specificUsers: { $size: 0 } }, 
+        { specificUsers: userId } 
+      ]
+    })
+    .select('code name description discountType discountValue minPurchase maxDiscountLimit perUserLimit totalUsageLimit usedCount usedBy expiryDate')
+    .lean();
+
+    const availableCoupons = coupons.filter(coupon => {
+      
+      if (coupon.totalUsageLimit && coupon.usedCount >= coupon.totalUsageLimit) {
+        return false;
+      }
+      const userUsage = coupon.usedBy.find(u => u.user.toString() === userId.toString());
+      const userCount = userUsage ? userUsage.count : 0;
+      
+      if (userCount >= coupon.perUserLimit) {
+        return false;
+      }
+
+      return true;
+    });
+
+    res.json({
+      success: true,
+      coupons: availableCoupons
+    });
+
+  } catch (error) {
+    console.error("Get available coupons error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch coupons"
+    });
+  }
+};
 export const successPage = async (req, res) => {
   try {
     const orderId = req.query.orderId || (req.session && req.session.lastOrderId);

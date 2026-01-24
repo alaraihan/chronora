@@ -16,40 +16,55 @@
     <p class="text-muted">Only Delivered Items</p>
   </header>
 
-  <div class="filters-card">
-    <div class="filter-row">
-      <div class="filter-group">
-        <label>Date From:</label>
-        <input type="date" id="dateFrom" class="date-input">
-      </div>
-      
-      <div class="filter-group">
-        <label>Date To:</label>
-        <input type="date" id="dateTo" class="date-input">
-      </div>
 
-      <div class="filter-group">
-        <input 
-          type="text" 
-          id="searchInput"
-          placeholder="Search by Order ID, Customer..."
-          class="search-input"
-        >
-      </div>
+<div class="filters-card">
+  <div class="filter-row">
+    <div class="filter-group">
+      <label>Quick Period:</label>
+      <select id="quickPeriod" class="select-input">
+        <option value="custom">Custom Range</option>
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+        <option value="year">This Year</option>
+      </select>
+    </div>
 
-      <div class="filter-actions">
-        <button onclick="applyFilters()" class="btn btn-primary">
-          <i class="bi bi-funnel"></i> Apply Filters
-        </button>
-        <button onclick="clearFilters()" class="btn btn-secondary">
-          <i class="bi bi-x-circle"></i> Clear All
-        </button>
-        <button onclick="downloadReport()" class="btn btn-success">
-          <i class="bi bi-download"></i> Download CSV
-        </button>
-      </div>
+    <div class="filter-group">
+      <label>Date From:</label>
+      <input type="date" id="dateFrom" class="date-input">
+    </div>
+    
+    <div class="filter-group">
+      <label>Date To:</label>
+      <input type="date" id="dateTo" class="date-input">
+    </div>
+
+    <div class="filter-group">
+      <input 
+        type="text" 
+        id="searchInput"
+        placeholder="Search by Order ID, Customer..."
+        class="search-input"
+      >
+    </div>
+
+    <div class="filter-actions">
+      <button onclick="applyFilters()" class="btn btn-primary">
+        <i class="bi bi-funnel"></i> Apply Filters
+      </button>
+      <button onclick="clearFilters()" class="btn btn-secondary">
+        <i class="bi bi-x-circle"></i> Clear All
+      </button>
+      <button onclick="downloadReport('csv')" class="btn btn-success">
+        <i class="bi bi-filetype-csv"></i> CSV
+      </button>
+      <button onclick="downloadReport('pdf')" class="btn btn-danger">
+        <i class="bi bi-filetype-pdf"></i> PDF
+      </button>
     </div>
   </div>
+</div>
 
   <div class="summary-cards">
     <div class="summary-card bg-primary">
@@ -117,7 +132,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="/js/admin/salesReport.js"></script>
 
 </body>

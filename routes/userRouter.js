@@ -36,7 +36,9 @@ import {
   placeOrder,
   successPage,
   failurePage,
-  applyCoupon
+  applyCoupon,
+  getAvailableCoupons,
+
 } from "../controller/user/checkoutController.js";
 
 import {
@@ -72,10 +74,10 @@ router.get("/", userController.loadHomepage);
 router.get("/product/:id", userController.productDetails);
 router.get("/watch", userController.loadWatchPage);
 
-router.get("/login",  authController.loadLogin);
+router.get("/login", checkLogin, authController.loadLogin);
+router.get("/signup", checkLogin, authController.loadSignUp);
 router.post("/login", authController.login);
 
-router.get("/signup", authController.loadSignUp);
 router.post("/signup", authController.signUp);
 
 router.get("/verifyOtp", authController.loadVerifyOtp);
@@ -135,12 +137,17 @@ router.post('/cart/update/:id', isLoggedIn, updateQuantity);
 router.post('/cart/remove/:id', isLoggedIn, removeFromCart);
 
 
+
+
 router.get("/checkout", isLoggedIn, loadCheckout);
 router.post('/address/add', isLoggedIn, addAddressCheck);
+
 router.post('/checkout/place-order', isLoggedIn, placeOrder);
 router.get("/checkout/success", isLoggedIn, successPage);
 router.get("/checkout/failure", isLoggedIn, failurePage);
-router.post('/checkout/apply-coupon', isLoggedIn, applyCoupon)
+router.post('/checkout/apply-coupon', isLoggedIn, applyCoupon);
+router.get('/coupons/available', isLoggedIn, getAvailableCoupons);
+
 router.get("/profile/orders", isLoggedIn, getOrdersPage);
 
 router.get("/profile/orders/:orderId", isLoggedIn, getOrderDetails);

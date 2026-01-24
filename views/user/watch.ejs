@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/css/user/watch.css">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <main>
   <h1>The Watch Collection</h1>
 
@@ -72,14 +72,14 @@
               <% } %>
 
               <!-- Wishlist Heart Button -->
-              <button 
-                class="favorite-btn <%= user && user.wishlist?.some(w => w.productId.toString() === product._id.toString() && w.variantId.toString() === variantId?.toString()) ? 'active' : '' %>"
-                data-product-id="<%= product._id %>"
-                data-variant-id="<%= variantId %>"
-                title="Add to Wishlist"
-              >
-                ♥
-              </button>
+<button 
+  class="favorite-btn <%= user && user.wishlist?.some(w => w.productId.toString() === product._id.toString() && w.variantId.toString() === variantId?.toString()) ? 'active' : '' %>"
+  data-product-id="<%= product._id %>"
+  data-variant-id="<%= variantId %>"
+  title="<%= user && user.wishlist?.some(w => w.productId.toString() === product._id.toString() && w.variantId.toString() === variantId?.toString()) ? 'Remove from Wishlist' : 'Add to Wishlist' %>"
+>
+  <i class="fa-regular fa-heart" id="heart-icon"></i>  <!-- Outline by default -->
+</button>
             </div>
 
             <div class="watch-info">
@@ -150,10 +150,11 @@
 document.querySelectorAll('.favorite-btn').forEach(btn => {
   btn.addEventListener('click', async (e) => {
     e.preventDefault();
-    e.stopPropagation();
+    e.stopPropagation(); // Prevent card click if whole card is clickable
 
     const productId = btn.dataset.productId;
     const variantId = btn.dataset.variantId;
+    const heartIcon = btn.querySelector('i');
 
     if (!productId || !variantId) return;
 
@@ -161,14 +162,25 @@ document.querySelectorAll('.favorite-btn').forEach(btn => {
       const res = await axios.post('/add-wishlist', { productId, variantId });
 
       if (res.data.success) {
-        btn.classList.add('active');
-        toast("Added to wishlist ❤️", "success");
+        // Toggle active state
+        btn.classList.toggle('active');
+
+        // Toggle heart icon: outline ↔ filled
+        if (btn.classList.contains('active')) {
+          heartIcon.classList.remove('fa-regular', 'fa-heart');
+          heartIcon.classList.add('fa-solid', 'fa-heart');
+          toast("Added to wishlist ❤️", "success");
+        } else {
+          heartIcon.classList.remove('fa-solid', 'fa-heart');
+          heartIcon.classList.add('fa-regular', 'fa-heart');
+          toast("Removed from wishlist", "info");
+        }
       } else {
-        if (res.data.message.includes("login")) {
+        if (res.data.message?.includes("login")) {
           toast("Please login to save wishlist", "error");
           setTimeout(() => window.location.href = "/login", 1500);
         } else {
-          toast(res.data.message, "error");
+          toast(res.data.message || "Something went wrong", "error");
         }
       }
     } catch (err) {
@@ -177,7 +189,6 @@ document.querySelectorAll('.favorite-btn').forEach(btn => {
     }
   });
 });
-
 function toast(msg, type = "info") {
   Toastify({
     text: msg,

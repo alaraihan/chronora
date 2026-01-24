@@ -186,7 +186,7 @@ function openAddModal() {
     document.getElementById('modalTitle').textContent = 'Add New Product';
     document.getElementById('productForm').reset();
     document.getElementById('productId').value = '';
-    variants = [{ id: null, name: '', stock: 0, images: [], newFiles: [] }];
+    variants = [{ id: null, name: '', stock: 0,strapColor:"", images: [], newFiles: [] }];
     renderVariants();
     updateCalculatedStock();
     document.getElementById('productModal').style.display = 'block';
@@ -206,17 +206,19 @@ async function openEditModal(id) {
         document.getElementById('description').value = p.description || '';
         document.getElementById('price').value = p.price != null ? p.price : '';
         document.getElementById('category').value = p.category || '';
+
         
         variants = (p.variants || []).map(v => ({
             id: v.id || v.variantId || v.variantId?.toString() || null,
             name: v.name || v.colorName || '',
             stock: v.stock || 0,
             images: Array.isArray(v.images) ? v.images.slice() : [],
+            strapColor:v.strapColor,
             newFiles: []
         }));
         
         if (variants.length === 0) {
-            variants.push({ id: null, name: '', stock: 0, images: [], newFiles: [] });
+            variants.push({ id: null, name: '', stock: 0, strapColor:"",images: [], newFiles: [] });
         }
         
         renderVariants();
@@ -269,6 +271,12 @@ function renderVariants() {
                     <label style="display:block;margin-bottom:6px;font-weight:500;">Stock</label>
                     <input type="number" value="${v.stock}" min="0"
                            onchange="variants[${i}].stock=+this.value;updateCalculatedStock();"
+                           style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
+                </div>
+                  <div>
+                    <label style="display:block;margin-bottom:6px;font-weight:500;">StrapColor</label>
+                    <input type="text" value="${v.strapColor}"
+                           onchange="variants[${i}].strapColor=this.value;renderVariants()"
                            style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
                 </div>
             </div>
@@ -352,7 +360,7 @@ function addVariant() {
         showToast('Max 8 variants', 'warning');
         return;
     }
-    variants.push({ id: null, name: '', stock: 0, images: [], newFiles: [] });
+    variants.push({ id: null, name: '', stock: 0, strapColor:"",images: [], newFiles: [] });
     renderVariants();
 }
 
@@ -413,6 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     id: v.id || null,
                     name: v.name || '',
                     stock: v.stock || 0,
+                    strapColor:v.strapColor,
                     existingImages,
                     newImageCount: (v.newFiles || []).length
                 };
