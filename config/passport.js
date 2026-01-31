@@ -6,43 +6,43 @@ dotenv.config();
 
 
 passport.use(new GoogleStrategy({
-    clientID:process.env.GOOGLE_CLIENTID,
-    clientSecret:process.env.GOOGLE_CLIENTSECRET,
-    callbackURL:'http://localhost:3000/auth/google/callback'
+  clientID:process.env.GOOGLE_CLIENTID,
+  clientSecret:process.env.GOOGLE_CLIENTSECRET,
+  callbackURL:"http://localhost:3000/auth/google/callback"
 },
-async(accessToken,refreshToken,profile,done)=>{
-try{
- let user=await User.findOne({googleId:profile.id});
- if(user){
-    return done(null,user);
- }
-  const fullName = profile.displayName || (profile.name && `${profile.name.givenName || ""} ${profile.name.familyName || ""}`).trim() || "No name";
-        const email = (profile.emails && profile.emails[0] && profile.emails[0].value) || "";
-
-        user = await User.create({
-            fullName,
-          email,
-          googleId: profile.id,
-          isVerified: true,
-        });
-
-        return done(null, user);
-      } catch (error) {
-        return done(error, null);
-      }
+async (accessToken,refreshToken,profile,done)=>{
+  try {
+    let user=await User.findOne({googleId:profile.id});
+    if (user) {
+      return done(null,user);
     }
-  )
+    const fullName = profile.displayName || (profile.name && `${profile.name.givenName || ""} ${profile.name.familyName || ""}`).trim() || "No name";
+    const email = (profile.emails && profile.emails[0] && profile.emails[0].value) || "";
+
+    user = await User.create({
+      fullName,
+      email,
+      googleId: profile.id,
+      isVerified: true
+    });
+
+    return done(null, user);
+  } catch (error) {
+    return done(error, null);
+  }
+}
 )
+);
 passport.serializeUser((user,done)=>{
-done(null,user.id)
+  done(null,user.id);
 });
 passport.deserializeUser((id,done)=>{
-    User.findById(id)
+  User.findById(id)
     .then(user=>{
-        done(null,user)
+      done(null,user);
     })
     .catch(err=>{
-        done(err,null)
-    })
-})
+      done(err,null);
+    });
+});
 export default passport;

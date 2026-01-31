@@ -13,13 +13,13 @@ export const getCouponsPage = async (req, res) => {
       coupons: Array.isArray(coupons) ? coupons : [],
       users,
       title: "Coupon",
-      page: "Coupons",
+      page: "Coupons"
     });
   } catch (err) {
     console.error("Error fetching coupons:", err);
     res.status(500).render("admin/coupons", {
       coupons: [],
-      users: [],
+      users: []
     });
   }
 };
@@ -38,7 +38,7 @@ export const createCoupon = async (req, res) => {
       startDate,
       expiryDate,
       status,
-      specificUsers = [],
+      specificUsers = []
     } = req.body;
     if (
       !code ||
@@ -52,7 +52,7 @@ export const createCoupon = async (req, res) => {
         .status(400)
         .json({
           success: false,
-          message: "Please fill in all required fields.",
+          message: "Please fill in all required fields."
         });
     }
 
@@ -62,7 +62,7 @@ export const createCoupon = async (req, res) => {
         .status(400)
         .json({
           success: false,
-          message: "Coupon code must be at least 3 characters long.",
+          message: "Coupon code must be at least 3 characters long."
         });
     }
     const discountVal = parseFloat(discountValue);
@@ -71,7 +71,7 @@ export const createCoupon = async (req, res) => {
         .status(400)
         .json({
           success: false,
-          message: "Discount value must be a positive number.",
+          message: "Discount value must be a positive number."
         });
     }
     if (discountType === "percentage" && discountVal > 100) {
@@ -79,7 +79,7 @@ export const createCoupon = async (req, res) => {
         .status(400)
         .json({
           success: false,
-          message: "Percentage discount cannot exceed 100%.",
+          message: "Percentage discount cannot exceed 100%."
         });
     }
     let maxLimit = null;
@@ -94,7 +94,7 @@ export const createCoupon = async (req, res) => {
           .status(400)
           .json({
             success: false,
-            message: "Max discount limit must be a positive number.",
+            message: "Max discount limit must be a positive number."
           });
       }
       if (discountType === "percentage" && maxLimit < discountVal) {
@@ -102,7 +102,7 @@ export const createCoupon = async (req, res) => {
           .status(400)
           .json({
             success: false,
-            message: "Max discount cap cannot be less than the discount value.",
+            message: "Max discount cap cannot be less than the discount value."
           });
       }
     }
@@ -118,7 +118,7 @@ export const createCoupon = async (req, res) => {
         .status(400)
         .json({
           success: false,
-          message: "Expiry date must be after the start date.",
+          message: "Expiry date must be after the start date."
         });
     }
     const perUser = parseInt(perUserLimit);
@@ -127,7 +127,7 @@ export const createCoupon = async (req, res) => {
         .status(400)
         .json({
           success: false,
-          message: "Per user limit must be at least 1.",
+          message: "Per user limit must be at least 1."
         });
     }
 
@@ -143,7 +143,7 @@ export const createCoupon = async (req, res) => {
           .status(400)
           .json({
             success: false,
-            message: "Total usage limit must be at least 1.",
+            message: "Total usage limit must be at least 1."
           });
       }
     }
@@ -160,7 +160,7 @@ export const createCoupon = async (req, res) => {
       startDate: new Date(startDate),
       expiryDate: new Date(expiryDate),
       status: status || "Active",
-      specificUsers,
+      specificUsers
     });
     res.json({ success: true, message: "coupon created" });
   } catch (error) {
@@ -183,7 +183,7 @@ export const updateCoupon = async (req, res) => {
       startDate,
       expiryDate,
       status,
-      specificUsers = [],
+      specificUsers = []
     } = req.body;
 
     const coupon = await Coupon.findById(couponId);
@@ -197,7 +197,7 @@ export const updateCoupon = async (req, res) => {
       if (existing) {
         return res.json({
           success: false,
-          message: "This coupon code already exists",
+          message: "This coupon code already exists"
         });
       }
     }

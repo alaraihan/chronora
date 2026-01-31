@@ -1,9 +1,11 @@
 import multer from "multer";
 import path from "path";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
+import pkg from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary.js";  // adjust path to your cloudinary config file
 
-const storage = new CloudinaryStorage({
+const { CloudinaryStorage } = pkg;
+
+const storage = pkg({
   cloudinary: cloudinary,
   params: {
     folder: "chronora/variants",  // your folder in Cloudinary
@@ -13,9 +15,9 @@ const storage = new CloudinaryStorage({
     transformation: [
       { quality: "auto" },
       { fetch_format: "auto" },
-      { width: 1000, height: 1000, crop: "limit" },
-    ],
-  },
+      { width: 1000, height: 1000, crop: "limit" }
+    ]
+  }
 });
 
 const upload = multer({
@@ -30,7 +32,7 @@ const upload = multer({
     } else {
       cb(new Error("Only JPG, JPEG, PNG, WEBP images allowed!"));
     }
-  },
+  }
 });
 
 export default upload;

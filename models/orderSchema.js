@@ -6,31 +6,31 @@ const orderedItemSchema = new mongoose.Schema({
   productId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
-    required: true,
+    required: true
   },
   variantId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Variant",
-    required: true,
+    required: true
   },
   quantity: {
     type: Number,
     required: true,
-    min: 1,
+    min: 1
   },
   price: {
     type: Number,
     required: true,
-    min: 0,
-  }, 
+    min: 0
+  },
   originalPrice: {
     type: Number,
     required: true,
-    min: 0,
-  }, 
- 
-  refundId: { type: String }, 
-refundProcessedAt: { type: Date },
+    min: 0
+  },
+
+  refundId: { type: String },
+  refundProcessedAt: { type: Date },
   itemStatus: {
     type: String,
     enum: [
@@ -44,9 +44,9 @@ refundProcessedAt: { type: Date },
       "ReturnRequested",
       "ReturnRejected",
       "ReturnApproved",
-      "Returned",
+      "Returned"
     ],
-    default: "Pending",
+    default: "Pending"
   },
 
   itemTimeline: {
@@ -59,10 +59,10 @@ refundProcessedAt: { type: Date },
     returnRequestedAt: Date,
     returnRejectedAt: Date,
     returnApprovedAt: Date,
-    returnedAt: Date,
+    returnedAt: Date
   },
 
-  reason: { type: String, default: "" },
+  reason: { type: String, default: "" }
 });
 
 const shippingAddressSchema = new mongoose.Schema({
@@ -74,7 +74,7 @@ const shippingAddressSchema = new mongoose.Schema({
   state: { type: String, required: true },
   pincode: { type: String, required: true },
   country: { type: String, default: "India" },
-  addressType: String,
+  addressType: String
 });
 
 const orderSchema = new mongoose.Schema(
@@ -82,13 +82,13 @@ const orderSchema = new mongoose.Schema(
     orderId: {
       type: String,
       unique: true,
-      index: true,
+      index: true
     },
 
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: true
     },
 
     products: [orderedItemSchema],
@@ -97,26 +97,26 @@ const orderSchema = new mongoose.Schema(
     deliveryDate: Date,
 
     status: {
-  type: String,
-  enum: [
-    "Pending",
-    "Confirmed",
-    "Processing",
-    "Shipped",
-    "Out for Delivery",
-    "Delivered",
-    "CancelRequested",
-    "ReturnRequested",
-    "ReturnRejected",
-    "ReturnApproved",
-    "Cancelled",
-    "Returned",
-    "Partially Delivered",
-    "Partially Cancelled",
-    "Partially Returned",  
-  ],
-  default: "Pending",
-},
+      type: String,
+      enum: [
+        "Pending",
+        "Confirmed",
+        "Processing",
+        "Shipped",
+        "Out for Delivery",
+        "Delivered",
+        "CancelRequested",
+        "ReturnRequested",
+        "ReturnRejected",
+        "ReturnApproved",
+        "Cancelled",
+        "Returned",
+        "Partially Delivered",
+        "Partially Cancelled",
+        "Partially Returned"
+      ],
+      default: "Pending"
+    },
 
     cancelReason: { type: String, default: "" },
     returnReason: { type: String, default: "" },
@@ -128,8 +128,8 @@ const orderSchema = new mongoose.Schema(
         rating: { type: Number, min: 1, max: 5, required: true },
         title: String,
         text: { type: String, required: true },
-        reviewedAt: { type: Date, default: Date.now },
-      },
+        reviewedAt: { type: Date, default: Date.now }
+      }
     ],
 
     statusHistory: {
@@ -139,10 +139,10 @@ const orderSchema = new mongoose.Schema(
           reason: String,
           changedBy: String,
           previousStatus: String,
-          date: { type: Date, default: Date.now },
-        },
+          date: { type: Date, default: Date.now }
+        }
       ],
-      default: [],
+      default: []
     },
 
     address: shippingAddressSchema,
@@ -151,22 +151,22 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
       enum: ["razorpay", "cod", "wallet"],
-      required: true,
+      required: true
     },
 
-   paymentStatus: {
-  type: String,
-  enum: ["Pending", "Paid", "Failed", "Refunded", "Partially Refunded"],
-  default: "Pending",
-},
+    paymentStatus: {
+      type: String,
+      enum: ["Pending", "Paid", "Failed", "Refunded", "Partially Refunded"],
+      default: "Pending"
+    },
 
     paymentId: String,
 
-    totalAmount: { type: Number, required: true },     
+    totalAmount: { type: Number, required: true },
     deliveryCharge: { type: Number, default: 0 },
-    discount: { type: Number, default: 0 },             
+    discount: { type: Number, default: 0 },
 
-    expectedDelivery: Date,
+    expectedDelivery: Date
   },
   { timestamps: true }
 );

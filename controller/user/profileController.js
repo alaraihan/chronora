@@ -1,34 +1,34 @@
-import emailOtps from "../../utils/emailOtpStore.js";  
+import emailOtps from "../../utils/emailOtpStore.js";
 
 import cloudinary from "../../config/cloudinary.js";
 import User from "../../models/userSchema.js";
 import { sendOtp, generateOtp } from "../../utils/mail.js";
-import fs from 'fs';
-import path from 'path';
-import bcrypt from 'bcrypt';
-export const loadProfile=async(req,res)=>{
-    try{
-    if(!req.session.userId){
-        return res.redirect("/login");
+import fs from "fs";
+import path from "path";
+import bcrypt from "bcrypt";
+export const loadProfile=async (req,res)=>{
+  try {
+    if (!req.session.userId) {
+      return res.redirect("/login");
     }
 
     const user =await User.findById(req.session.userId);
     return res.render("user/profile",{
-        title:'Chronora-Profile',
-        user,
-        active:"proile"
+      title:"Chronora-Profile",
+      user,
+      active:"proile"
     });
-}catch(error){
+  } catch (error) {
     console.log("error loading profile", error);
     return res.status(500).render("user/pageNotfound");
-}
+  }
 };
 
 export const loadProfileImageEdit = async (req, res) => {
   try {
     const user = await User.findById(req.session.userId);
 
-    if (!user) return res.redirect("/login");
+    if (!user) {return res.redirect("/login");}
 
     res.render("user/profile-edit-image", {
       user,
@@ -54,7 +54,7 @@ export const profileImageEdit = async (req, res) => {
       folder: "chronora/Profile_images",
       transformation: [
         { width: 500, height: 500, crop: "limit" }
-      ],
+      ]
     });
 
     if (user.profileImageId) {
@@ -64,7 +64,7 @@ export const profileImageEdit = async (req, res) => {
     user.profileImage = result.secure_url;
     user.profileImageId = result.public_id;
     await user.save();
-  
+
 
     try {
       fs.unlinkSync(req.file.path);
@@ -75,7 +75,7 @@ export const profileImageEdit = async (req, res) => {
     res.json({
       success: true,
       message: "Profile image updated successfully",
-      image: user.profileImage,
+      image: user.profileImage
     });
 
   } catch (error) {
@@ -90,7 +90,7 @@ export const loadProfileNameEdit = async (req, res) => {
     const user = await User.findById(req.session.userId);
     res.render("user/profile-edit-name", {
       active: "profile-edit-name",
-      user,
+      user
     });
   } catch (error) {
     console.error("Error loading name edit page:", error);
@@ -122,15 +122,14 @@ export const profileNameEdit = async (req, res) => {
 };
 
 
-
 export const loadProfileEmailEdit = async (req, res) => {
   try {
-    if (!req.session.userId) return res.redirect("/login");
+    if (!req.session.userId) {return res.redirect("/login");}
 
     const user = await User.findById(req.session.userId);
     return res.render("user/profile-edit-email", {
       active: "profile-email-edit",
-      user,
+      user
     });
   } catch (error) {
     console.error("Error loading email edit page:", error);
@@ -145,14 +144,14 @@ export const sendEmailOtp = async (req, res) => {
     }
 
     const { email } = req.body;
-    if (!email) return res.status(400).json({ success: false, message: "Email is required." });
+    if (!email) {return res.status(400).json({ success: false, message: "Email is required." });}
 
     if (!/\S+@\S+\.\S+/.test(email)) {
       return res.status(400).json({ success: false, message: "Invalid email format." });
     }
 
     const user = await User.findById(req.session.userId);
-    if (!user) return res.status(404).json({ success: false, message: "User not found." });
+    if (!user) {return res.status(404).json({ success: false, message: "User not found." });}
 
     if (user.email && user.email.toLowerCase() === email.toLowerCase()) {
       return res.status(400).json({ success: false, message: "This is already your current email." });
@@ -166,7 +165,7 @@ export const sendEmailOtp = async (req, res) => {
     const otp = generateOtp(6);
     let sent = false;
     try {
-      sent = await sendOtp(email, otp); 
+      sent = await sendOtp(email, otp);
     } catch (sendErr) {
       console.error("sendOtp failed:", sendErr);
       sent = false;
@@ -176,12 +175,12 @@ export const sendEmailOtp = async (req, res) => {
       return res.status(500).json({ success: false, message: "Failed to send OTP. Try again later." });
     }
 
-    const expiresAt = Date.now() + 5 * 60 * 1000; 
+    const expiresAt = Date.now() + 5 * 60 * 1000;
 
     emailOtps.set(email.toLowerCase(), {
       otp,
       expiresAt,
-      userId: req.session.userId,
+      userId: req.session.userId
     });
 
     req.session.pendingEmailChange = { email: email.toLowerCase(), otpExpires: expiresAt };
@@ -195,10 +194,10 @@ export const sendEmailOtp = async (req, res) => {
 
 export const getPendingEmailChange = (req, res) => {
   try {
-    if (!req.session.userId) return res.status(401).json({ success: false, message: "No session" });
+    if (!req.session.userId) {return res.status(401).json({ success: false, message: "No session" });}
 
     const pending = req.session.pendingEmailChange;
-    if (!pending) return res.json({ success: false, message: "No pending email change" });
+    if (!pending) {return res.json({ success: false, message: "No pending email change" });}
 
     const now = Date.now();
     const remainingMs = Math.max(0, pending.otpExpires - now);
@@ -218,11 +217,11 @@ export const verifyEmailOtp = async (req, res) => {
     }
 
     const { email, otp } = req.body;
-    if (!email || !otp) return res.status(400).json({ success: false, message: "Email & OTP required." });
+    if (!email || !otp) {return res.status(400).json({ success: false, message: "Email & OTP required." });}
 
     const key = email.toLowerCase();
     const record = emailOtps.get(key);
-    if (!record) return res.status(400).json({ success: false, message: "No OTP found. Request a new one." });
+    if (!record) {return res.status(400).json({ success: false, message: "No OTP found. Request a new one." });}
 
     if (record.userId !== req.session.userId) {
       return res.status(403).json({ success: false, message: "OTP does not match this user session." });
@@ -247,7 +246,7 @@ export const verifyEmailOtp = async (req, res) => {
     }
 
     const user = await User.findById(req.session.userId);
-    if (!user) return res.status(404).json({ success: false, message: "User not found." });
+    if (!user) {return res.status(404).json({ success: false, message: "User not found." });}
 
     user.email = key;
     await user.save();
@@ -267,11 +266,11 @@ export const verifyEmailOtp = async (req, res) => {
 export const getChangePassword = async (req, res) => {
   try {
     const user = await User.findById(req.session.userId);
-    if (!user) return res.redirect('/login');
+    if (!user) {return res.redirect("/login");}
 
     res.render("user/change-password", {
       user,
-      active:'profeil-change password'
+      active:"profeil-change password"
     });
   } catch (error) {
     console.error(error);
@@ -284,32 +283,32 @@ export const changePassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
 
     if (!currentPassword || !newPassword) {
-      return res.status(400).json({ success: false, message: 'All fields required' });
+      return res.status(400).json({ success: false, message: "All fields required" });
     }
     if (newPassword.length < 8) {
-      return res.status(400).json({ success: false, message: 'Password too short' });
+      return res.status(400).json({ success: false, message: "Password too short" });
     }
 
-    const user = await User.findById(req.session.userId).select('+password');
+    const user = await User.findById(req.session.userId).select("+password");
     if (!user) {
-      return res.status(401).json({ success: false, message: 'User not found' });
+      return res.status(401).json({ success: false, message: "User not found" });
     }
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
-      return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+      return res.status(400).json({ success: false, message: "Current password is incorrect" });
     }
 
     if (await bcrypt.compare(newPassword, user.password)) {
-      return res.status(400).json({ success: false, message: 'New password must be different' });
+      return res.status(400).json({ success: false, message: "New password must be different" });
     }
 
     user.password = await bcrypt.hash(newPassword, 12);
     await user.save();
 
-    return res.json({ success: true, message: 'Password changed successfully!' });
+    return res.json({ success: true, message: "Password changed successfully!" });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ success: false, message: 'Server error' });
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };

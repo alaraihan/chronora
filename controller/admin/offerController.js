@@ -6,7 +6,7 @@ export const loadOfferPage = async (req, res) => {
   try {
     res.render("admin/offer", {
       title: "Offers Management",
-      page: "offer",
+      page: "offer"
     });
   } catch (error) {
     console.error("LOAD OFFER PAGE ERROR:", error);
@@ -16,10 +16,10 @@ export const loadOfferPage = async (req, res) => {
 
 export const getOffersData = async (req, res) => {
   try {
-    const { type, status } = req.query;  
-    let query = {};
-    if (type) query.type = type;
-    if (status) query.active = status === 'active';  
+    const { type, status } = req.query;
+    const query = {};
+    if (type) {query.type = type;}
+    if (status) {query.active = status === "active";}
     const offers = await Offer.find(query)
       .populate("productId","name")
       .populate("categoryId","name")
@@ -110,7 +110,7 @@ export const createOffer = async (req, res) => {
       if (!category) {
         return res.status(404).json({ success: false, message: "Category not found" });
       }
-      originalPrice = category.price; 
+      originalPrice = category.price;
     }
 
     if (discountType === "fixed" && discount >= originalPrice) {
@@ -142,8 +142,8 @@ export const createOffer = async (req, res) => {
       active: true
     };
 
-    if (type === "product") offerData.productId = targetId;
-    if (type === "category") offerData.categoryId = targetId;
+    if (type === "product") {offerData.productId = targetId;}
+    if (type === "category") {offerData.categoryId = targetId;}
 
     await Offer.create(offerData);
 
@@ -231,7 +231,7 @@ export const updateOffer = async (req, res) => {
       if (!category) {
         return res.status(404).json({ success: false, message: "Category not found" });
       }
-      originalPrice = category.price; 
+      originalPrice = category.price;
     }
 
     if (discountType === "fixed" && discount >= originalPrice) {
@@ -264,8 +264,8 @@ export const updateOffer = async (req, res) => {
       categoryId: null
     };
 
-    if (type === "product") offerData.productId = targetId;
-    if (type === "category") offerData.categoryId = targetId;
+    if (type === "product") {offerData.productId = targetId;}
+    if (type === "category") {offerData.categoryId = targetId;}
 
     await Offer.findByIdAndUpdate(id, offerData, { new: true });
 
@@ -303,10 +303,10 @@ export const toggleOfferActive = async (req, res) => {
     offer.active = !offer.active;
     await offer.save();
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: "Status updated successfully",
-      active: offer.active 
+      active: offer.active
     });
   } catch (error) {
     console.error("TOGGLE STATUS ERROR:", error);

@@ -6,33 +6,33 @@ const categorySchema = new mongoose.Schema(
       type: String,
       required: [true, "Category name is required."],
       unique: true,
-      trim: true,
+      trim: true
     },
 
     description: {
       type: String,
       required: [true, "Category description is required."],
-      trim: true,
+      trim: true
     },
 
     image: {
       url: {
         type: String,
-        required: true,
+        required: true
       },
       public_id: {
         type: String,
-        required: true,
-      },
+        required: true
+      }
     },
 
     isListed: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 

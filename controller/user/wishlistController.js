@@ -1,7 +1,7 @@
 import Wishlist from "../../models/wishlistSchema.js";
-import Cart from "../../models/cartSchema.js"; 
+import Cart from "../../models/cartSchema.js";
 import Product from "../../models/productSchema.js";
-import getBestOfferForProduct from "../../utils/offerHelper.js"; 
+import getBestOfferForProduct from "../../utils/offerHelper.js";
 export const loadWishlist = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -9,7 +9,7 @@ export const loadWishlist = async (req, res) => {
     let wishlist = await Wishlist.find({ userId })
       .populate({
         path: "productId",
-        populate: { path: "category" } 
+        populate: { path: "category" }
       })
       .populate("variantId")
       .sort({ addedAt: -1 })
@@ -28,7 +28,7 @@ export const loadWishlist = async (req, res) => {
     res.render("user/wishlist", {
       title: "My Wishlist",
       wishlist,
-      active:'Wishlist',
+      active:"Wishlist"
     });
   } catch (error) {
     console.error("Error loading wishlist:", error);
@@ -98,11 +98,11 @@ export const moveToCart = async (req, res) => {
     const price = offerData ? offerData.offerPrice : product.price;
     const originalPrice = product.price;
 
-    let cartItem = await Cart.findOne({ userId, productId, variantId });
+    const cartItem = await Cart.findOne({ userId, productId, variantId });
 
     if (cartItem) {
       cartItem.quantity += 1;
-      cartItem.price = price; 
+      cartItem.price = price;
       await cartItem.save();
     } else {
       const newCartItem = new Cart({
@@ -110,8 +110,8 @@ export const moveToCart = async (req, res) => {
         productId,
         variantId,
         quantity: 1,
-        price,           
-        originalPrice    
+        price,
+        originalPrice
       });
       await newCartItem.save();
     }

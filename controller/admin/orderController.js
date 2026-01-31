@@ -39,25 +39,25 @@ export const getAdminOrdersData = async (req, res) => {
       .populate("products.productId", "name price images")
       .populate("products.variantId", "colorName size images")
       .sort({ createdAt: -1 })
-      .limit(100) 
+      .limit(100)
       .lean();
 
     const lineItems = [];
 
     for (const order of orders) {
-      if (!order.products?.length) continue;
+      if (!order.products?.length) {continue;}
 
       for (let i = 0; i < order.products.length; i++) {
         const prod = order.products[i];
 
-        if (status && prod.itemStatus !== status) continue;
+        if (status && prod.itemStatus !== status) {continue;}
 
         lineItems.push({
           _id: order._id.toString(),
           orderId: order.orderId,
           createdAt: order.createdAt,
           address: order.address || {},
-          products: [prod],           
+          products: [prod],
           itemIndex: i,
           totalAmount: order.totalAmount || 0
         });
@@ -167,32 +167,32 @@ export const updateOrderStatus = async (req, res) => {
     }
 
     const itemValidStatuses = ["Confirmed", "Processing", "Shipped", "Out for Delivery", "Delivered", "Cancelled"];
-    
+
     if (itemValidStatuses.includes(status)) {
       order.products.forEach((item, index) => {
-        if (item.itemStatus !== 'ReturnRequested') {
+        if (item.itemStatus !== "ReturnRequested") {
           const oldItemStatus = item.itemStatus;
           item.itemStatus = status;
-          
-          if (!item.itemTimeline) item.itemTimeline = {};
+
+          if (!item.itemTimeline) {item.itemTimeline = {};}
           const timelineMap = {
-            'Confirmed': 'confirmedAt',
-            'Processing': 'processedAt',
-            'Shipped': 'shippedAt',
-            'Out for Delivery': 'outForDeliveryAt',
-            'Delivered': 'deliveredAt',
-            'Cancelled': 'cancelledAt'
+            "Confirmed": "confirmedAt",
+            "Processing": "processedAt",
+            "Shipped": "shippedAt",
+            "Out for Delivery": "outForDeliveryAt",
+            "Delivered": "deliveredAt",
+            "Cancelled": "cancelledAt"
           };
-          
+
           if (timelineMap[status]) {
             item.itemTimeline[timelineMap[status]] = new Date();
           }
-          
+
           console.log(`Item ${index} updated: ${oldItemStatus} → ${status}`);
         }
       });
-      
-      order.markModified('products');
+
+      order.markModified("products");
     }
 
     const oldStatus = order.status;
@@ -227,37 +227,37 @@ export const updateItemStatus = async (req, res) => {
     const { itemIndex, status } = req.body;
 
     if (itemIndex == null || !status) {
-      return res.status(400).json({ success: false, message: 'Missing data' });
+      return res.status(400).json({ success: false, message: "Missing data" });
     }
 
     const order = await Order.findById(orderId);
-    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    if (!order) {return res.status(404).json({ success: false, message: "Order not found" });}
 
     const item = order.products[itemIndex];
-    if (!item) return res.status(400).json({ success: false, message: 'Item not found' });
+    if (!item) {return res.status(400).json({ success: false, message: "Item not found" });}
 
     item.itemStatus = status;
 
     item.itemTimeline ||= {};
     const timelineMap = {
-      Confirmed: 'confirmedAt',
-      Processing: 'processedAt',
-      Shipped: 'shippedAt',
-      'Out for Delivery': 'outForDeliveryAt',
-      Delivered: 'deliveredAt',
-      Cancelled: 'cancelledAt',
-      ReturnApproved: 'returnApprovedAt',
-      ReturnRejected: 'returnRejectedAt',
+      Confirmed: "confirmedAt",
+      Processing: "processedAt",
+      Shipped: "shippedAt",
+      "Out for Delivery": "outForDeliveryAt",
+      Delivered: "deliveredAt",
+      Cancelled: "cancelledAt",
+      ReturnApproved: "returnApprovedAt",
+      ReturnRejected: "returnRejectedAt"
     };
-    if (timelineMap[status]) item.itemTimeline[timelineMap[status]] = new Date();
+    if (timelineMap[status]) {item.itemTimeline[timelineMap[status]] = new Date();}
 
-    order.markModified('products');
+    order.markModified("products");
     await order.save();
 
-    res.json({ success: true, message: 'Item status updated successfully' });
+    res.json({ success: true, message: "Item status updated successfully" });
   } catch (error) {
-    console.error('UPDATE ITEM ERROR:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("UPDATE ITEM ERROR:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -266,18 +266,18 @@ export const approveItemReturn = async (req, res) => {
     const { orderId } = req.params;
     const { itemIndex } = req.body;
     const order = await Order.findById(orderId);
-    if (!order || order.products[itemIndex] == null) return res.status(400).json({ message: 'Invalid' });
+    if (!order || order.products[itemIndex] == null) {return res.status(400).json({ message: "Invalid" });}
 
     const item = order.products[itemIndex];
-    item.itemStatus = 'ReturnApproved';
+    item.itemStatus = "ReturnApproved";
     item.itemTimeline.returnApprovedAt = new Date();
 
-    order.markModified('products');
+    order.markModified("products");
     await order.save();
 
-    res.json({ success: true, message: 'Return approved' });
+    res.json({ success: true, message: "Return approved" });
   } catch (error) {
-    res.status(500).json({ message: 'Error' });
+    res.status(500).json({ message: "Error" });
   }
 };
 
@@ -286,18 +286,18 @@ export const rejectItemReturn = async (req, res) => {
     const { orderId } = req.params;
     const { itemIndex } = req.body;
     const order = await Order.findById(orderId);
-    if (!order || order.products[itemIndex] == null) return res.status(400).json({ message: 'Invalid' });
+    if (!order || order.products[itemIndex] == null) {return res.status(400).json({ message: "Invalid" });}
 
     const item = order.products[itemIndex];
-    item.itemStatus = 'Delivered';
+    item.itemStatus = "Delivered";
     item.itemTimeline.returnRejectedAt = new Date();
 
-    order.markModified('products');
+    order.markModified("products");
     await order.save();
 
-    res.json({ success: true, message: 'Return rejected' });
+    res.json({ success: true, message: "Return rejected" });
   } catch (error) {
-    res.status(500).json({ message: 'Error' });
+    res.status(500).json({ message: "Error" });
   }
 };
 
@@ -317,7 +317,7 @@ export const printOrder = async (req, res) => {
     res.render("admin/order-print", {
       order,
       title: `Invoice #${order.orderId}`,
-      page: "order",
+      page: "order"
     });
 
   } catch (error) {
@@ -329,7 +329,7 @@ export const printOrder = async (req, res) => {
 export const markOrderAsReturned = async (req, res) => {
   try {
     const order = await Order.findById(req.params.orderId).populate("products.variantId");
-    if (!order) return res.json({ success: false });
+    if (!order) {return res.json({ success: false });}
 
     order.status = "Returned";
 
@@ -337,7 +337,7 @@ export const markOrderAsReturned = async (req, res) => {
       if (item.itemStatus === "ReturnApproved") {
         if (item.variantId) {
           await Variant.findByIdAndUpdate(item.variantId._id || item.variantId, {
-            $inc: { stock: item.quantity },
+            $inc: { stock: item.quantity }
           });
         }
         item.itemStatus = "Returned";
@@ -350,7 +350,7 @@ export const markOrderAsReturned = async (req, res) => {
       status: "Returned",
       reason: "Products received",
       changedBy: "Admin",
-      date: new Date(),
+      date: new Date()
     });
 
     await order.save();
@@ -388,7 +388,7 @@ export const markItemAsReturned = async (req, res) => {
     item.itemTimeline ||= {};
     item.itemTimeline.returnedAt = new Date();
 
-    order.markModified('products');
+    order.markModified("products");
     await order.save();
 
     res.json({ success: true, message: "Item marked as returned and stock restored" });

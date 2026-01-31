@@ -8,7 +8,7 @@ dotenv.config();
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
 export const processRefund = async (req, res) => {
@@ -21,22 +21,22 @@ export const processRefund = async (req, res) => {
       .populate("products.productId")
       .populate("products.variantId");
 
-    if (!order) return res.json({ success: false, message: "Order not found" });
+    if (!order) {return res.json({ success: false, message: "Order not found" });}
 
     const item = order.products[index];
-    if (!item) return res.json({ success: false, message: "Item not found in order" });
+    if (!item) {return res.json({ success: false, message: "Item not found in order" });}
 
     if (item.itemStatus !== "ReturnApproved") {
       return res.json({
         success: false,
-        message: "Refund can only be processed when status is 'Return Approved'",
+        message: "Refund can only be processed when status is 'Return Approved'"
       });
     }
 
     if (item.itemTimeline?.returnedAt) {
       return res.json({
         success: false,
-        message: "Refund has already been processed for this item",
+        message: "Refund has already been processed for this item"
       });
     }
 
@@ -44,8 +44,8 @@ export const processRefund = async (req, res) => {
     const couponDiscount = order.discount || 0;
 
     const itemSubtotal = item.price * item.quantity;
-    const itemShareOfDiscount = itemsTotalBeforeDiscount > 0 
-      ? (itemSubtotal / itemsTotalBeforeDiscount) * couponDiscount 
+    const itemShareOfDiscount = itemsTotalBeforeDiscount > 0
+      ? (itemSubtotal / itemsTotalBeforeDiscount) * couponDiscount
       : 0;
 
     const refundableAmount = itemSubtotal - itemShareOfDiscount;
@@ -53,7 +53,7 @@ export const processRefund = async (req, res) => {
     if (refundableAmount <= 0) {
       return res.json({
         success: false,
-        message: "Refundable amount is zero (fully covered by coupon)",
+        message: "Refundable amount is zero (fully covered by coupon)"
       });
     }
 
@@ -69,8 +69,8 @@ export const processRefund = async (req, res) => {
           notes: {
             order_id: order.orderId,
             item: `${item.productId.name} x ${item.quantity}`,
-            reason: item.reason || "Return approved",
-          },
+            reason: item.reason || "Return approved"
+          }
         });
         razorpayRefundId = refund.id;
         refundMessage += " via Razorpay";
@@ -91,9 +91,9 @@ export const processRefund = async (req, res) => {
             amount: refundableAmount,
             type: "credit",
             description: `Refund for returned item - Order #${order.orderId} (${order.paymentMethod.toUpperCase()})`,
-            date: new Date(),
-          },
-        },
+            date: new Date()
+          }
+        }
       }
     );
 
@@ -123,14 +123,14 @@ export const processRefund = async (req, res) => {
     return res.json({
       success: true,
       message: refundMessage,
-      refundableAmount: refundableAmount.toFixed(2),
+      refundableAmount: refundableAmount.toFixed(2)
     });
 
   } catch (error) {
     console.error("Refund Error:", error);
     return res.json({
       success: false,
-      message: "Refund failed: " + (error.message || "Unknown error"),
+      message: "Refund failed: " + (error.message || "Unknown error")
     });
   }
 };

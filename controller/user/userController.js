@@ -1,19 +1,19 @@
 import User from "../../models/userSchema.js";
 import Product from "../../models/productSchema.js";
-import Variant from '../../models/variantSchema.js'
+import Variant from "../../models/variantSchema.js";
 import { sendOtp, generateOtp } from "../../utils/mail.js";
 import bcrypt from "bcrypt";
 import { setFlash, getFlash } from "../../utils/flash.js";
 import Category from "../../models/categorySchema.js";
 export const render = (req, res, view, options = {}) => {
-  const flash = getFlash(req); 
+  const flash = getFlash(req);
   return res.render(view, { flash, ...options });
 };
 
 export const pageNotfound = async (req, res) => {
   try {
     return render(req, res, "user/pageNotfound", {
-      title: "Chronora - 404 Page",
+      title: "Chronora - 404 Page"
     });
   } catch (error) {
     console.log("Page not found");
@@ -29,7 +29,7 @@ export const googleCallback = (req, res) => {
     req.session.user = {
       id: req.user._id,
       fullName: req.user.fullName,
-      email: req.user.email,
+      email: req.user.email
     };
 
     setFlash(req, "success", "Login successful!");
@@ -44,7 +44,7 @@ export const googleCallback = (req, res) => {
 export const loadAboutpage = async (req, res) => {
   try {
     return render(req, res, "user/about", {
-      title: "Chronora - About",
+      title: "Chronora - About"
     });
   } catch (error) {
     console.log("About page not found");
@@ -55,7 +55,7 @@ export const loadAboutpage = async (req, res) => {
 export const loadContactpage = async (req, res) => {
   try {
     return render(req, res, "user/contact", {
-      title: "Chronora - Contact",
+      title: "Chronora - Contact"
     });
   } catch (error) {
     console.log("Contact page not found");
@@ -66,15 +66,15 @@ export const loadContactpage = async (req, res) => {
 export const loadHomepage = async (req, res) => {
   try {
     const categories=await Category.find({isListed:true})
-    .select("name image")
-    .sort({createdAt:-1})
-    .limit(4)
-    .lean();
+      .select("name image")
+      .sort({createdAt:-1})
+      .limit(4)
+      .lean();
 
     return render(req, res, "user/home", {
       user: req.session.user||null,
       title: "Chronora - Home",
-      categories,
+      categories
     });
   } catch (error) {
     console.log("Home page not found", error);
@@ -83,15 +83,14 @@ export const loadHomepage = async (req, res) => {
 };
 
 
-
-import getBestOfferForProduct from '../../utils/offerHelper.js'; 
+import getBestOfferForProduct from "../../utils/offerHelper.js";
 
 export const loadWatchPage = async (req, res) => {
   try {
     const searchQuery = req.query.search?.trim() || "";
     const sortQuery = req.query.sort || "newest";
     const categoryFilter = req.query.category || "";
-    const page = Math.max(1, parseInt(req.query.page || '1', 10));
+    const page = Math.max(1, parseInt(req.query.page || "1", 10));
     const limit = 6;
     const skip = (page - 1) * limit;
     const productQuery = { isBlocked: false };
@@ -127,20 +126,20 @@ export const loadWatchPage = async (req, res) => {
       }
     }
 
-    let sortOption = { createdAt: -1 }; 
+    let sortOption = { createdAt: -1 };
     switch (sortQuery) {
-      case "price-low":
-        sortOption = { price: 1 };
-        break;
-      case "price-high":
-        sortOption = { price: -1 };
-        break;
-      case "a-z":
-        sortOption = { name: 1 };
-        break;
-      case "z-a":
-        sortOption = { name: -1 };
-        break;
+    case "price-low":
+      sortOption = { price: 1 };
+      break;
+    case "price-high":
+      sortOption = { price: -1 };
+      break;
+    case "a-z":
+      sortOption = { name: 1 };
+      break;
+    case "z-a":
+      sortOption = { name: -1 };
+      break;
     }
 
     const totalProducts = await Product.countDocuments(productQuery);
@@ -148,7 +147,7 @@ export const loadWatchPage = async (req, res) => {
 
     const products = await Product.find(productQuery)
       .select("name price description category createdAt")
-      .populate('category')  
+      .populate("category")
       .sort(sortOption)
       .skip(skip)
       .limit(limit)
@@ -157,8 +156,8 @@ export const loadWatchPage = async (req, res) => {
     const productIds = products.map(p => String(p._id));
     const variants = productIds.length
       ? await Variant.find({ product: { $in: productIds }, isBlocked: false })
-          .select("product images colorName stock price")
-          .lean()
+        .select("product images colorName stock price")
+        .lean()
       : [];
 
     const variantMap = {};
@@ -168,11 +167,11 @@ export const loadWatchPage = async (req, res) => {
 
     const productsWithOffers = await Promise.all(
       products.map(async (product) => {
-        const offerData = await getBestOfferForProduct(product);  
+        const offerData = await getBestOfferForProduct(product);
         return {
           ...product,
           variant: variantMap[product._id] || null,
-          offerData  
+          offerData
         };
       })
     );
@@ -185,7 +184,7 @@ export const loadWatchPage = async (req, res) => {
     res.render("user/watch", {
       user: req.session.user || null,
       title: "Chronora - Watch",
-      products: productsWithOffers,  
+      products: productsWithOffers,
       categories,
       searchQuery,
       sortQuery,
@@ -199,7 +198,6 @@ export const loadWatchPage = async (req, res) => {
     res.status(500).send("Something went wrong");
   }
 };
-
 
 
 export const productDetails = async (req, res) => {
@@ -219,7 +217,7 @@ export const productDetails = async (req, res) => {
       return res.status(404).render("user/pageNotfound");
     }
 
-    const categoryId = product.category._id; 
+    const categoryId = product.category._id;
 
     const variants = await Variant.find({
       product: productId,
@@ -245,7 +243,7 @@ export const productDetails = async (req, res) => {
         images: [],
         colorName: "Default",
         stock: 0,
-        price: product.price 
+        price: product.price
       };
     }
 
@@ -256,8 +254,8 @@ export const productDetails = async (req, res) => {
       _id: { $ne: productId },
       isBlocked: false
     })
-    .limit(4)
-    .populate("category"); 
+      .limit(4)
+      .populate("category");
 
     const allVariants = await Variant.find({}, { product: 1, images: 1 }).lean();
 
@@ -267,7 +265,7 @@ export const productDetails = async (req, res) => {
       title: "Product Detail",
       product: {
         ...product.toObject(),
-        offerData  
+        offerData
       },
       variants,
       variant,
@@ -278,7 +276,7 @@ export const productDetails = async (req, res) => {
 
   } catch (error) {
     console.error("Error loading product details:", error);
-    return res.status(500).render("user/serverError"); 
+    return res.status(500).render("user/serverError");
   }
 };
 export default {
@@ -288,5 +286,5 @@ export default {
   loadContactpage,
   loadHomepage,
   loadWatchPage,
-  productDetails,
+  productDetails
 };

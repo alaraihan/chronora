@@ -1,15 +1,15 @@
 import express from "express";
 const app = express();
 import dotenv from "dotenv";
-import Razorpay from 'razorpay';
+import Razorpay from "razorpay";
 dotenv.config();
 import {sessions} from "./middlewares/session.js";
 import passport from "./config/passport.js";
-import expressLayouts from 'express-ejs-layouts';
+import expressLayouts from "express-ejs-layouts";
 import userRouter from "./routes/userRouter.js";
 import adminRouter from "./routes/adminRouter.js";
 import { message } from "./middlewares/message.js";
-import {setUser} from './middlewares/authMiddleware.js';
+import {setUser} from "./middlewares/authMiddleware.js";
 import { Cache } from "./middlewares/cache.js";
 import { layouts } from "./middlewares/layouts.js";
 import connectDB from "./config/db.js";
@@ -23,11 +23,11 @@ const __dirname = path.dirname(__filename);
 connectDB();
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json({limit:'50mb'}));
-app.use(express.urlencoded({ extended: true,limit:'50mb' }));
+app.use(express.json({limit:"50mb"}));
+app.use(express.urlencoded({ extended: true,limit:"50mb" }));
 
 app.use(sessions);
 
@@ -44,8 +44,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(expressLayouts);
 
 
-
-app.set('layout', 'layouts/userLayouts/main');
+app.set("layout", "layouts/userLayouts/main");
 
 app.use(passport.initialize());
 app.use(passport.session());

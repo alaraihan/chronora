@@ -20,49 +20,48 @@ import {
 } from "../controller/admin/productController.js";
 
 import {
-  renderAdminOrdersPage,   
-  getAdminOrdersData,      
+  renderAdminOrdersPage,
+  getAdminOrdersData,
   getOrderDetails,
   printOrder,
   updateItemStatus,
   approveItemReturn,
   rejectItemReturn,
-  markItemAsReturned,
+  markItemAsReturned
 } from "../controller/admin/orderController.js";
 
 import {
-  loadOfferPage, 
-  getOffersData, 
-  getOfferTargets, 
-  createOffer, 
-  updateOffer, 
+  loadOfferPage,
+  getOffersData,
+  getOfferTargets,
+  createOffer,
+  updateOffer,
   deleteOffer,
   toggleOfferActive
- 
-} from '../controller/admin/offerController.js';
+
+} from "../controller/admin/offerController.js";
 import upload from "../middlewares/uploadImage.js";
 
 import {
   getCouponsPage,createCoupon,updateCoupon,deleteCoupon
-} from '../controller/admin/couponController.js';
+} from "../controller/admin/couponController.js";
 
 import { processRefund } from "../controller/admin/refundController.js";
-import { 
-  getSalesReportPage, 
-  getSalesReportData, 
-  downloadSalesReport 
-} from '../controller/admin/salesReport.js';
+import {
+  getSalesReportPage,
+  getSalesReportData,
+  downloadSalesReport
+} from "../controller/admin/salesReport.js";
 
-import { getDashboardPage, getDashboardData } from '../controller/admin/adminController.js';
+import { getDashboardPage, getDashboardData } from "../controller/admin/adminController.js";
 
-router.get('/dashboard', getDashboardPage);
-router.get('/dashboard/data', getDashboardData);
+router.get("/dashboard", getDashboardPage);
+router.get("/dashboard/data", getDashboardData);
 router.post("/orders/:orderId/refund-item", isAdmin, processRefund);
 
 router.get("/login", adminController.loadLogin);
 router.post("/login", adminController.login);
 router.get("/logout", adminController.logout);
-
 
 
 router.get("/customers", isAdmin, adminController.loadCustomers);
@@ -102,21 +101,21 @@ router.post("/orders/:orderId/reject-return", isAdmin, rejectItemReturn);
 
 router.post("/orders/:orderId/mark-returned-item", isAdmin, markItemAsReturned);
 
-router.get("/offer",isAdmin, loadOfferPage);                    
-router.get("/offers/data", isAdmin,getOffersData);           
-router.get("/offers/targets", isAdmin,getOfferTargets);         
+router.get("/offer",isAdmin, loadOfferPage);
+router.get("/offers/data", isAdmin,getOffersData);
+router.get("/offers/targets", isAdmin,getOfferTargets);
 
-router.post("/offers",isAdmin, createOffer);                    
-router.put("/offers/:id",isAdmin, updateOffer);                
+router.post("/offers",isAdmin, createOffer);
+router.put("/offers/:id",isAdmin, updateOffer);
 router.delete("/offers/:id",isAdmin, deleteOffer);
-router.patch('/offers/:id/toggle', toggleOfferActive);
+router.patch("/offers/:id/toggle", toggleOfferActive);
 
 router.get("/coupons",isAdmin,getCouponsPage);
 router.post("/coupons/create",isAdmin,createCoupon);
 router.put("/coupons/update/:id", isAdmin, updateCoupon);
 router.delete("/coupons/delete/:id", isAdmin, deleteCoupon);
 
-router.get('/sales-report', isAdmin, getSalesReportPage);
-router.get('/sales-report/data', isAdmin, getSalesReportData);
-router.get('/sales-report/download', isAdmin, downloadSalesReport);
+router.get("/sales-report", isAdmin, getSalesReportPage);
+router.get("/sales-report/data", isAdmin, getSalesReportData);
+router.get("/sales-report/download", isAdmin, downloadSalesReport);
 export default router;

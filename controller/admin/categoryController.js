@@ -4,50 +4,50 @@ import fs from "fs";
 import { setFlash, getFlash } from "../../utils/flash.js";
 
 const render = (req, res, view, options = {}) => {
-  const flash = getFlash(req); 
+  const flash = getFlash(req);
   return res.render(view, { flash, ...options });
 };
 export const listCategories = async (req, res) => {
-    try {
-        const search = req.query.search?.trim() || "";
-        const status = req.query.status || 'listed'; 
-        const page = Math.max(1, Number(req.query.page) || 1);
-        const limit = 4;
-        const skip = (page - 1) * limit;
+  try {
+    const search = req.query.search?.trim() || "";
+    const status = req.query.status || "listed";
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = 4;
+    const skip = (page - 1) * limit;
 
-        const filter = {}; 
+    const filter = {};
 
-        if (search) {
-            filter.$or = [
-                { name: { $regex: search, $options: "i" } },
-                { description: { $regex: search, $options: "i" } },
-            ];
-        }
-
-        const total = await Category.countDocuments(filter);
-        const categories = await Category.find(filter)
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit)
-            .lean();
-
-        return render(req, res, "admin/categories", {
-            title: "Categories - Chronora Admin",
-            layout: "layouts/adminLayouts/main",
-            page: "categories",
-            categories,
-            search,
-            status, 
-            currentPage: page,
-            totalPages: Math.ceil(total / limit),
-            totalCategories: total,
-            pageJs: 'categories',
-            pageCss: 'categories',
-        });
-    } catch (err) {
-        console.error("listCategories error:", err);
-        return res.status(500).json({ success: false, message: "Failed to load categories" });
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } }
+      ];
     }
+
+    const total = await Category.countDocuments(filter);
+    const categories = await Category.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    return render(req, res, "admin/categories", {
+      title: "Categories - Chronora Admin",
+      layout: "layouts/adminLayouts/main",
+      page: "categories",
+      categories,
+      search,
+      status,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalCategories: total,
+      pageJs: "categories",
+      pageCss: "categories"
+    });
+  } catch (err) {
+    console.error("listCategories error:", err);
+    return res.status(500).json({ success: false, message: "Failed to load categories" });
+  }
 };
 
 export const addCategory = async (req, res) => {
@@ -189,47 +189,47 @@ export const editCategory = async (req, res) => {
 
 
 export const getCategory = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const category = await Category.findById(id);
+  try {
+    const { id } = req.params;
+    const category = await Category.findById(id);
 
-        if (!category) {
-            return res.status(404).json({ success: false, message: "Category not found" });
-        }
-        
-        return res.status(200).json({ category });
-
-    } catch (err) {
-        console.error("getCategory error:", err);
-        return res.status(500).json({ success: false, message: "Failed to fetch category" });
+    if (!category) {
+      return res.status(404).json({ success: false, message: "Category not found" });
     }
+
+    return res.status(200).json({ category });
+
+  } catch (err) {
+    console.error("getCategory error:", err);
+    return res.status(500).json({ success: false, message: "Failed to fetch category" });
+  }
 };
 
-export const toggleListCategory=async(req,res)=>{
-  try{
-  const {id}=req.params;
-  const category=await Category.findById(id).select('isListed');
-    if(!category){
+export const toggleListCategory=async (req,res)=>{
+  try {
+    const {id}=req.params;
+    const category=await Category.findById(id).select("isListed");
+    if (!category) {
       return res.status(404).json({success:false,message:"Category not found!"});
     }
-      const newStatus=!category.isListed;
-       await Category.updateOne({_id:id},{isListed:newStatus})
-             const action = newStatus ? 'listed' : 'unlisted ';
-      return res.status(200).json({
-            success: true,
-            message: `Category successfully ${action}.`,
-            isListed:newStatus,
-        });
-  }catch(error){
-console.error("toggleListCategory error:", error);
-        return res.status(500).json({ success: false, message: "Failed to toggle category status." });
+    const newStatus=!category.isListed;
+    await Category.updateOne({_id:id},{isListed:newStatus});
+    const action = newStatus ? "listed" : "unlisted ";
+    return res.status(200).json({
+      success: true,
+      message: `Category successfully ${action}.`,
+      isListed:newStatus
+    });
+  } catch (error) {
+    console.error("toggleListCategory error:", error);
+    return res.status(500).json({ success: false, message: "Failed to toggle category status." });
   }
-}
+};
 
 export default {
-    listCategories,
-    addCategory,
-    editCategory,
-    getCategory,
-    toggleListCategory,
+  listCategories,
+  addCategory,
+  editCategory,
+  getCategory,
+  toggleListCategory
 };

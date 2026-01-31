@@ -33,6 +33,7 @@
           <th>Name</th>
           <th>Email</th>
           <th>Join Date</th>
+          <th>No. of Orders</th>
           <th>Status</th>
           <th>Action</th>
         </tr>
@@ -49,7 +50,7 @@
             <td><%= c.email %></td>
              
              <td><%=c.createdAt.toDateString()%></td>
-
+             <td><%=c.orderCount%></td>
             <td class="status" id="status-<%= c._id %>">
               <%= c.isBlocked ? "Blocked" : "Active" %>
             </td>

@@ -1,46 +1,46 @@
-import Product from '../../models/productSchema.js';
-import Variant from '../../models/variantSchema.js';
-import Category from '../../models/categorySchema.js';
-import cloudinary from '../../config/cloudinary.js'; 
-import fs from 'fs';
-import mongoose from 'mongoose';
+import Product from "../../models/productSchema.js";
+import Variant from "../../models/variantSchema.js";
+import Category from "../../models/categorySchema.js";
+import cloudinary from "../../config/cloudinary.js";
+import fs from "fs";
+import mongoose from "mongoose";
 export async function listProducts(req, res) {
   try {
-    const searchQuery = (req.query.search || '').trim();
-    const currentPage = Math.max(1, parseInt(req.query.page || '1', 10));
-    const limit = Math.max(1, parseInt(req.query.limit || '8', 10));
+    const searchQuery = (req.query.search || "").trim();
+    const currentPage = Math.max(1, parseInt(req.query.page || "1", 10));
+    const limit = Math.max(1, parseInt(req.query.limit || "8", 10));
     const skip = (currentPage - 1) * limit;
 
-    const matchStage = searchQuery ? { $match: { name: { $regex: searchQuery, $options: 'i' } } } : { $match: {} };
+    const matchStage = searchQuery ? { $match: { name: { $regex: searchQuery, $options: "i" } } } : { $match: {} };
 
     const agg = await Product.aggregate([
       matchStage,
       {
         $lookup: {
-          from: 'variants',
-          localField: 'variants',
-          foreignField: '_id',
-          as: 'variantDocs'
+          from: "variants",
+          localField: "variants",
+          foreignField: "_id",
+          as: "variantDocs"
         }
       },
       {
         $lookup: {
-          from: 'categories',
-          localField: 'category',
-          foreignField: '_id',
-          as: 'categoryDoc'
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "categoryDoc"
         }
       },
-      { $unwind: { path: '$categoryDoc', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: "$categoryDoc", preserveNullAndEmptyArrays: true } },
       {
         $addFields: {
           firstImage: {
             $let: {
-              vars: { fv: { $arrayElemAt: ['$variantDocs', 0] } },
+              vars: { fv: { $arrayElemAt: ["$variantDocs", 0] } },
               in: {
                 $cond: [
-                  { $gt: [{ $size: { $ifNull: ['$$fv.images', []] } }, 0] },
-                  { $arrayElemAt: ['$$fv.images', 0] },
+                  { $gt: [{ $size: { $ifNull: ["$$fv.images", []] } }, 0] },
+                  { $arrayElemAt: ["$$fv.images", 0] },
                   null
                 ]
               }
@@ -49,9 +49,9 @@ export async function listProducts(req, res) {
           totalStock: {
             $sum: {
               $map: {
-                input: { $ifNull: ['$variantDocs', []] },
-                as: 'v',
-                in: { $ifNull: ['$$v.stock', 0] }
+                input: { $ifNull: ["$variantDocs", []] },
+                as: "v",
+                in: { $ifNull: ["$$v.stock", 0] }
               }
             }
           }
@@ -64,8 +64,8 @@ export async function listProducts(req, res) {
           price: 1,
           totalStock: 1,
           isBlocked: 1,
-          categoryName: '$categoryDoc.name',
-          image: { $ifNull: ['$firstImage', '/images/no-image.png'] },
+          categoryName: "$categoryDoc.name",
+          image: { $ifNull: ["$firstImage", "/images/no-image.png"] },
           createdAt: 1
         }
       },
@@ -73,7 +73,7 @@ export async function listProducts(req, res) {
       {
         $facet: {
           results: [{ $skip: skip }, { $limit: limit }],
-          totalCount: [{ $count: 'count' }]
+          totalCount: [{ $count: "count" }]
         }
       }
     ]);
@@ -84,80 +84,80 @@ export async function listProducts(req, res) {
 
     const categories = await Category.find({ isListed: true }).sort({ name: 1 }).lean();
 
-    return res.render('admin/product', {
+    return res.render("admin/product", {
       page: "products",
       pageJs: "products",
       pageCss: "products",
       products: results,
       categories,
       searchQuery,
-     pagination: {
+      pagination: {
         currentPage,
         limit,
         totalPages,
         totalCount
       },
-      title: 'Products'
+      title: "Products"
     });
   } catch (err) {
-    console.error('listProducts error:', err);
-    return res.status(500).send('Server error');
+    console.error("listProducts error:", err);
+    return res.status(500).send("Server error");
   }
 }
 
 export async function getProduct(req, res) {
   try {
     const id = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ success: false, message: 'Invalid id' });
+    if (!mongoose.Types.ObjectId.isValid(id)) {return res.status(400).json({ success: false, message: "Invalid id" });}
 
     const p = await Product.findById(id)
-      .populate('category', 'name')
-      .populate({ path: 'variants', model: 'Variant' })
+      .populate("category", "name")
+      .populate({ path: "variants", model: "Variant" })
       .lean();
 
-    if (!p) return res.status(404).json({ success: false, message: 'Product not found' });
+    if (!p) {return res.status(404).json({ success: false, message: "Product not found" });}
 
     const data = {
       id: p._id.toString(),
       name: p.name,
-      description: p.description || '',
+      description: p.description || "",
       price: p.price || 0,
-      category: p.category?._id?.toString() || '',
+      category: p.category?._id?.toString() || "",
       variants: (p.variants || []).map(v => ({
         id: v._id.toString(),
-        name: v.colorName || '',
+        name: v.colorName || "",
         stock: v.stock || 0,
-        images: (v.images || []).slice() 
+        images: (v.images || []).slice()
       }))
     };
 
     return res.json({ success: true, data });
   } catch (err) {
-    console.error('getProduct error', err);
-    return res.status(500).json({ success: false, message: 'Server error' });
+    console.error("getProduct error", err);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 }
 
 export async function addProduct(req, res) {
   try {
-   
+
     const { name, category, description, price} = req.body;
-    const variants = JSON.parse(req.body.variants || '[]'); 
+    const variants = JSON.parse(req.body.variants || "[]");
     const files = req.files || [];
-    if (!name || !category ||!price) return res.status(400).json({ success: false, message: 'Name & price required' });
-     const existing = await Product.findOne({ name: name.trim(), isBlocked: false });
-    if (existing) return res.status(400).json({ success: false, message: 'Product already exists!' });
+    if (!name || !category ||!price) {return res.status(400).json({ success: false, message: "Name & price required" });}
+    const existing = await Product.findOne({ name: name.trim(), isBlocked: false });
+    if (existing) {return res.status(400).json({ success: false, message: "Product already exists!" });}
 
     const cat = await Category.findById(category);
-    if (!cat) return res.status(400).json({ success: false, message: 'Invalid category' });
+    if (!cat) {return res.status(400).json({ success: false, message: "Invalid category" });}
 
- if (files.length < 2) {
-      return res.status(400).json({ success: false, message: 'Please upload at least 2 images for the product' });
+    if (files.length < 2) {
+      return res.status(400).json({ success: false, message: "Please upload at least 2 images for the product" });
     }
 
     const product = await Product.create({
       name: name.trim(),
-      description: description?.trim() || '',
+      description: description?.trim() || "",
       price: Number(price || 0),
       category
     });
@@ -170,47 +170,47 @@ export async function addProduct(req, res) {
       const count = Number(v.newImageCount || 0);
       for (let i = 0; i < count; i++) {
         const f = files[fileIndex++];
-        if (!f) break;
-        const up = await cloudinary.uploader.upload(f.path, { folder: 'chronora/products', transformation: { width: 1200, crop: 'limit' }});
+        if (!f) {break;}
+        const up = await cloudinary.uploader.upload(f.path, { folder: "chronora/products", transformation: { width: 1200, crop: "limit" }});
         imgs.push(up.secure_url);
-        if (fs.existsSync(f.path)) fs.unlinkSync(f.path);
+        if (fs.existsSync(f.path)) {fs.unlinkSync(f.path);}
       }
 
       const newV = await Variant.create({
         product: product._id,
-        colorName: v.name || '',
+        colorName: v.name || "",
         stock: Number(v.stock || 0),
         images: imgs,
-        strapColor:v.strapColor,
+        strapColor:v.strapColor
       });
 
       savedVariantIds.push(newV._id);
     }
-    
+
     product.variants = savedVariantIds;
     await product.save();
 
-    return res.status(201).json({ success: true, message: 'Product created' });
+    return res.status(201).json({ success: true, message: "Product created" });
   } catch (err) {
-    console.error('addProduct error', err);
-    return res.status(500).json({ success: false, message: 'Failed to add product' });
+    console.error("addProduct error", err);
+    return res.status(500).json({ success: false, message: "Failed to add product" });
   }
 }
 
 export async function updateProduct(req, res) {
   try {
     const id = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ success: false, message: 'Invalid id' });
+    if (!mongoose.Types.ObjectId.isValid(id)) {return res.status(400).json({ success: false, message: "Invalid id" });}
 
     const { name, category, description, price } = req.body;
-    const variants = JSON.parse(req.body.variants || '[]'); 
+    const variants = JSON.parse(req.body.variants || "[]");
     const files = req.files || [];
 
     const product = await Product.findById(id);
-    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+    if (!product) {return res.status(404).json({ success: false, message: "Product not found" });}
 
     const cat = await Category.findById(category);
-    if (!cat) return res.status(400).json({ success: false, message: 'Invalid category' });
+    if (!cat) {return res.status(400).json({ success: false, message: "Invalid category" });}
 
     product.name = name?.trim() || product.name;
     product.description = description?.trim() || product.description;
@@ -226,27 +226,27 @@ export async function updateProduct(req, res) {
 
       for (let i = 0; i < count; i++) {
         const f = files[fileIndex++];
-        if (!f) break;
-        const up = await cloudinary.uploader.upload(f.path, { folder: 'chronora/products', transformation: { width: 1200, crop: 'limit' } });
+        if (!f) {break;}
+        const up = await cloudinary.uploader.upload(f.path, { folder: "chronora/products", transformation: { width: 1200, crop: "limit" } });
         existing.push(up.secure_url);
-        if (fs.existsSync(f.path)) fs.unlinkSync(f.path);
+        if (fs.existsSync(f.path)) {fs.unlinkSync(f.path);}
       }
 
       if (v.id) {
         await Variant.findByIdAndUpdate(v.id, {
-          colorName: v.name || '',
+          colorName: v.name || "",
           stock: Number(v.stock || 0),
           images: existing,
-          strapColor:v.strapColor,
+          strapColor:v.strapColor
         }, { new: true });
         newVariantIds.push(v.id);
       } else {
         const created = await Variant.create({
           product: product._id,
-          colorName: v.name || '',
+          colorName: v.name || "",
           stock: Number(v.stock || 0),
           images: existing,
-          strapColor:v.strapColor,
+          strapColor:v.strapColor
         });
         newVariantIds.push(created._id);
       }
@@ -261,24 +261,24 @@ export async function updateProduct(req, res) {
     product.variants = newVariantIds;
     await product.save();
 
-    return res.json({ success: true, message: 'Product updated' });
+    return res.json({ success: true, message: "Product updated" });
   } catch (err) {
-    console.error('updateProduct error', err);
-    return res.status(500).json({ success: false, message: 'Failed to update product' });
+    console.error("updateProduct error", err);
+    return res.status(500).json({ success: false, message: "Failed to update product" });
   }
 }
 
 export async function toggleBlock(req, res) {
   try {
     const id = req.params.id;
-    const action = req.body.action; 
-    const block = action === 'block';
+    const action = req.body.action;
+    const block = action === "block";
     const p = await Product.findByIdAndUpdate(id, { isBlocked: block }, { new: true });
-    if (!p) return res.status(404).json({ success: false, message: 'Product not found' });
-    return res.json({ success: true, message: `Product ${block ? 'blocked' : 'unblocked'}` });
+    if (!p) {return res.status(404).json({ success: false, message: "Product not found" });}
+    return res.json({ success: true, message: `Product ${block ? "blocked" : "unblocked"}` });
   } catch (err) {
-    console.error('toggleBlock error', err);
-    return res.status(500).json({ success: false, message: 'Failed to update status' });
+    console.error("toggleBlock error", err);
+    return res.status(500).json({ success: false, message: "Failed to update status" });
   }
 }
 

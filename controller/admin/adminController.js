@@ -1,7 +1,7 @@
 import Admin from "../../models/adminSchema.js";
 import User from "../../models/userSchema.js";
 import Order from "../../models/orderSchema.js";
-import Product from "../../models/productSchema.js"
+import Product from "../../models/productSchema.js";
 
 import bcrypt from "bcrypt";
 import { setFlash, getFlash } from "../../utils/flash.js";
@@ -10,13 +10,13 @@ const render = (req, res, view, options = {}) => {
   return res.render(view, { flash, ...options });
 };
 const loadLogin = (req, res) => {
-  if (req.session.admin) return res.redirect("/admin/dashboard");
+  if (req.session.admin) {return res.redirect("/admin/dashboard");}
 
   return render(req, res, "admin/adminLogin", {
     title: "Admin Login - Chronora",
     layout: "layouts/adminLayouts/auth",
     pageJs: "adminLogin",
-    pageCss: "adminLogin",
+    pageCss: "adminLogin"
   });
 };
 
@@ -41,7 +41,7 @@ const login = async (req, res) => {
     req.session.admin = {
       id: admin._id.toString(),
       email: admin.email,
-      name: admin.fullName || "Admin",
+      name: admin.fullName || "Admin"
     };
 
     res.status(200).json({ success: true, message: "Welcome back, Admin!" });
@@ -56,13 +56,13 @@ const login = async (req, res) => {
 
 export const getDashboardPage = async (req, res) => {
   try {
-    res.render('admin/dashboard', { 
-      title: 'Dashboard',
-      page: 'dashboard',  
+    res.render("admin/dashboard", {
+      title: "Dashboard",
+      page: "dashboard"
     });
   } catch (error) {
-    console.error('Dashboard page error:', error);
-    res.status(500).send('Server Error');
+    console.error("Dashboard page error:", error);
+    res.status(500).send("Server Error");
   }
 };
 
@@ -71,29 +71,29 @@ export const getDashboardData = async (req, res) => {
     const totalOrders = await Order.countDocuments();
     const totalUsers = await User.countDocuments();
     const totalProducts = await Product.countDocuments();
-    
+
     const revenueResult = await Order.aggregate([
-      { $unwind: '$products' },
-      { $match: { 'products.itemStatus': 'Delivered' } },
+      { $unwind: "$products" },
+      { $match: { "products.itemStatus": "Delivered" } },
       {
         $group: {
           _id: null,
-          total: { $sum: { $multiply: ['$products.quantity', '$products.price'] } }
+          total: { $sum: { $multiply: ["$products.quantity", "$products.price"] } }
         }
       }
     ]);
     const totalRevenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
 
     const recentOrders = await Order.find()
-      .populate('userId', 'email')
+      .populate("userId", "email")
       .sort({ createdAt: -1 })
       .limit(10)
-      .select('orderId userId totalAmount status createdAt paymentMethod');
+      .select("orderId userId totalAmount status createdAt paymentMethod");
 
     const statusDistribution = await Order.aggregate([
       {
         $group: {
-          _id: '$status',
+          _id: "$status",
           count: { $sum: 1 }
         }
       }
@@ -117,19 +117,19 @@ export const getDashboardData = async (req, res) => {
               createdAt: { $gte: date, $lt: nextDay }
             }
           },
-          { $unwind: '$products' },
-          { $match: { 'products.itemStatus': 'Delivered' } },
+          { $unwind: "$products" },
+          { $match: { "products.itemStatus": "Delivered" } },
           {
             $group: {
               _id: null,
-              revenue: { $sum: { $multiply: ['$products.quantity', '$products.price'] } },
+              revenue: { $sum: { $multiply: ["$products.quantity", "$products.price"] } },
               orders: { $sum: 1 }
             }
           }
         ]);
 
         return {
-          date: date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }),
+          date: date.toLocaleDateString("en-IN", { day: "2-digit", month: "short" }),
           revenue: dailyRevenue.length > 0 ? dailyRevenue[0].revenue : 0,
           orders: dailyRevenue.length > 0 ? dailyRevenue[0].orders : 0
         };
@@ -137,13 +137,13 @@ export const getDashboardData = async (req, res) => {
     );
 
     const topProducts = await Order.aggregate([
-      { $unwind: '$products' },
-      { $match: { 'products.itemStatus': 'Delivered' } },
+      { $unwind: "$products" },
+      { $match: { "products.itemStatus": "Delivered" } },
       {
         $group: {
-          _id: '$products.productId',
-          totalSold: { $sum: '$products.quantity' },
-          revenue: { $sum: { $multiply: ['$products.quantity', '$products.price'] } },
+          _id: "$products.productId",
+          totalSold: { $sum: "$products.quantity" },
+          revenue: { $sum: { $multiply: ["$products.quantity", "$products.price"] } },
           orderCount: { $sum: 1 }
         }
       },
@@ -151,16 +151,16 @@ export const getDashboardData = async (req, res) => {
       { $limit: 5 },
       {
         $lookup: {
-          from: 'products',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'productInfo'
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "productInfo"
         }
       },
-      { $unwind: '$productInfo' },
+      { $unwind: "$productInfo" },
       {
         $project: {
-          name: '$productInfo.name',
+          name: "$productInfo.name",
           totalSold: 1,
           revenue: 1,
           orderCount: 1
@@ -171,9 +171,9 @@ export const getDashboardData = async (req, res) => {
     const paymentDistribution = await Order.aggregate([
       {
         $group: {
-          _id: '$paymentMethod',
+          _id: "$paymentMethod",
           count: { $sum: 1 },
-          revenue: { $sum: '$totalAmount' }
+          revenue: { $sum: "$totalAmount" }
         }
       }
     ]);
@@ -188,7 +188,7 @@ export const getDashboardData = async (req, res) => {
       },
       recentOrders: recentOrders.map(order => ({
         orderId: order.orderId,
-        customer: order.userId?.email || 'Guest',
+        customer: order.userId?.email || "Guest",
         amount: order.totalAmount,
         status: order.status,
         date: order.createdAt,
@@ -201,10 +201,10 @@ export const getDashboardData = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Dashboard data error:', error);
+    console.error("Dashboard data error:", error);
     res.status(500).json({
       success: false,
-      message: 'Error loading dashboard data'
+      message: "Error loading dashboard data"
     });
   }
 };
@@ -213,7 +213,7 @@ const logout = (req, res) => {
   delete req.session.admin;
   res.json({
     success: true,
-    message: "Logged out successfully!",
+    message: "Logged out successfully!"
   });
 };
 
@@ -226,11 +226,11 @@ const loadCustomers = async (req, res) => {
 
     const filter = search
       ? {
-          $or: [
-            { fullName: { $regex: search, $options: "i" } },
-            { email: { $regex: search, $options: "i" } },
-          ],
-        }
+        $or: [
+          { fullName: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } }
+        ]
+      }
       : {};
 
     const totalCustomers = await User.countDocuments(filter);
@@ -240,6 +240,10 @@ const loadCustomers = async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
+    for (const customer of customers) {
+      customer.orderCount = await Order.countDocuments({userId: customer._id});
+    }
+
     return render(req, res, "admin/customers", {
       title: "Customers - Chronora Admin",
       layout: "layouts/adminLayouts/main",
@@ -248,7 +252,7 @@ const loadCustomers = async (req, res) => {
       search,
       currentPage: page,
       totalPages: Math.ceil(totalCustomers / limit),
-      totalCustomers,
+      totalCustomers
     });
   } catch (error) {
     console.error("Load customers error:", error);
@@ -276,7 +280,7 @@ const toggleBlockCustomer = async (req, res) => {
     res.json({
       success: true,
       message: msg,
-      isBlocked: user.isBlocked,
+      isBlocked: user.isBlocked
     });
   } catch (error) {
     console.error("Toggle block error:", error);
@@ -289,6 +293,6 @@ export default {
   login,
   logout,
   loadCustomers,
-  toggleBlockCustomer,
+  toggleBlockCustomer
 };
 

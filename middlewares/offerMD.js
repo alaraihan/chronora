@@ -5,7 +5,7 @@ export const attachOffersMiddleware = async (req, res, next) => {
     }
 
     const currentDate = new Date();
-    
+
     const allOffers = await Offer.find({
       active: true,
       startDate: { $lte: currentDate },
@@ -14,8 +14,8 @@ export const attachOffersMiddleware = async (req, res, next) => {
 
     if (res.locals.product) {
       const product = res.locals.product;
-      
-      const applicableOffers = allOffers.filter(offer => 
+
+      const applicableOffers = allOffers.filter(offer =>
         offer.productId?.toString() === product._id.toString() ||
         offer.categoryId?.toString() === product.category?._id?.toString()
       );
@@ -27,8 +27,8 @@ export const attachOffersMiddleware = async (req, res, next) => {
       if (applicableOffers.length > 0) {
         for (const offer of applicableOffers) {
           let currentDiscount = 0;
-          
-          if (offer.discountType === 'percentage') {
+
+          if (offer.discountType === "percentage") {
             currentDiscount = (product.price * offer.discountValue) / 100;
           } else {
             currentDiscount = offer.discountValue;
@@ -48,7 +48,7 @@ export const attachOffersMiddleware = async (req, res, next) => {
         originalPrice: product.price,
         finalPrice: finalPrice,
         discount: discountAmount,
-        discountPercentage: product.price > 0 ? 
+        discountPercentage: product.price > 0 ?
           Math.round((discountAmount / product.price) * 100) : 0,
         hasOffer: discountAmount > 0,
         bestOffer: bestOffer,
@@ -58,7 +58,7 @@ export const attachOffersMiddleware = async (req, res, next) => {
 
     if (res.locals.products && Array.isArray(res.locals.products)) {
       res.locals.products = res.locals.products.map(product => {
-        const applicableOffers = allOffers.filter(offer => 
+        const applicableOffers = allOffers.filter(offer =>
           offer.productId?.toString() === product._id.toString() ||
           offer.categoryId?.toString() === product.category?._id?.toString()
         );
@@ -70,8 +70,8 @@ export const attachOffersMiddleware = async (req, res, next) => {
         if (applicableOffers.length > 0) {
           for (const offer of applicableOffers) {
             let currentDiscount = 0;
-            
-            if (offer.discountType === 'percentage') {
+
+            if (offer.discountType === "percentage") {
               currentDiscount = (product.price * offer.discountValue) / 100;
             } else {
               currentDiscount = offer.discountValue;
@@ -91,7 +91,7 @@ export const attachOffersMiddleware = async (req, res, next) => {
           originalPrice: product.price,
           finalPrice: finalPrice,
           discount: discountAmount,
-          discountPercentage: product.price > 0 ? 
+          discountPercentage: product.price > 0 ?
             Math.round((discountAmount / product.price) * 100) : 0,
           hasOffer: discountAmount > 0,
           bestOffer: bestOffer,

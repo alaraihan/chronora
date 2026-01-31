@@ -1,12 +1,12 @@
 import Order from "../../models/orderSchema.js";
 import Variant from "../../models/variantSchema.js";
 import PDFDocument from "pdfkit";
-import User from '../../models/userSchema.js'
+import User from "../../models/userSchema.js";
 
 export const getOrdersPage = async (req, res) => {
   try {
     const userId = req.user?._id;
-    if (!userId) return res.redirect("/login");
+    if (!userId) {return res.redirect("/login");}
 
     const orders = await Order.find({ userId })
       .populate({
@@ -20,7 +20,7 @@ export const getOrdersPage = async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    res.render("user/orders", { orders, active: 'Orders' });
+    res.render("user/orders", { orders, active: "Orders" });
   } catch (err) {
     console.error("getOrdersPage ERROR:", err);
     res.status(500).send("Server error");
@@ -38,19 +38,19 @@ export const getOrderDetails = async (req, res) => {
       .lean();
 
     if (!order || order.userId.toString() !== req.user._id.toString()) {
-      return res.status(404).render('user/error', { message: 'Order not found or access denied' });
+      return res.status(404).render("user/error", { message: "Order not found or access denied" });
     }
 
-    res.render("user/orderDetail", { 
+    res.render("user/orderDetail", {
       order,
       requestedProductId: productId || null,
       requestedVariantId: variantId || null,
       title: `Order ${order.orderId}`,
-      active: 'Orders'
+      active: "Orders"
     });
   } catch (err) {
     console.error("getOrderDetails ERROR:", err);
-    res.status(500).render('user/error', { message: 'Server error' });
+    res.status(500).render("user/error", { message: "Server error" });
   }
 };
 export const cancelOrderItem = async (req, res) => {
@@ -60,9 +60,9 @@ export const cancelOrderItem = async (req, res) => {
 
     const index = parseInt(itemIndex);
     if (isNaN(index) || index < 0 || !reason?.trim()) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Invalid item index or reason is required" 
+      return res.status(400).json({
+        success: false,
+        message: "Invalid item index or reason is required"
       });
     }
 
@@ -85,9 +85,9 @@ export const cancelOrderItem = async (req, res) => {
 
     const allowedStatuses = ["Pending", "Confirmed", "Processing"];
     if (!allowedStatuses.includes(item.itemStatus)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: `Cannot cancel item in status: ${item.itemStatus}` 
+      return res.status(400).json({
+        success: false,
+        message: `Cannot cancel item in status: ${item.itemStatus}`
       });
     }
 
@@ -96,19 +96,19 @@ export const cancelOrderItem = async (req, res) => {
 
     if (order.paymentMethod === "razorpay") {
       const itemsTotalBeforeDiscount = order.products.reduce(
-        (sum, p) => sum + p.price * p.quantity, 
+        (sum, p) => sum + p.price * p.quantity,
         0
       );
-      
+
       const couponDiscount = order.discount || 0;
       const itemSubtotal = item.price * item.quantity;
-      
+
       const itemShareOfDiscount = itemsTotalBeforeDiscount > 0
         ? (itemSubtotal / itemsTotalBeforeDiscount) * couponDiscount
         : 0;
 
-      refundableAmount = Math.round((itemSubtotal - itemShareOfDiscount) * 100) / 100; 
-      
+      refundableAmount = Math.round((itemSubtotal - itemShareOfDiscount) * 100) / 100;
+
       if (refundableAmount > 0) {
         refundMessage = `₹${refundableAmount.toFixed(2)} credited to wallet`;
       }
@@ -150,24 +150,24 @@ export const cancelOrderItem = async (req, res) => {
     order.markModified("products");
 
     const allCancelled = order.products.every(p => p.itemStatus === "Cancelled");
-  if (allCancelled) {
-  order.status = "Cancelled";
-  
-  if (order.paymentMethod === "razorpay") {
-    order.paymentStatus = "Refunded";           
-  } else {
-    order.paymentStatus = "Pending";            
-  }
-} 
-else if (order.products.some(p => p.itemStatus === "Cancelled")) {
-  order.status = "Partially Cancelled";
-  
-  if (order.paymentMethod === "razorpay") {
-    order.paymentStatus = "Partially Refunded";
-  } else {
-    order.paymentStatus = "Pending";           
-  }
-}
+    if (allCancelled) {
+      order.status = "Cancelled";
+
+      if (order.paymentMethod === "razorpay") {
+        order.paymentStatus = "Refunded";
+      } else {
+        order.paymentStatus = "Pending";
+      }
+    }
+    else if (order.products.some(p => p.itemStatus === "Cancelled")) {
+      order.status = "Partially Cancelled";
+
+      if (order.paymentMethod === "razorpay") {
+        order.paymentStatus = "Partially Refunded";
+      } else {
+        order.paymentStatus = "Pending";
+      }
+    }
 
     await order.save();
 
@@ -184,9 +184,9 @@ else if (order.products.some(p => p.itemStatus === "Cancelled")) {
 
   } catch (error) {
     console.error("cancelOrderItem ERROR:", error);
-    return res.status(500).json({ 
-      success: false, 
-      message: "Server error while cancelling item" 
+    return res.status(500).json({
+      success: false,
+      message: "Server error while cancelling item"
     });
   }
 };
@@ -207,7 +207,7 @@ export const returnOrderItem = async (req, res) => {
     }
 
     const item = order.products[index];
-    if (!item) return res.json({ success: false, message: "Item not found" });
+    if (!item) {return res.json({ success: false, message: "Item not found" });}
 
     if (item.itemStatus !== "Delivered") {
       return res.json({ success: false, message: "Only delivered items can be returned" });
@@ -218,10 +218,9 @@ export const returnOrderItem = async (req, res) => {
     item.itemTimeline ||= {};
     item.itemTimeline.returnRequestedAt = new Date();
 
-    order.markModified('products');
+    order.markModified("products");
     await order.save();
 
- 
 
     res.json({ success: true, message: "Return request submitted" });
   } catch (err) {
@@ -267,13 +266,13 @@ export const reviewOrderItem = async (req, res) => {
     }
 
     if (item.itemStatus !== "Delivered") {
-      return res.json({ 
-        success: false, 
-        message: `Cannot review item with status: ${item.itemStatus}. Only Delivered items can be reviewed.` 
+      return res.json({
+        success: false,
+        message: `Cannot review item with status: ${item.itemStatus}. Only Delivered items can be reviewed.`
       });
     }
 
-    const alreadyReviewed = order.reviews?.some(r => 
+    const alreadyReviewed = order.reviews?.some(r =>
       r.productId?.toString() === item.productId._id.toString() &&
       r.variantId?.toString() === item.variantId._id.toString()
     );
@@ -281,24 +280,24 @@ export const reviewOrderItem = async (req, res) => {
     if (alreadyReviewed) {
       return res.json({ success: false, message: "You have already reviewed this item" });
     }
-const user = await User.findById(order.userId).select("fullName");
+    const user = await User.findById(order.userId).select("fullName");
 
     order.reviews.push({
       productId: item.productId._id,
       variantId: item.variantId._id,
       rating: numRating,
       reviewedBy: order.userId,
-reviewerName: order.customerName,
+      reviewerName: order.customerName,
       title: title.trim() || null,
       text: text.trim(),
-      reviewedAt: new Date(),
+      reviewedAt: new Date()
     });
 
     await order.save();
 
-    res.json({ 
-      success: true, 
-      message: "Thank you! Your review has been submitted successfully." 
+    res.json({
+      success: true,
+      message: "Thank you! Your review has been submitted successfully."
     });
 
   } catch (err) {
@@ -308,7 +307,7 @@ reviewerName: order.customerName,
 };
 export const downloadInvoice = async (req, res) => {
   try {
-    const { orderId } = req.params; 
+    const { orderId } = req.params;
 
     const order = await Order.findOne({ orderId })
       .populate("products.productId", "name")
@@ -318,7 +317,7 @@ export const downloadInvoice = async (req, res) => {
       return res.status(404).send("Invoice not found or access denied");
     }
 
-    res.render("user/invoice", { 
+    res.render("user/invoice", {
       order,
       title: `Invoice - ${order.orderId}`
     });

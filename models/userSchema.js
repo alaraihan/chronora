@@ -8,34 +8,34 @@ const userSchema = new Schema(
     fullName: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
     email: {
       type: String,
       required: true,
       unique: true,
-      lowercase: true,    
-      trim: true,
+      lowercase: true,
+      trim: true
     },
     password: {
       type: String,
-      required: false,     
+      required: false
     },
     profileImage: {
       type: String,
-      default: "",
+      default: ""
     },
     googleId: {
       type: String,
-      sparse: true,       
+      sparse: true
     },
     isBlocked: {
       type: Boolean,
-      default: false,
+      default: false
     },
     isVerified: {
       type: Boolean,
-      default: false,
+      default: false
     },
 
     referralCode: {
@@ -43,44 +43,44 @@ const userSchema = new Schema(
       unique: true,
       required: true,
       uppercase: true,
-      trim: true,
+      trim: true
     },
     referredBy: {
       type: String,
       default: null,
-      trim: true,
+      trim: true
     },
-wallet: {
-  type: Number,
-  default: 0,
-  min: 0,
-},
-
-walletTransactions: [
-  {
-    amount: {
+    wallet: {
       type: Number,
-      required: true,
+      default: 0,
+      min: 0
     },
-    type: {
-      type: String,
-      enum: ["credit", "debit"],
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    date: {
-      type: Date,
-      default: Date.now,
-    },
-  },
-],
+
+    walletTransactions: [
+      {
+        amount: {
+          type: Number,
+          required: true
+        },
+        type: {
+          type: String,
+          enum: ["credit", "debit"],
+          required: true
+        },
+        description: {
+          type: String,
+          required: true,
+          trim: true
+        },
+        date: {
+          type: Date,
+          default: Date.now
+        }
+      }
+    ]
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 
@@ -102,7 +102,7 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
-  if (!this.password) return false;
+  if (!this.password) {return false;}
 
   if (!this.password.startsWith("$2")) {
     if (candidatePassword === this.password) {

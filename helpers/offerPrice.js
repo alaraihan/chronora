@@ -1,7 +1,7 @@
 import Offer from "../models/offerSchema.js";
 
 export const getProductPrice = async (product, variant = null) => {
-  if (!product) return { price: 0, originalPrice: 0, offerApplied: false, discountPercentage: 0 };
+  if (!product) {return { price: 0, originalPrice: 0, offerApplied: false, discountPercentage: 0 };}
 
   const originalPrice = Number(variant?.price || product.price || 0);
   let finalPrice = originalPrice;
@@ -48,6 +48,6 @@ export const getProductPrice = async (product, variant = null) => {
     finalPrice,
     offerApplied: !!appliedOffer,
     discountPercentage,
-    offer: appliedOffer || null,
+    offer: appliedOffer || null
   };
 };

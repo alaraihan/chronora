@@ -4,18 +4,18 @@ import User from "../../models/userSchema.js";
 export const loadWallet = async (req, res) => {
   try {
     const userId = req.session.userId;
-    
+
     if (!userId) {
       return res.redirect("/login");
     }
 
-    const user = await User.findById(userId).select('fullName email referralCode wallet walletTransactions');
-    
+    const user = await User.findById(userId).select("fullName email referralCode wallet walletTransactions");
+
     if (!user) {
       return res.redirect("/login");
     }
-        console.log("User referral code:", user.referralCode);
- console.log("Full user object:", {
+    console.log("User referral code:", user.referralCode);
+    console.log("Full user object:", {
       id: user._id,
       email: user.email,
       referralCode: user.referralCode
@@ -26,16 +26,16 @@ export const loadWallet = async (req, res) => {
       user: {
         fullName: user.fullName,
         email: user.email,
-        referralCode: user.referralCode || "NO_CODE", 
-        wallet: user.wallet || 0,
+        referralCode: user.referralCode || "NO_CODE",
+        wallet: user.wallet || 0
       },
-      active: "wallet",
+      active: "wallet"
     });
   } catch (error) {
     console.error("loadWallet error:", error);
     return res.status(500).render("user/pageNotfound", {
       title: "Error - Chronora",
-      message: "Unable to load wallet",
+      message: "Unable to load wallet"
     });
   }
 };
@@ -43,13 +43,13 @@ export const loadWallet = async (req, res) => {
 export const getWalletData = async (req, res) => {
   try {
     const userId = req.session.userId;
-    
+
     if (!userId) {
       return res.json({ success: false, message: "Not authenticated" });
     }
 
-    const user = await User.findById(userId).select('wallet walletTransactions');
-    
+    const user = await User.findById(userId).select("wallet walletTransactions");
+
     if (!user) {
       return res.json({ success: false, message: "User not found" });
     }
@@ -60,7 +60,7 @@ export const getWalletData = async (req, res) => {
     return res.json({
       success: true,
       balance: user.wallet || 0,
-      transactions: sortedTransactions,
+      transactions: sortedTransactions
     });
   } catch (error) {
     console.error("getWalletData error:", error);
@@ -82,17 +82,17 @@ export const createWalletOrder = async (req, res) => {
       return res.json({ success: false, message: "Minimum amount is ₹10" });
     }
 
-    
-    const Razorpay = (await import('razorpay')).default;
+
+    const Razorpay = (await import("razorpay")).default;
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_KEY_SECRET,
+      key_secret: process.env.RAZORPAY_KEY_SECRET
     });
 
     const orderOptions = {
-      amount: Math.round(parsedAmount * 100), 
+      amount: Math.round(parsedAmount * 100),
       currency: "INR",
-receipt: `wallet_${userId.toString().slice(-10)}_${Date.now() % 10000}`
+      receipt: `wallet_${userId.toString().slice(-10)}_${Date.now() % 10000}`
     };
 
     const order = await razorpay.orders.create(orderOptions);
@@ -101,7 +101,7 @@ receipt: `wallet_${userId.toString().slice(-10)}_${Date.now() % 10000}`
       success: true,
       order_id: order.id,
       amount: order.amount,
-      key_id: process.env.RAZORPAY_KEY_ID,
+      key_id: process.env.RAZORPAY_KEY_ID
     });
   } catch (error) {
     console.error("createWalletOrder error:", error);
@@ -118,8 +118,8 @@ export const verifyAndAddMoney = async (req, res) => {
       return res.json({ success: false, message: "Not authenticated" });
     }
 
-    const crypto = await import('crypto');
-    
+    const crypto = await import("crypto");
+
     const generatedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
@@ -141,7 +141,7 @@ export const verifyAndAddMoney = async (req, res) => {
       amount: parsedAmount,
       type: "credit",
       description: "Added via Razorpay",
-      date: new Date(),
+      date: new Date()
     });
 
     await user.save();
@@ -151,7 +151,7 @@ export const verifyAndAddMoney = async (req, res) => {
     return res.json({
       success: true,
       message: `₹${parsedAmount} added successfully!`,
-      newBalance: user.wallet,
+      newBalance: user.wallet
     });
   } catch (error) {
     console.error("verifyAndAddMoney error:", error);

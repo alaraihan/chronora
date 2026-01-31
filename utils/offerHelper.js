@@ -1,4 +1,4 @@
-import Offer from '../models/offerSchema.js';
+import Offer from "../models/offerSchema.js";
 
 const getBestOfferForProduct = async (product) => {
   const now = new Date();
@@ -12,12 +12,12 @@ const getBestOfferForProduct = async (product) => {
     startDate: { $lte: now },
     endDate: { $gte: now },
     $or: [
-      { type: 'product', productId: product._id },
-      ...(categoryId ? [{ type: 'category', categoryId }] : [])
+      { type: "product", productId: product._id },
+      ...(categoryId ? [{ type: "category", categoryId }] : [])
     ]
   }).lean();
 
-  if (!offers.length) return null;
+  if (!offers.length) {return null;}
 
   let bestOffer = null;
   let bestPrice = price;
@@ -25,18 +25,17 @@ const getBestOfferForProduct = async (product) => {
   for (const offer of offers) {
     let discountedPrice;
 
-    if (offer.discountType === 'percentage') {
-      if (offer.discountValue >= 90) continue;
+    if (offer.discountType === "percentage") {
+      if (offer.discountValue >= 90) {continue;}
 
-      discountedPrice =
-        price - (price * offer.discountValue) / 100;
+      discountedPrice = price - (price * offer.discountValue) / 100;
     } else {
-      if (offer.discountValue >= price) continue;
+      if (offer.discountValue >= price) {continue;}
 
       discountedPrice = price - offer.discountValue;
     }
 
-    if (discountedPrice <= 0) continue;
+    if (discountedPrice <= 0) {continue;}
 
     if (discountedPrice < bestPrice) {
       bestPrice = discountedPrice;
@@ -44,7 +43,7 @@ const getBestOfferForProduct = async (product) => {
     }
   }
 
-  if (!bestOffer) return null;
+  if (!bestOffer) {return null;}
 
   return {
     originalPrice: price,

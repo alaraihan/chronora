@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 
-import upload from "../middlewares/uploadImage.js"; 
+import upload from "../middlewares/uploadImage.js";
 
 import { checkLogin, isLoggedIn } from "../middlewares/authMiddleware.js";
 import * as userController from "../controller/user/userController.js";
@@ -30,14 +30,14 @@ import {
   removeFromCart
 } from "../controller/user/cartController.js";
 
-import { 
-  loadCheckout, 
-  addAddressCheck, 
+import {
+  loadCheckout,
+  addAddressCheck,
   placeOrder,
   successPage,
   failurePage,
   applyCoupon,
-  getAvailableCoupons,
+  getAvailableCoupons
 
 } from "../controller/user/checkoutController.js";
 
@@ -48,9 +48,9 @@ import {
   returnOrderItem,
   downloadInvoice,
   reviewOrderItem
-} from "../controller/user/orderController.js"; 
+} from "../controller/user/orderController.js";
 
-import{
+import {
   loadWishlist,addToWishlist,moveToCart,removeFromWishlist
 } from "../controller/user/wishlistController.js";
 
@@ -58,12 +58,12 @@ import {
   loadWallet,
   getWalletData,
   createWalletOrder,
-  verifyAndAddMoney,
+  verifyAndAddMoney
 } from "../controller/user/walletController.js";
 
 import {
   createRazorpayOrder,
-  verifyRazorpayPayment,
+  verifyRazorpayPayment
 } from "../controller/user/paymentController.js";
 
 router.get("/pageNotfound", userController.pageNotfound);
@@ -121,32 +121,31 @@ router.post("/profile/verify-email-otp", isLoggedIn, verifyEmailOtp);
 
 router.get("/profile/pending-email", isLoggedIn, getPendingEmailChange);
 
-router.get('/profile/addresses', isLoggedIn, loadAddresses);
-router.post('/profile/addresses/add', isLoggedIn, addAddress);
-router.get('/profile/addresses/:id/edit', isLoggedIn, loadEditAddress);
-router.put('/profile/addresses/:id', isLoggedIn, updateAddress);
-router.delete('/profile/addresses/:id', isLoggedIn, deleteAddress);
+router.get("/profile/addresses", isLoggedIn, loadAddresses);
+router.post("/profile/addresses/add", isLoggedIn, addAddress);
+router.get("/profile/addresses/:id/edit", isLoggedIn, loadEditAddress);
+router.put("/profile/addresses/:id", isLoggedIn, updateAddress);
+router.delete("/profile/addresses/:id", isLoggedIn, deleteAddress);
 
-router.get('/profile/change-password', isLoggedIn, getChangePassword);
-router.post('/profile/change-password', isLoggedIn, changePassword);
+router.get("/profile/change-password", isLoggedIn, getChangePassword);
+router.post("/profile/change-password", isLoggedIn, changePassword);
 
 
 router.get("/cart", isLoggedIn, loadCart);
 router.post("/cart/add", isLoggedIn, addToCart);
-router.post('/cart/update/:id', isLoggedIn, updateQuantity);
-router.post('/cart/remove/:id', isLoggedIn, removeFromCart);
-
-
+router.post("/cart/update/:id", isLoggedIn, updateQuantity);
+router.post("/cart/remove/:id", isLoggedIn, removeFromCart);
 
 
 router.get("/checkout", isLoggedIn, loadCheckout);
-router.post('/address/add', isLoggedIn, addAddressCheck);
+router.post("/address/add", isLoggedIn, addAddressCheck);
 
-router.post('/checkout/place-order', isLoggedIn, placeOrder);
+router.post("/checkout/place-order", isLoggedIn, placeOrder);
+
 router.get("/checkout/success", isLoggedIn, successPage);
 router.get("/checkout/failure", isLoggedIn, failurePage);
-router.post('/checkout/apply-coupon', isLoggedIn, applyCoupon);
-router.get('/coupons/available', isLoggedIn, getAvailableCoupons);
+router.post("/checkout/apply-coupon", isLoggedIn, applyCoupon);
+router.get("/coupons/available", isLoggedIn, getAvailableCoupons);
 
 router.get("/profile/orders", isLoggedIn, getOrdersPage);
 
@@ -175,7 +174,6 @@ router.post("/wallet/verify-add", isLoggedIn, verifyAndAddMoney);
 
 router.post("/create-order", isLoggedIn, createRazorpayOrder);
 router.post("/verify", isLoggedIn, verifyRazorpayPayment);
-
 
 
 export default router;

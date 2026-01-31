@@ -8,7 +8,7 @@ dotenv.config();
 const requiredEnvVars = [
   "CLOUDINARY_CLOUD_NAME",
   "CLOUDINARY_API_KEY",
-  "CLOUDINARY_API_SECRET",
+  "CLOUDINARY_API_SECRET"
 ];
 
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
@@ -24,7 +24,7 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true, // Always use HTTPS (recommended for production)
+  secure: true // Always use HTTPS (recommended for production)
 });
 
 console.log("Cloudinary configured successfully with secure URLs!");

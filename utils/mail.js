@@ -7,7 +7,7 @@ export async function sendOtp(email, otp) {
 
   if (process.env.NODE_ENV !== "production") {
     console.log(`\n[DEV MODE] OTP for ${email}: ${otp}\n`);
-    return true; 
+    return true;
   }
 
   try {
@@ -15,8 +15,8 @@ export async function sendOtp(email, otp) {
       service: "gmail",
       auth: {
         user: process.env.NODEMAILER_EMAIL,
-        pass: process.env.NODEMAILER_PASSWORD, 
-      },
+        pass: process.env.NODEMAILER_PASSWORD
+      }
     });
 
     await transporter.verify();
@@ -28,7 +28,7 @@ export async function sendOtp(email, otp) {
       html: `
         <p>Your OTP is <b>${otp}</b></p>
         <p>This OTP expires in 1 minute.</p>
-      `,
+      `
     });
 
     return info.accepted && info.accepted.length > 0;

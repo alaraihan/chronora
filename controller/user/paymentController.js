@@ -6,7 +6,7 @@ dotenv.config();
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
 export const createRazorpayOrder = async (req, res) => {
@@ -16,14 +16,14 @@ export const createRazorpayOrder = async (req, res) => {
     if (!amount || amount < 1) {
       return res.status(400).json({
         success: false,
-        message: "Valid amount is required",
+        message: "Valid amount is required"
       });
     }
 
     const options = {
-      amount: Math.round(amount * 100), 
+      amount: Math.round(amount * 100),
       currency: "INR",
-      receipt: `chronora_${Date.now()}`,
+      receipt: `chronora_${Date.now()}`
     };
 
     const order = await razorpay.orders.create(options);
@@ -32,13 +32,13 @@ export const createRazorpayOrder = async (req, res) => {
       success: true,
       order_id: order.id,
       amount: order.amount,
-      key_id: process.env.RAZORPAY_KEY_ID,
+      key_id: process.env.RAZORPAY_KEY_ID
     });
   } catch (error) {
     console.error("Create Razorpay order error:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to initiate payment",
+      message: "Failed to initiate payment"
     });
   }
 };
@@ -50,7 +50,7 @@ export const verifyRazorpayPayment = (req, res) => {
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return res.status(400).json({
         success: false,
-        message: "Missing payment details",
+        message: "Missing payment details"
       });
     }
 
@@ -65,10 +65,10 @@ export const verifyRazorpayPayment = (req, res) => {
     if (isValid) {
       res.json({ success: true, message: "Payment verified successfully" });
     } else {
-req.session.checkoutFailure = {
-  totalAmount: req.session.checkoutSummary?.totalAmount || 0,
-  errorMessage: "Your payment was declined or cancelled. You can retry below."
-};
+      req.session.checkoutFailure = {
+        totalAmount: req.session.checkoutSummary?.totalAmount || 0,
+        errorMessage: "Your payment was declined or cancelled. You can retry below."
+      };
 
       res.status(400).json({ success: false, message: "Invalid payment signature" });
     }
