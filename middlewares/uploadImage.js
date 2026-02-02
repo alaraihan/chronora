@@ -1,17 +1,17 @@
 import multer from "multer";
 import path from "path";
 import pkg from "multer-storage-cloudinary";
-import cloudinary from "../config/cloudinary.js";  // adjust path to your cloudinary config file
+import cloudinary from "../config/cloudinary.js";
 
 const { CloudinaryStorage } = pkg;
 
-const storage = pkg({
+const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "chronora/variants",  // your folder in Cloudinary
+    folder: "chronora/variants",
     allowed_formats: ["jpg", "jpeg", "png", "webp"],
-    public_id: (req, file) => `variant-${Date.now()}-${Math.floor(Math.random() * 1e9)}`,
-    // Auto-optimize for faster loading
+    public_id: () =>
+      `variant-${Date.now()}-${Math.floor(Math.random() * 1e9)}`,
     transformation: [
       { quality: "auto" },
       { fetch_format: "auto" },
@@ -21,12 +21,13 @@ const storage = pkg({
 });
 
 const upload = multer({
-  storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   fileFilter: (req, file, cb) => {
     const allowed = /jpeg|jpg|png|webp/;
     const extOk = allowed.test(path.extname(file.originalname).toLowerCase());
     const mimeOk = allowed.test(file.mimetype);
+
     if (extOk && mimeOk) {
       cb(null, true);
     } else {
