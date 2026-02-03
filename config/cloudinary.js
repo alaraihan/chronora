@@ -30,3 +30,5 @@ cloudinary.config({
 console.log("Cloudinary configured successfully with secure URLs!");
 
 export default cloudinary;
+
+const a = 10;
