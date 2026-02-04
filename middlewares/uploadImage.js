@@ -1,20 +1,32 @@
 import multer from "multer";
 import path from "path";
+import dotenv from "dotenv";
+import { v2 as cloudinary } from "cloudinary";
 import { createRequire } from "module";
-import cloudinary from "../config/cloudinary.js"; 
+
+// Ensure dotenv is loaded first
+dotenv.config();
+
+// Configure cloudinary directly here to avoid import timing issues
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true
+});
 
 const require = createRequire(import.meta.url);
-const cloudinaryStoragePkg  = require("multer-storage-cloudinary");
+const cloudinaryStoragePkg = require("multer-storage-cloudinary");
 
 const CloudinaryStorage =
   cloudinaryStoragePkg.CloudinaryStorage ||
   cloudinaryStoragePkg.default ||
   cloudinaryStoragePkg;
 
-const storage =  new CloudinaryStorage({
+const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "chronora/variants",  
+    folder: "chronora/variants",
     allowed_formats: ["jpg", "jpeg", "png", "webp"],
     public_id: (req, file) => `variant-${Date.now()}-${Math.floor(Math.random() * 1e9)}`,
     transformation: [
