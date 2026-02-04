@@ -140,26 +140,54 @@ export async function getProduct(req, res) {
 
 export async function addProduct(req, res) {
   try {
+    console.log("BODY:", req.body);
+    console.log("FILES:", req.files);
 
-    const { name, category, description, price} = req.body;
-    const variants = JSON.parse(req.body.variants || "[]");
-    const files = req.files || [];
-    if (!name || !category ||!price) {return res.status(400).json({ success: false, message: "Name & price required" });}
-    const existing = await Product.findOne({ name: name.trim(), isBlocked: false });
-    if (existing) {return res.status(400).json({ success: false, message: "Product already exists!" });}
+    const { name, category, description, price } = req.body;
 
-    const cat = await Category.findById(category);
-    if (!cat) {return res.status(400).json({ success: false, message: "Invalid category" });}
+    if (!name || !category || !price) {
+      return res.status(400).json({ success: false, message: "Name & price required" });
+    }
+
+    // ✅ SAFE variants parsing (fixes prod crash)
+    let variants = [];
+    try {
+      variants =
+        typeof req.body.variants === "string"
+          ? JSON.parse(req.body.variants)
+          : req.body.variants || [];
+    } catch (e) {
+      return res.status(400).json({ success: false, message: "Invalid variants format" });
+    }
+
+    const files = Array.isArray(req.files) ? req.files : [];
 
     if (files.length < 2) {
-      return res.status(400).json({ success: false, message: "Please upload at least 2 images for the product" });
+      return res.status(400).json({
+        success: false,
+        message: "Please upload at least 2 images for the product",
+      });
+    }
+
+    const existing = await Product.findOne({
+      name: new RegExp(`^${name.trim()}$`, "i"),
+      isBlocked: false,
+    });
+
+    if (existing) {
+      return res.status(400).json({ success: false, message: "Product already exists!" });
+    }
+
+    const cat = await Category.findById(category);
+    if (!cat) {
+      return res.status(400).json({ success: false, message: "Invalid category" });
     }
 
     const product = await Product.create({
       name: name.trim(),
       description: description?.trim() || "",
-      price: Number(price || 0),
-      category
+      price: Number(price),
+      category,
     });
 
     let fileIndex = 0;
@@ -168,34 +196,53 @@ export async function addProduct(req, res) {
     for (const v of variants) {
       const imgs = [];
       const count = Number(v.newImageCount || 0);
+
       for (let i = 0; i < count; i++) {
         const f = files[fileIndex++];
-        if (!f) {break;}
-        const up = await cloudinary.uploader.upload(f.path, { folder: "chronora/products", transformation: { width: 1200, crop: "limit" }});
-        imgs.push(up.secure_url);
-        if (fs.existsSync(f.path)) {fs.unlinkSync(f.path);}
+        if (!f) break;
+
+        const upload = await cloudinary.uploader.upload(f.path, {
+          folder: "chronora/products",
+          transformation: { width: 1200, crop: "limit" },
+        });
+
+        imgs.push(upload.secure_url);
+
+        // ✅ SAFE file cleanup (won't crash prod)
+        try {
+          if (fs.existsSync(f.path)) fs.unlinkSync(f.path);
+        } catch (e) {
+          console.warn("File cleanup failed:", e.message);
+        }
       }
 
-      const newV = await Variant.create({
+      const newVariant = await Variant.create({
         product: product._id,
         colorName: v.name || "",
         stock: Number(v.stock || 0),
         images: imgs,
-        strapColor:v.strapColor
+        strapColor: v.strapColor || "",
       });
 
-      savedVariantIds.push(newV._id);
+      savedVariantIds.push(newVariant._id);
     }
 
     product.variants = savedVariantIds;
     await product.save();
 
     return res.status(201).json({ success: true, message: "Product created" });
+
   } catch (err) {
-    console.error("addProduct error", err);
-    return res.status(500).json({ success: false, message: "Failed to add product" });
+    console.error("ADD PRODUCT ERROR:", err.message);
+    console.error(err.stack);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to add product",
+      error: err.message,
+    });
   }
 }
+
 
 export async function updateProduct(req, res) {
   try {
