@@ -1,13 +1,18 @@
 import multer from "multer";
 import path from "path";
 import dotenv from "dotenv";
-import { v2 as cloudinary } from "cloudinary";
 import { createRequire } from "module";
 
 // Ensure dotenv is loaded first
 dotenv.config();
 
-// Configure cloudinary directly here to avoid import timing issues
+const require = createRequire(import.meta.url);
+
+// Use require for cloudinary to ensure compatibility with multer-storage-cloudinary
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+// Configure cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -15,13 +20,7 @@ cloudinary.config({
   secure: true
 });
 
-const require = createRequire(import.meta.url);
-const cloudinaryStoragePkg = require("multer-storage-cloudinary");
-
-const CloudinaryStorage =
-  cloudinaryStoragePkg.CloudinaryStorage ||
-  cloudinaryStoragePkg.default ||
-  cloudinaryStoragePkg;
+console.log("Cloudinary upload middleware configured");
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
