@@ -1,39 +1,25 @@
 import multer from "multer";
 import path from "path";
-import dotenv from "dotenv";
-import { createRequire } from "module";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
-// Ensure dotenv is loaded first
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const require = createRequire(import.meta.url);
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, "..", "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
-// Use require for cloudinary to ensure compatibility with multer-storage-cloudinary
-const cloudinary = require("cloudinary").v2;
-const cloudinaryStoragePkg = require("multer-storage-cloudinary");
-const CloudinaryStorage = cloudinaryStoragePkg.CloudinaryStorage || cloudinaryStoragePkg;
-
-// Configure cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true
-});
-
-console.log("Cloudinary upload middleware configured");
-
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "chronora/variants",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
-    public_id: (req, file) => `variant-${Date.now()}-${Math.floor(Math.random() * 1e9)}`,
-    transformation: [
-      { quality: "auto" },
-      { fetch_format: "auto" },
-      { width: 1000, height: 1000, crop: "limit" }
-    ]
+// Use disk storage instead of cloudinary storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
+    cb(null, uniqueName);
   }
 });
 

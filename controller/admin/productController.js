@@ -1,6 +1,8 @@
 import Product from "../../models/productSchema.js";
 import Variant from "../../models/variantSchema.js";
 import Category from "../../models/categorySchema.js";
+import cloudinary from "../../config/cloudinary.js";
+import fs from "fs";
 import mongoose from "mongoose";
 export async function listProducts(req, res) {
   try {
@@ -199,9 +201,19 @@ export async function addProduct(req, res) {
         const f = files[fileIndex++];
         if (!f) break;
 
-        // ✅ multer-storage-cloudinary already uploads to Cloudinary
-        // f.path contains the Cloudinary URL directly
-        imgs.push(f.path);
+        // ✅ Upload to Cloudinary from disk
+        const uploadResult = await cloudinary.uploader.upload(f.path, {
+          folder: "chronora/products",
+          transformation: { width: 1200, crop: "limit" },
+        });
+        imgs.push(uploadResult.secure_url);
+
+        // ✅ Clean up temp file
+        try {
+          if (fs.existsSync(f.path)) fs.unlinkSync(f.path);
+        } catch (e) {
+          console.warn("File cleanup failed:", e.message);
+        }
       }
 
       const newVariant = await Variant.create({
@@ -262,9 +274,20 @@ export async function updateProduct(req, res) {
       for (let i = 0; i < count; i++) {
         const f = files[fileIndex++];
         if (!f) { break; }
-        // ✅ multer-storage-cloudinary already uploads to Cloudinary
-        // f.path contains the Cloudinary URL directly
-        existing.push(f.path);
+
+        // ✅ Upload to Cloudinary from disk
+        const uploadResult = await cloudinary.uploader.upload(f.path, {
+          folder: "chronora/products",
+          transformation: { width: 1200, crop: "limit" }
+        });
+        existing.push(uploadResult.secure_url);
+
+        // ✅ Clean up temp file
+        try {
+          if (fs.existsSync(f.path)) fs.unlinkSync(f.path);
+        } catch (e) {
+          console.warn("File cleanup failed:", e.message);
+        }
       }
 
       if (v.id) {
