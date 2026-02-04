@@ -1,8 +1,6 @@
 import Product from "../../models/productSchema.js";
 import Variant from "../../models/variantSchema.js";
 import Category from "../../models/categorySchema.js";
-import cloudinary from "../../config/cloudinary.js";
-import fs from "fs";
 import mongoose from "mongoose";
 export async function listProducts(req, res) {
   try {
@@ -108,14 +106,14 @@ export async function listProducts(req, res) {
 export async function getProduct(req, res) {
   try {
     const id = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(id)) {return res.status(400).json({ success: false, message: "Invalid id" });}
+    if (!mongoose.Types.ObjectId.isValid(id)) { return res.status(400).json({ success: false, message: "Invalid id" }); }
 
     const p = await Product.findById(id)
       .populate("category", "name")
       .populate({ path: "variants", model: "Variant" })
       .lean();
 
-    if (!p) {return res.status(404).json({ success: false, message: "Product not found" });}
+    if (!p) { return res.status(404).json({ success: false, message: "Product not found" }); }
 
     const data = {
       id: p._id.toString(),
@@ -201,19 +199,9 @@ export async function addProduct(req, res) {
         const f = files[fileIndex++];
         if (!f) break;
 
-        const upload = await cloudinary.uploader.upload(f.path, {
-          folder: "chronora/products",
-          transformation: { width: 1200, crop: "limit" },
-        });
-
-        imgs.push(upload.secure_url);
-
-        // ✅ SAFE file cleanup (won't crash prod)
-        try {
-          if (fs.existsSync(f.path)) fs.unlinkSync(f.path);
-        } catch (e) {
-          console.warn("File cleanup failed:", e.message);
-        }
+        // ✅ multer-storage-cloudinary already uploads to Cloudinary
+        // f.path contains the Cloudinary URL directly
+        imgs.push(f.path);
       }
 
       const newVariant = await Variant.create({
@@ -247,17 +235,17 @@ export async function addProduct(req, res) {
 export async function updateProduct(req, res) {
   try {
     const id = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(id)) {return res.status(400).json({ success: false, message: "Invalid id" });}
+    if (!mongoose.Types.ObjectId.isValid(id)) { return res.status(400).json({ success: false, message: "Invalid id" }); }
 
     const { name, category, description, price } = req.body;
     const variants = JSON.parse(req.body.variants || "[]");
     const files = req.files || [];
 
     const product = await Product.findById(id);
-    if (!product) {return res.status(404).json({ success: false, message: "Product not found" });}
+    if (!product) { return res.status(404).json({ success: false, message: "Product not found" }); }
 
     const cat = await Category.findById(category);
-    if (!cat) {return res.status(400).json({ success: false, message: "Invalid category" });}
+    if (!cat) { return res.status(400).json({ success: false, message: "Invalid category" }); }
 
     product.name = name?.trim() || product.name;
     product.description = description?.trim() || product.description;
@@ -273,10 +261,10 @@ export async function updateProduct(req, res) {
 
       for (let i = 0; i < count; i++) {
         const f = files[fileIndex++];
-        if (!f) {break;}
-        const up = await cloudinary.uploader.upload(f.path, { folder: "chronora/products", transformation: { width: 1200, crop: "limit" } });
-        existing.push(up.secure_url);
-        if (fs.existsSync(f.path)) {fs.unlinkSync(f.path);}
+        if (!f) { break; }
+        // ✅ multer-storage-cloudinary already uploads to Cloudinary
+        // f.path contains the Cloudinary URL directly
+        existing.push(f.path);
       }
 
       if (v.id) {
@@ -284,7 +272,7 @@ export async function updateProduct(req, res) {
           colorName: v.name || "",
           stock: Number(v.stock || 0),
           images: existing,
-          strapColor:v.strapColor
+          strapColor: v.strapColor
         }, { new: true });
         newVariantIds.push(v.id);
       } else {
@@ -293,7 +281,7 @@ export async function updateProduct(req, res) {
           colorName: v.name || "",
           stock: Number(v.stock || 0),
           images: existing,
-          strapColor:v.strapColor
+          strapColor: v.strapColor
         });
         newVariantIds.push(created._id);
       }
@@ -321,7 +309,7 @@ export async function toggleBlock(req, res) {
     const action = req.body.action;
     const block = action === "block";
     const p = await Product.findByIdAndUpdate(id, { isBlocked: block }, { new: true });
-    if (!p) {return res.status(404).json({ success: false, message: "Product not found" });}
+    if (!p) { return res.status(404).json({ success: false, message: "Product not found" }); }
     return res.json({ success: true, message: `Product ${block ? "blocked" : "unblocked"}` });
   } catch (err) {
     console.error("toggleBlock error", err);
