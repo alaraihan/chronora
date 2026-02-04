@@ -10,7 +10,8 @@ const require = createRequire(import.meta.url);
 
 // Use require for cloudinary to ensure compatibility with multer-storage-cloudinary
 const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinaryStoragePkg = require("multer-storage-cloudinary");
+const CloudinaryStorage = cloudinaryStoragePkg.CloudinaryStorage || cloudinaryStoragePkg;
 
 // Configure cloudinary
 cloudinary.config({
