@@ -39,14 +39,12 @@ const userSchema = new Schema(
     },
 
     referralCode: {
-  type: String,
-  unique: true,
-  uppercase: true,
-  trim: true,
-  default: () =>
-    Math.random().toString(36).substring(2, 8).toUpperCase()
-},
-
+      type: String,
+      unique: true,
+      required: true,
+      uppercase: true,
+      trim: true
+    },
     referredBy: {
       type: String,
       default: null,
