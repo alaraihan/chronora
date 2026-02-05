@@ -37,7 +37,9 @@ passport.use(
     fullName,
     email,
     googleId: profile.id,
-    referralCode: await generateReferralCode(),
+    referralCode: (await generateReferralCode()) ||
+  Math.random().toString(36).substring(2,8).toUpperCase(),
+
     isVerified: true
   });
 }
