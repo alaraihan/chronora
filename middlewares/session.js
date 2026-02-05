@@ -13,10 +13,11 @@ export const sessions=session({
     collectionName: "sessions",
     ttl: 14 * 24 * 60 * 60
   }),
-  cookie: {
-    httpOnly: true,
-    maxAge: 14 * 24 * 60 * 60 * 1000,
-    sameSite: "lax",
-    secure: true
-  }
+cookie: {
+  httpOnly: true,
+  maxAge: 14 * 24 * 60 * 60 * 1000,
+  sameSite: "none",   // IMPORTANT for Google login
+  secure: true
+}
+
 });
