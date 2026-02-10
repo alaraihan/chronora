@@ -1,6 +1,7 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import dotenv from "dotenv";
+import logger from "../../helpers/logger.js";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ export const createRazorpayOrder = async (req, res) => {
     };
 
     const order = await razorpay.orders.create(options);
+    logger.info(`Razorpay order created: ${order.id}, amount: ${order.amount}`);
 
     res.json({
       success: true,
@@ -35,7 +37,7 @@ export const createRazorpayOrder = async (req, res) => {
       key_id: process.env.RAZORPAY_KEY_ID
     });
   } catch (error) {
-    console.error("Create Razorpay order error:", error);
+    logger.error("Create Razorpay order error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to initiate payment"
@@ -63,8 +65,10 @@ export const verifyRazorpayPayment = (req, res) => {
     const isValid = razorpay_signature === expectedSign;
 
     if (isValid) {
+            logger.info(`Razorpay payment verified: ${razorpay_payment_id}`);
       res.json({ success: true, message: "Payment verified successfully" });
     } else {
+            logger.warn(`Razorpay payment verification failed for order: ${razorpay_order_id}`);
       req.session.checkoutFailure = {
         totalAmount: req.session.checkoutSummary?.totalAmount || 0,
         errorMessage: "Your payment was declined or cancelled. You can retry below."
@@ -73,7 +77,7 @@ export const verifyRazorpayPayment = (req, res) => {
       res.status(400).json({ success: false, message: "Invalid payment signature" });
     }
   } catch (error) {
-    console.error("Payment verification error:", error);
+    logger.error("Razorpay payment verification error:", error);
     res.status(500).json({ success: false, message: "Verification failed" });
   }
 };

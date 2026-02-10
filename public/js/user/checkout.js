@@ -14,8 +14,10 @@ document.getElementById('openAddressModal')?.addEventListener('click', () => {
 });
 
 function closeModal() {
-  document.getElementById('addressModal').style.display = 'none';
-  document.getElementById('addressForm').reset();
+  const modal = document.getElementById('addressModal');
+  const form = document.getElementById('addressForm');
+  if (modal) modal.style.display = 'none';
+  if (form) form.reset();
 }
 
 document.getElementById('closeModal')?.addEventListener('click', closeModal);
@@ -53,8 +55,11 @@ document.getElementById('addressForm')?.addEventListener('submit', async (e) => 
         </label>
       `).join('');
 
-      document.getElementById('addressList').innerHTML = addressHtml;
-      attachAddressClickListeners();
+      const addressList = document.getElementById('addressList');
+      if (addressList) {
+        addressList.innerHTML = addressHtml;
+        attachAddressClickListeners();
+      }
     }
   } catch (err) {
     toast(err.response?.data?.message || "Failed to add address", "error");
@@ -67,7 +72,8 @@ function attachAddressClickListeners() {
       if (e.target.tagName === 'INPUT') return;
       document.querySelectorAll('.address-option').forEach(l => l.classList.remove('selected'));
       this.classList.add('selected');
-      this.querySelector('input[type="radio"]').checked = true;
+      const radio = this.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
     });
   });
 }
@@ -93,19 +99,21 @@ attachPaymentClickListeners();
 // ---------------------- COUPON LOGIC ----------------------
 document.getElementById('applyCouponBtn')?.addEventListener('click', async () => {
   const codeInput = document.getElementById('couponCode');
-  const code = codeInput.value.trim().toUpperCase();
+  const code = codeInput?.value.trim().toUpperCase();
   const msgError = document.getElementById('couponMessage');
   const msgSuccess = document.getElementById('couponSuccess');
   const discountRow = document.getElementById('discountRow');
   const discountAmount = document.getElementById('discountAmount');
   const grandTotalDisplay = document.getElementById('grandTotalDisplay');
 
-  msgError.style.display = 'none';
-  msgSuccess.style.display = 'none';
+  if (msgError) msgError.style.display = 'none';
+  if (msgSuccess) msgSuccess.style.display = 'none';
 
   if (!code) {
-    msgError.textContent = "Please enter a coupon code";
-    msgError.style.display = 'block';
+    if (msgError) {
+      msgError.textContent = "Please enter a coupon code";
+      msgError.style.display = 'block';
+    }
     return;
   }
 
@@ -113,31 +121,46 @@ document.getElementById('applyCouponBtn')?.addEventListener('click', async () =>
     const response = await axios.post('/checkout/apply-coupon', { couponCode: code });
 
     if (response.data.success) {
-      msgSuccess.textContent = `Coupon "${code}" applied! ₹${response.data.discount} off`;
-      msgSuccess.style.display = 'block';
-      discountAmount.textContent = response.data.discount.toLocaleString('en-IN');
-      discountRow.style.display = 'flex';
+      if (msgSuccess) {
+        msgSuccess.textContent = `Coupon "${code}" applied! ₹${response.data.discount} off`;
+        msgSuccess.style.display = 'block';
+      }
+      if (discountAmount) discountAmount.textContent = response.data.discount.toLocaleString('en-IN');
+      if (discountRow) discountRow.style.display = 'flex';
 
-      const subtotal = parseFloat(document.getElementById('subtotalDisplay').textContent.replace(/,/g, ''));
-      const shipping = subtotal < 15000 ? 100 : 0;
-      const newGrandTotal = subtotal + shipping - response.data.discount;
-      grandTotalDisplay.textContent = newGrandTotal.toLocaleString('en-IN');
+      const subtotalDisplay = document.getElementById('subtotalDisplay');
+      if (subtotalDisplay && grandTotalDisplay) {
+        const subtotal = parseFloat(subtotalDisplay.textContent.replace(/,/g, ''));
+        const shipping = subtotal < 15000 ? 100 : 0;
+        const newGrandTotal = subtotal + shipping - response.data.discount;
+        grandTotalDisplay.textContent = newGrandTotal.toLocaleString('en-IN');
+      }
 
-      document.getElementById('placeOrderBtn').dataset.discount = response.data.discount;
-      document.getElementById('placeOrderBtn').dataset.appliedCoupon = code;
+      const placeOrderBtn = document.getElementById('placeOrderBtn');
+      if (placeOrderBtn) {
+        placeOrderBtn.dataset.discount = response.data.discount;
+        placeOrderBtn.dataset.appliedCoupon = code;
+      }
 
-      codeInput.disabled = true;
+      if (codeInput) codeInput.disabled = true;
       const applyBtn = document.getElementById('applyCouponBtn');
-      applyBtn.textContent = "Applied ✓";
-      applyBtn.disabled = true;
-      document.getElementById('removeCouponBtn').style.display = 'block';
+      if (applyBtn) {
+        applyBtn.textContent = "Applied ✓";
+        applyBtn.disabled = true;
+      }
+      const removeBtn = document.getElementById('removeCouponBtn');
+      if (removeBtn) removeBtn.style.display = 'block';
     } else {
-      msgError.textContent = response.data.message || "Invalid coupon";
-      msgError.style.display = 'block';
+      if (msgError) {
+        msgError.textContent = response.data.message || "Invalid coupon";
+        msgError.style.display = 'block';
+      }
     }
   } catch (err) {
-    msgError.textContent = "Error applying coupon. Try again.";
-    msgError.style.display = 'block';
+    if (msgError) {
+      msgError.textContent = err.response?.data?.message || "Error applying coupon. Try again.";
+      msgError.style.display = 'block';
+    }
     console.error(err);
   }
 });
@@ -152,23 +175,32 @@ document.getElementById('removeCouponBtn')?.addEventListener('click', function()
   const placeOrderBtn = document.getElementById('placeOrderBtn');
   const applyBtn = document.getElementById('applyCouponBtn');
 
-  codeInput.value = '';
-  codeInput.disabled = false;
-  msgSuccess.style.display = 'none';
-  msgError.style.display = 'none';
-  discountRow.style.display = 'none';
-  discountAmount.textContent = '0';
+  if (codeInput) {
+    codeInput.value = '';
+    codeInput.disabled = false;
+  }
+  if (msgSuccess) msgSuccess.style.display = 'none';
+  if (msgError) msgError.style.display = 'none';
+  if (discountRow) discountRow.style.display = 'none';
+  if (discountAmount) discountAmount.textContent = '0';
 
-  const subtotal = parseFloat(document.getElementById('subtotalDisplay').textContent.replace(/,/g, ''));
-  const shipping = subtotal < 15000 ? 100 : 0;
-  const newGrandTotal = subtotal + shipping;
-  grandTotalDisplay.textContent = newGrandTotal.toLocaleString('en-IN');
+  const subtotalDisplay = document.getElementById('subtotalDisplay');
+  if (subtotalDisplay && grandTotalDisplay) {
+    const subtotal = parseFloat(subtotalDisplay.textContent.replace(/,/g, ''));
+    const shipping = subtotal < 15000 ? 100 : 0;
+    const newGrandTotal = subtotal + shipping;
+    grandTotalDisplay.textContent = newGrandTotal.toLocaleString('en-IN');
+  }
 
-  delete placeOrderBtn.dataset.discount;
-  delete placeOrderBtn.dataset.appliedCoupon;
+  if (placeOrderBtn) {
+    delete placeOrderBtn.dataset.discount;
+    delete placeOrderBtn.dataset.appliedCoupon;
+  }
 
-  applyBtn.textContent = "Apply";
-  applyBtn.disabled = false;
+  if (applyBtn) {
+    applyBtn.textContent = "Apply";
+    applyBtn.disabled = false;
+  }
   this.style.display = 'none';
 
   toast("Coupon removed successfully", "success");
@@ -180,17 +212,22 @@ document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
     const walletRow = document.getElementById('walletPayable');
     const amountEl = document.getElementById('walletPayableAmount');
     const walletBalanceDisplay = document.getElementById('walletBalanceDisplay');
+    const grandTotalDisplay = document.getElementById('grandTotalDisplay');
 
     if (this.value === 'wallet') {
-      const total = parseFloat(document.getElementById('grandTotalDisplay').textContent.replace(/,/g, ''));
-      const walletBalance = parseFloat(walletBalanceDisplay?.textContent.replace(/[^0-9.]/g, '') || '0');
-      amountEl.textContent = total.toLocaleString('en-IN');
-      walletRow.style.display = 'flex';
-      if (walletBalance < total) {
-        toast(`Insufficient wallet balance. Available: ₹${walletBalance.toLocaleString('en-IN')}, Required: ₹${total.toLocaleString('en-IN')}`, "error");
+      if (grandTotalDisplay) {
+        const total = parseFloat(grandTotalDisplay.textContent.replace(/,/g, ''));
+        const walletBalance = parseFloat(walletBalanceDisplay?.textContent.replace(/[^0-9.]/g, '') || '0');
+        
+        if (amountEl) amountEl.textContent = total.toLocaleString('en-IN');
+        if (walletRow) walletRow.style.display = 'flex';
+        
+        if (walletBalance < total) {
+          toast(`Insufficient wallet balance. Available: ₹${walletBalance.toLocaleString('en-IN')}, Required: ₹${total.toLocaleString('en-IN')}`, "error");
+        }
       }
     } else {
-      walletRow.style.display = 'none';
+      if (walletRow) walletRow.style.display = 'none';
     }
   });
 });
@@ -199,13 +236,17 @@ document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
 document.getElementById('viewCouponsBtn')?.addEventListener('click', async function() {
   const modal = document.getElementById('couponsModal');
   const container = document.getElementById('couponsContainer');
+  
+  if (!modal || !container) return;
+  
   modal.style.display = 'flex';
   container.innerHTML = '<div class="text-center" style="padding: 40px;"><p>Loading coupons...</p></div>';
 
   try {
     const response = await fetch('/coupons/available');
     const data = await response.json();
-    if (data.success && data.coupons.length > 0) {
+    
+    if (data.success && data.coupons && data.coupons.length > 0) {
       container.innerHTML = data.coupons.map(coupon => `
         <div class="coupon-card" style="border: 2px dashed #667eea; border-radius: 12px; padding: 16px; margin-bottom: 16px; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);">
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
@@ -234,8 +275,11 @@ document.getElementById('viewCouponsBtn')?.addEventListener('click', async funct
       document.querySelectorAll('.apply-coupon-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           const code = this.dataset.code;
-          document.getElementById('couponCode').value = code;
-          document.getElementById('applyCouponBtn').click();
+          const couponInput = document.getElementById('couponCode');
+          const applyBtn = document.getElementById('applyCouponBtn');
+          
+          if (couponInput) couponInput.value = code;
+          if (applyBtn) applyBtn.click();
           modal.style.display = 'none';
         });
       });
@@ -250,48 +294,57 @@ document.getElementById('viewCouponsBtn')?.addEventListener('click', async funct
 });
 
 document.getElementById('closeCouponsModal')?.addEventListener('click', function() {
-  document.getElementById('couponsModal').style.display = 'none';
+  const modal = document.getElementById('couponsModal');
+  if (modal) modal.style.display = 'none';
 });
 
-// ---------------------- FRONTEND STOCK CHECK ----------------------
-async function checkStockAndTogglePayment() {
-  try {
-    const res = await axios.get('/checkout/check-stock'); // server endpoint
-    const placeOrderBtn = document.getElementById('placeOrderBtn');
-    const soldOutMsg = document.getElementById('soldOutMessage'); // add in HTML
+// ---------------------- STOCK CHECK ----------------------
+let stockCheckInterval = null;
 
-    if (res.data.stockAvailable) {
-      placeOrderBtn.style.display = 'block';
-      if (soldOutMsg) soldOutMsg.style.display = 'none';
-    } else {
-      placeOrderBtn.style.display = 'none';
-      if (soldOutMsg) soldOutMsg.style.display = 'block';
-      toast("Sorry, this item is sold out.", "error");
+async function checkStockAndTogglePayment(showErrorToast = false) {
+  const placeOrderBtn = document.getElementById('placeOrderBtn');
+  const soldOutMsg = document.getElementById('soldOutMessage');
+  
+  // If elements don't exist, silently return
+  if (!placeOrderBtn) return;
+
+  try {
+    const res = await axios.get('/checkout/check-stock');
+    
+    if (res.data && res.data.stockAvailable !== undefined) {
+      if (res.data.stockAvailable) {
+        placeOrderBtn.style.display = 'block';
+        if (soldOutMsg) soldOutMsg.style.display = 'none';
+      } else {
+        placeOrderBtn.style.display = 'none';
+        if (soldOutMsg) soldOutMsg.style.display = 'block';
+        if (showErrorToast) {
+          toast("Some items are out of stock", "error");
+        }
+      }
     }
   } catch (err) {
-    console.error("Error checking stock:", err);
-    toast("Could not verify stock. Please refresh.", "error");
+    // Only log to console, don't show error toast on initial load
+    console.warn("Stock check unavailable:", err.message);
+    // Keep the button visible if stock check fails
+    if (placeOrderBtn) placeOrderBtn.style.display = 'block';
   }
 }
-checkStockAndTogglePayment();
-// ---------------------- AUTO STOCK REFRESH ----------------------
-setInterval(async () => {
-  try {
-    const res = await axios.get('/checkout/check-stock'); // server endpoint
-    const placeOrderBtn = document.getElementById('placeOrderBtn');
-    const soldOutMsg = document.getElementById('soldOutMessage');
 
-    if (res.data.stockAvailable) {
-      placeOrderBtn.style.display = 'block';
-      if (soldOutMsg) soldOutMsg.style.display = 'none';
-    } else {
-      placeOrderBtn.style.display = 'none';
-      if (soldOutMsg) soldOutMsg.style.display = 'block';
-    }
-  } catch (err) {
-    console.error("Error auto-checking stock:", err);
+// Initial check without error toast
+checkStockAndTogglePayment(false);
+
+// Auto-refresh stock every 30 seconds (reduced from 5 seconds)
+stockCheckInterval = setInterval(() => {
+  checkStockAndTogglePayment(true); // Show toast on subsequent checks if out of stock
+}, 30000);
+
+// Clean up interval when page unloads
+window.addEventListener('beforeunload', () => {
+  if (stockCheckInterval) {
+    clearInterval(stockCheckInterval);
   }
-}, 5000); // checks every 5 seconds
+});
 
 // ---------------------- PLACE ORDER ----------------------
 document.getElementById('placeOrderBtn')?.addEventListener('click', async function() {
@@ -301,34 +354,64 @@ document.getElementById('placeOrderBtn')?.addEventListener('click', async functi
   const appliedDiscount = parseFloat(this.dataset.discount) || 0;
   const appliedCoupon = this.dataset.appliedCoupon || null;
 
-  if (!selectedAddress) { toast("Please select a delivery address", "error"); return; }
-  if (!paymentMethod) { toast("Please select a payment method", "error"); return; }
+  if (!selectedAddress) { 
+    toast("Please select a delivery address", "error"); 
+    return; 
+  }
+  if (!paymentMethod) { 
+    toast("Please select a payment method", "error"); 
+    return; 
+  }
 
-  const subtotal = parseFloat(document.getElementById('subtotalDisplay').textContent.replace(/,/g, ''));
+  const subtotalDisplay = document.getElementById('subtotalDisplay');
+  const grandTotalDisplay = document.getElementById('grandTotalDisplay');
+  
+  if (!subtotalDisplay || !grandTotalDisplay) {
+    toast("Error loading order details. Please refresh the page.", "error");
+    return;
+  }
+
+  const subtotal = parseFloat(subtotalDisplay.textContent.replace(/,/g, ''));
   const shipping = subtotal < 15000 ? 100 : 0;
   const finalAmount = subtotal + shipping - appliedDiscount;
 
-  // Wallet check
+  // Wallet balance check
   if (paymentMethod === 'wallet') {
-    const walletBalance = parseFloat(document.getElementById('walletBalanceDisplay')?.textContent.replace(/[^0-9.]/g, '') || '0');
+    const walletBalanceDisplay = document.getElementById('walletBalanceDisplay');
+    const walletBalance = parseFloat(walletBalanceDisplay?.textContent.replace(/[^0-9.]/g, '') || '0');
+    
     if (walletBalance < finalAmount) {
       toast(`Insufficient wallet balance. Available: ₹${walletBalance.toLocaleString('en-IN')}, Required: ₹${finalAmount.toLocaleString('en-IN')}`, "error");
       return;
     }
   }
 
-  sessionStorage.setItem('checkoutSummary', JSON.stringify({ subtotal, shipping, discount: appliedDiscount, totalAmount: finalAmount }));
+  // Save checkout summary
+  sessionStorage.setItem('checkoutSummary', JSON.stringify({ 
+    subtotal, 
+    shipping, 
+    discount: appliedDiscount, 
+    totalAmount: finalAmount 
+  }));
+
   this.disabled = true;
   const originalText = this.textContent;
   this.textContent = 'Processing...';
 
   try {
     if (paymentMethod === "razorpay") {
-      if (typeof Razorpay === 'undefined') throw new Error("Payment gateway not loaded");
+      if (typeof Razorpay === 'undefined') {
+        throw new Error("Payment gateway not loaded. Please refresh the page.");
+      }
+
       const orderResponse = await axios.post('/create-order', { amount: finalAmount });
-      if (!orderResponse.data.success) throw new Error(orderResponse.data.message || "Failed to create payment order");
+      
+      if (!orderResponse.data.success) {
+        throw new Error(orderResponse.data.message || "Failed to create payment order");
+      }
 
       const { order_id, amount, key_id } = orderResponse.data;
+      
       const options = {
         key: key_id,
         amount,
@@ -340,43 +423,72 @@ document.getElementById('placeOrderBtn')?.addEventListener('click', async functi
         handler: async function (response) {
           try {
             const placeOrderRes = await axios.post('/checkout/place-order', {
-              selectedAddress, paymentMethod: 'razorpay', discount: appliedDiscount, appliedCoupon,
+              selectedAddress, 
+              paymentMethod: 'razorpay', 
+              discount: appliedDiscount, 
+              appliedCoupon,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_order_id: response.razorpay_order_id,
               razorpay_signature: response.razorpay_signature
             });
+
             if (placeOrderRes.data.success) {
               toast("Payment successful! Order placed 🎉", "success");
               sessionStorage.removeItem('checkoutSummary');
-              setTimeout(() => window.location.href = placeOrderRes.data.redirect, 1000);
+              setTimeout(() => {
+                window.location.href = placeOrderRes.data.redirect;
+              }, 1000);
             } else {
               toast(placeOrderRes.data.message || "Order failed after payment", "error");
               window.location.href = `/checkout/failure?error=${encodeURIComponent(placeOrderRes.data.message || "Order processing failed")}`;
             }
           } catch (err) {
-            console.error(err);
+            console.error("Order confirmation error:", err);
             window.location.href = `/checkout/failure?error=${encodeURIComponent("Failed to confirm order with server")}`;
           }
         },
-        prefill: { name: "<%= user.name %>", email: "<%= user.email %>", contact: "<%= user.phone || '' %>" },
+        prefill: { 
+          name: "<%= user.name %>", 
+          email: "<%= user.email %>", 
+          contact: "<%= user.phone || '' %>" 
+        },
         theme: { color: "#3399cc" },
-        modal: { ondismiss: () => { toast("Payment cancelled", "error"); this.disabled = false; this.textContent = originalText; } }
+        modal: { 
+          ondismiss: () => { 
+            toast("Payment cancelled", "error"); 
+            this.disabled = false; 
+            this.textContent = originalText; 
+          } 
+        }
       };
 
       const rzp = new Razorpay(options);
+      
       rzp.on('payment.failed', (resp) => {
-        toast(`Payment failed: ${resp.error.description || 'Unknown error'}`, 'error');
-        this.disabled = false; this.textContent = originalText;
-        window.location.href = `/checkout/failure?error=${encodeURIComponent(resp.error.description || 'Payment declined')}`;
+        const errorMsg = resp.error?.description || 'Payment declined';
+        toast(`Payment failed: ${errorMsg}`, 'error');
+        this.disabled = false; 
+        this.textContent = originalText;
+        window.location.href = `/checkout/failure?error=${encodeURIComponent(errorMsg)}`;
       });
+      
       rzp.open();
 
     } else {
-      const res = await axios.post('/checkout/place-order', { selectedAddress, paymentMethod, discount: appliedDiscount, appliedCoupon });
+      // COD or Wallet payment
+      const res = await axios.post('/checkout/place-order', { 
+        selectedAddress, 
+        paymentMethod, 
+        discount: appliedDiscount, 
+        appliedCoupon 
+      });
+
       if (res.data.success) {
         toast("Order placed successfully!", "success");
         sessionStorage.removeItem('checkoutSummary');
-        setTimeout(() => window.location.href = res.data.redirect, 800);
+        setTimeout(() => {
+          window.location.href = res.data.redirect;
+        }, 800);
       } else {
         toast(res.data.message || "Order failed", "error");
         window.location.href = `/checkout/failure?error=${encodeURIComponent(res.data.message || 'Order could not be placed')}`;
@@ -384,13 +496,15 @@ document.getElementById('placeOrderBtn')?.addEventListener('click', async functi
     }
   } catch (err) {
     const errorMessage = err.response?.data?.message || err.message || "Something went wrong.";
+    
     if (err.response?.status === 409) {
-      toast(errorMessage || "❌ Some items went out of stock.", "error");
+      toast("Some items went out of stock", "error");
       window.location.href = `/checkout/failure?error=${encodeURIComponent(errorMessage || 'Stock unavailable')}`;
     } else {
       toast(errorMessage, "error");
     }
-    console.error('❌ Place order error:', err);
+    
+    console.error('Place order error:', err);
     this.disabled = false;
     this.textContent = originalText;
   }

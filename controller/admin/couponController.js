@@ -1,5 +1,6 @@
 import Coupon from "../../models/couponSchema.js";
 import User from "../../models/userSchema.js";
+import logger from "../../helpers/logger.js";
 
 export const getCouponsPage = async (req, res) => {
   try {
@@ -16,7 +17,7 @@ export const getCouponsPage = async (req, res) => {
       page: "Coupons"
     });
   } catch (err) {
-    console.error("Error fetching coupons:", err);
+logger.error("Error fetching coupons:", err);
     res.status(500).render("admin/coupons", {
       coupons: [],
       users: []
@@ -162,8 +163,10 @@ export const createCoupon = async (req, res) => {
       status: status || "Active",
       specificUsers
     });
+    logger.info(`Coupon ${trimmedCode} created successfully.`);
     res.json({ success: true, message: "coupon created" });
   } catch (error) {
+    logger.error("createCoupon error:", error);
     res.status(400).json({ success: false, message: "error loading coupon" });
   }
 };
@@ -219,10 +222,11 @@ export const updateCoupon = async (req, res) => {
     coupon.specificUsers = specificUsers;
 
     await coupon.save();
+logger.info(`Coupon ${cleanCode} updated successfully.`);
 
     return res.json({ success: true, message: "Coupon updated successfully!" });
   } catch (error) {
-    console.error("Update coupon error:", error);
+logger.error("updateCoupon error:", error);
     return res.json({ success: false, message: "Failed to update coupon" });
   }
 };
@@ -236,10 +240,10 @@ export const deleteCoupon = async (req, res) => {
     }
 
     await Coupon.findByIdAndDelete(couponId);
-
+logger.info(`Coupon ${coupon.code} deleted successfully.`);
     return res.json({ success: true, message: "Coupon deleted successfully!" });
   } catch (error) {
-    console.error("Delete coupon error:", error);
+logger.error("deleteCoupon error:", error);
     return res.json({ success: false, message: "Failed to delete coupon" });
   }
 };

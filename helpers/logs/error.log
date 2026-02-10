@@ -1,0 +1,9 @@
+2026-02-10 09:28:09 [ERROR]: GET /profile/orders - C:\Users\DELL\Desktop\CHRONORA\views\user\orders.ejs:56
+    54| 
+    55|                 <div class="item-actions">
+ >> 56|                   <a href="/profile/orders/<%= order.orderId %>?productId=<%= item.productId._id %>&variantId=<%= item.variantId._id %>" 
+    57|                      class="btn btn-view">
+    58|                     View Details
+    59|                   </a>
+
+Cannot read properties of null (reading '_id')

@@ -16,13 +16,16 @@ import connectDB from "./config/db.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import { checkBlockedUser } from "./middlewares/authMiddleware.js";
-
+import logger from './helpers/logger.js';
+import { requestLogger } from './middlewares/requestLogger.js';
+import { errorLogger } from './middlewares/errorLogger.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 connectDB();
 
 app.set("trust proxy", 1);
+app.use(requestLogger);
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -56,6 +59,8 @@ app.use(checkBlockedUser);
 
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
+
+app.use(errorLogger);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -1,21 +1,23 @@
 
 import User from "../../models/userSchema.js";
-
+import logger from "../../helpers/logger.js";
 export const loadWallet = async (req, res) => {
   try {
     const userId = req.session.userId;
 
     if (!userId) {
+      logger.warn("Unauthorized wallet page access attempt");
       return res.redirect("/login");
     }
 
     const user = await User.findById(userId).select("fullName email referralCode wallet walletTransactions");
 
     if (!user) {
+      logger.warn(`User not found during wallet load: ${userId}`);
       return res.redirect("/login");
     }
-    console.log("User referral code:", user.referralCode);
-    console.log("Full user object:", {
+logger.info(`User wallet page loaded`, { id: user._id, email: user.email, referralCode: user.referralCode });
+    logger.info("Full user object:", {
       id: user._id,
       email: user.email,
       referralCode: user.referralCode
@@ -32,7 +34,7 @@ export const loadWallet = async (req, res) => {
       active: "wallet"
     });
   } catch (error) {
-    console.error("loadWallet error:", error);
+logger.error("loadWallet error", error);
     return res.status(500).render("user/pageNotfound", {
       title: "Error - Chronora",
       message: "Unable to load wallet"
@@ -45,12 +47,14 @@ export const getWalletData = async (req, res) => {
     const userId = req.session.userId;
 
     if (!userId) {
+      logger.warn("getWalletData called without authentication");
       return res.json({ success: false, message: "Not authenticated" });
     }
 
     const user = await User.findById(userId).select("wallet walletTransactions");
 
     if (!user) {
+      logger.warn(`User not found during getWalletData: ${userId}`);
       return res.json({ success: false, message: "User not found" });
     }
 
@@ -63,7 +67,7 @@ export const getWalletData = async (req, res) => {
       transactions: sortedTransactions
     });
   } catch (error) {
-    console.error("getWalletData error:", error);
+logger.error("getWalletData error", error);
     return res.json({ success: false, message: "Server error" });
   }
 };
@@ -74,11 +78,13 @@ export const createWalletOrder = async (req, res) => {
     const userId = req.session.userId;
 
     if (!userId) {
+      logger.warn("createWalletOrder called without authentication");
       return res.json({ success: false, message: "Not authenticated" });
     }
 
     const parsedAmount = parseFloat(amount);
     if (!parsedAmount || parsedAmount < 10) {
+      logger.warn(`Invalid wallet top-up amount: ${amount}`);
       return res.json({ success: false, message: "Minimum amount is ₹10" });
     }
 
@@ -96,7 +102,7 @@ export const createWalletOrder = async (req, res) => {
     };
 
     const order = await razorpay.orders.create(orderOptions);
-
+logger.info(`Razorpay order created`, { userId, orderId: order.id, amount: order.amount });
     return res.json({
       success: true,
       order_id: order.id,
@@ -104,7 +110,7 @@ export const createWalletOrder = async (req, res) => {
       key_id: process.env.RAZORPAY_KEY_ID
     });
   } catch (error) {
-    console.error("createWalletOrder error:", error);
+logger.error("createWalletOrder error", error);
     return res.json({ success: false, message: "Failed to create order" });
   }
 };
@@ -115,6 +121,7 @@ export const verifyAndAddMoney = async (req, res) => {
     const userId = req.session.userId;
 
     if (!userId) {
+      logger.warn("verifyAndAddMoney called without authentication");
       return res.json({ success: false, message: "Not authenticated" });
     }
 
@@ -126,6 +133,7 @@ export const verifyAndAddMoney = async (req, res) => {
       .digest("hex");
 
     if (generatedSignature !== razorpay_signature) {
+      logger.warn(`Payment verification failed for user ${userId}`);
       return res.json({ success: false, message: "Payment verification failed" });
     }
 
@@ -133,6 +141,7 @@ export const verifyAndAddMoney = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
+      logger.warn(`User not found during verifyAndAddMoney: ${userId}`);
       return res.json({ success: false, message: "User not found" });
     }
 
@@ -146,15 +155,14 @@ export const verifyAndAddMoney = async (req, res) => {
 
     await user.save();
 
-    console.log(`✅ Added ₹${parsedAmount} to ${user.email}'s wallet`);
-
+logger.info(`Added ₹${parsedAmount} to user's wallet`, { userId, email: user.email });
     return res.json({
       success: true,
       message: `₹${parsedAmount} added successfully!`,
       newBalance: user.wallet
     });
   } catch (error) {
-    console.error("verifyAndAddMoney error:", error);
+logger.error("verifyAndAddMoney error", error);
     return res.json({ success: false, message: "Failed to add money" });
   }
 };

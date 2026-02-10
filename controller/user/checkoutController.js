@@ -7,6 +7,7 @@ import Order from "../../models/orderSchema.js";
 import Coupon from "../../models/couponSchema.js";
 import User from "../../models/userSchema.js";
 import getBestOfferForProduct from "../../utils/offerHelper.js";
+import logger from "../../helpers/logger.js"; 
 
 function calculateTotals(items) {
   let subtotal = 0;
@@ -48,6 +49,7 @@ export const loadCheckout = async (req, res) => {
     );
 
     if (!cart || cart.length === 0) {
+            logger.info(`User ${userId} attempted checkout with empty cart`);
       return res.redirect("/cart");
     }
 
@@ -59,6 +61,7 @@ export const loadCheckout = async (req, res) => {
         item.variantId.isBlocked ||
         item.variantId.stock < item.quantity
       ) {
+                logger.warn(`User ${userId} has invalid cart item for checkout`);
         return res.status(409).json({
           success: false,
           message: "Some items in your cart are out of stock. Please update your cart."
@@ -84,9 +87,9 @@ export const loadCheckout = async (req, res) => {
       grandTotal,
       couponDiscount: 0
     });
-
+    logger.info(`Checkout page loaded for user ${userId}`);
   } catch (error) {
-    console.error("Checkout load error:", error);
+    logger.error(`loadCheckout error for user ${req.user?._id}:`, error);
     res.redirect("/cart");
   }
 };
@@ -173,14 +176,14 @@ export const applyCoupon = async (req, res) => {
     }
 
     discount = Math.round(discount);
-
+    logger.info(`Coupon ${coupon.code} applied by user ${userId}, discount ₹${discount}`);
     return res.json({
       success: true,
       discount,
       message: `Coupon "${coupon.code}" applied! ₹${discount} off`
     });
   } catch (error) {
-    console.error("Apply coupon error:", error);
+    logger.error(`applyCoupon error for user ${req.user?._id}:`, error);
     return res.json({ success: false, message: "Error applying coupon. Try again." });
   }
 };
@@ -241,7 +244,7 @@ export const addAddressCheck = async (req, res) => {
     const addresses = await Address.find({ user: userId })
       .sort({ isDefaultShipping: -1, createdAt: -1 })
       .lean();
-
+    logger.info(`New address added during checkout by user ${userId}`);
     res.json({
       success: true,
       message: "Address added successfully!",
@@ -249,7 +252,7 @@ export const addAddressCheck = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Add address error:", err);
+    logger.error(`addAddressCheck error for user ${req.user?._id}:`, err);
     res.status(500).json({
       success: false,
       message: "Server error, try again"
@@ -329,6 +332,7 @@ export const placeOrder = async (req, res) => {
           await Variant.findByIdAndUpdate(v._id, { $inc: { stock: v.quantity } }, { session });
         }
         await session.abortTransaction();
+                logger.warn(`Order failed for user ${userId}: insufficient stock`);
         return res.status(409).json({
           success: false,
           message: "Some items are out of stock. Please update your cart."
@@ -425,6 +429,7 @@ export const placeOrder = async (req, res) => {
 
     await session.commitTransaction();
     session.endSession();
+    logger.info(`Order placed successfully by user ${userId}, orderId ${orderDoc._id}`);
 
     return res.json({
       success: true,
@@ -434,7 +439,7 @@ export const placeOrder = async (req, res) => {
   } catch (err) {
     await session.abortTransaction();
     session.endSession();
-    console.error("placeOrder error:", err);
+    logger.error(`placeOrder error for user ${req.user?._id}:`, err);
     return res.status(500).json({ success: false, message: "Failed to place order. Please try again." });
   }
 };
@@ -477,7 +482,7 @@ export const getAvailableCoupons = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Get available coupons error:", error);
+    logger.error(`getAvailableCoupons error for user ${req.user?._id}:`, error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch coupons"
@@ -496,8 +501,9 @@ export const successPage = async (req, res) => {
       orderTotal: order ? order.totalAmount : null,
       order
     });
+        logger.info(`Order success page loaded for orderId ${orderId}`);
   } catch (e) {
-    console.error("successPage error:", e);
+    logger.error("successPage error:", e);
     res.render("user/order-success", { orderId: "—", orderTotal: null, order: null });
   }
 };
@@ -523,8 +529,9 @@ export const failurePage = async (req, res) => {
       totalAmount,
       errorMessage
     });
+        logger.info("Order failure page loaded");
   } catch (e) {
-    console.error("failurePage error:", e);
+    logger.error("failurePage error:", e);
     res.render("user/order-failure", {
       subtotal: 0,
       shipping: 0,

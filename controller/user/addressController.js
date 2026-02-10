@@ -1,31 +1,45 @@
 import Address from "../../models/addressSchema.js";
-export const loadAddresses=async (req,res)=>{
-  try {
-    const address = await Address.find({ user: req.session.userId }).sort({ isDefault: -1, createdAt: -1 });
+import logger from "../../helpers/logger.js"; 
 
-    res.render("user/profile-edit-address",{active:"profile",addresses:address});
+export const loadAddresses = async (req, res) => {
+  try {
+    const addresses = await Address.find({ user: req.session.userId }).sort({
+      isDefault: -1,
+      createdAt: -1,
+    });
+
+    res.render("user/profile-edit-address", { active: "profile", addresses });
+    logger.info(`Loaded addresses for user: ${req.session.userId}`);
   } catch (error) {
-    console.log(error);
-    res.status(404).send("server error");
+    logger.error(`loadAddresses error for user ${req.session.userId}:`, error);
+    res.status(404).send("Server error");
   }
 };
 
-export const addAddress=async (req,res)=>{
+export const addAddress = async (req, res) => {
   try {
-    const { name, phone, street, city, state, zip, country, isDefaultShipping, isDefaultBilling } = req.body;
+    const {
+      name,
+      phone,
+      street,
+      city,
+      state,
+      zip,
+      country,
+      isDefaultShipping,
+      isDefaultBilling,
+    } = req.body;
 
-    console.log("Received data:", req.body);
-    if (!name || !phone || !street || !city || !state || !zip||!country) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required"
-      });
+    logger.debug(`Received address data: ${JSON.stringify(req.body)}`);
+
+    if (!name || !phone || !street || !city || !state || !zip || !country) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
     }
-    const userId = (req.user && req.user._id) ? req.user._id : req.session && req.session.userId;
+
+    const userId = req.user?._id || req.session?.userId;
     if (!userId) {
       return res.status(401).json({ success: false, message: "Not authenticated" });
     }
-
 
     if (isDefaultShipping) {
       await Address.updateMany({ user: userId }, { $set: { isDefaultShipping: false } });
@@ -44,35 +58,52 @@ export const addAddress=async (req,res)=>{
       zip,
       country: country || "India",
       isDefaultShipping: !!isDefaultShipping,
-      isDefaultBilling: !!isDefaultBilling
+      isDefaultBilling: !!isDefaultBilling,
     });
-    const saved = await newAddress.save();
 
-    res.json({ success: true, message: "Address added!", newAddress });
+    const saved = await newAddress.save();
+    logger.info(`Address added for user ${userId}: ${saved._id}`);
+
+    res.json({ success: true, message: "Address added!", newAddress: saved });
   } catch (err) {
-    console.error("Add address error:", err);
+    logger.error("addAddress error:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-export const loadEditAddress=async (req,res)=>{
+
+export const loadEditAddress = async (req, res) => {
   try {
-    const address=await Address.findOne({_id:req.params.id,user:req.session.userId});
-    if (!address) {return res.status(404).json({success:false,message:"Address not found"});}
+    const address = await Address.findOne({ _id: req.params.id, user: req.session.userId });
+    if (!address) {
+      logger.warn(`Address not found for edit: ${req.params.id}, user: ${req.session.userId}`);
+      return res.status(404).json({ success: false, message: "Address not found" });
+    }
+
+    logger.info(`Loaded address for edit: ${address._id}, user: ${req.session.userId}`);
     res.json({ success: true, address });
   } catch (error) {
+    logger.error(`loadEditAddress error for user ${req.session.userId}:`, error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-export const updateAddress=async (req,res)=>{
+
+export const updateAddress = async (req, res) => {
   try {
-    const { name, phone, street, city, state, zip, country, isDefaultShipping, isDefaultBilling } = req.body;
+    const { name, phone, street, city, state, zip, country, isDefaultShipping, isDefaultBilling } =
+      req.body;
     const updates = { name, phone, street, city, state, zip, country, isDefaultShipping, isDefaultBilling };
 
     if (isDefaultShipping) {
-      await Address.updateMany({ user: req.session.userId, _id: { $ne: req.params.id } }, { isDefaultShipping: false });
+      await Address.updateMany(
+        { user: req.session.userId, _id: { $ne: req.params.id } },
+        { isDefaultShipping: false }
+      );
     }
     if (isDefaultBilling) {
-      await Address.updateMany({ user: req.session.userId, _id: { $ne: req.params.id } }, { isDefaultBilling: false });
+      await Address.updateMany(
+        { user: req.session.userId, _id: { $ne: req.params.id } },
+        { isDefaultBilling: false }
+      );
     }
 
     const address = await Address.findOneAndUpdate(
@@ -81,21 +112,31 @@ export const updateAddress=async (req,res)=>{
       { new: true }
     );
 
-    if (!address) {return res.status(404).json({ success: false, message: "Address not found" });}
+    if (!address) {
+      logger.warn(`Address not found for update: ${req.params.id}, user: ${req.session.userId}`);
+      return res.status(404).json({ success: false, message: "Address not found" });
+    }
+
+    logger.info(`Address updated: ${address._id}, user: ${req.session.userId}`);
     res.json({ success: true, message: "Address updated!", address });
   } catch (err) {
-    console.error("Update address error:", err);
+    logger.error(`updateAddress error for user ${req.session.userId}:`, err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-export const deleteAddress=async (req,res)=>{
+export const deleteAddress = async (req, res) => {
   try {
     const deleted = await Address.findOneAndDelete({ _id: req.params.id, user: req.session.userId });
-    if (!deleted) {return res.status(404).json({ success: false, message: "Address not found" });}
+    if (!deleted) {
+      logger.warn(`Address not found for delete: ${req.params.id}, user: ${req.session.userId}`);
+      return res.status(404).json({ success: false, message: "Address not found" });
+    }
+
+    logger.info(`Address deleted: ${deleted._id}, user: ${req.session.userId}`);
     res.json({ success: true, message: "Address deleted!" });
   } catch (err) {
-    console.error("Delete address error:", err);
+    logger.error(`deleteAddress error for user ${req.session.userId}:`, err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

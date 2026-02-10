@@ -2,6 +2,7 @@ import Wishlist from "../../models/wishlistSchema.js";
 import Cart from "../../models/cartSchema.js";
 import Product from "../../models/productSchema.js";
 import getBestOfferForProduct from "../../utils/offerHelper.js";
+import logger from "../../helpers/logger.js";
 export const loadWishlist = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -24,6 +25,7 @@ export const loadWishlist = async (req, res) => {
         return item;
       })
     );
+    logger.info(`Wishlist loaded for user ${userId}`, { count: wishlist.length });
 
     res.render("user/wishlist", {
       title: "My Wishlist",
@@ -31,7 +33,7 @@ export const loadWishlist = async (req, res) => {
       active:"Wishlist"
     });
   } catch (error) {
-    console.error("Error loading wishlist:", error);
+logger.error("Error loading wishlist", error);
     res.redirect("/");
   }
 };
@@ -42,6 +44,7 @@ export const addToWishlist = async (req, res) => {
 
     const exists = await Wishlist.findOne({ userId, productId, variantId });
     if (exists) {
+      logger.warn(`Attempt to add existing wishlist item for user ${userId}`, { productId, variantId });
       return res.json({ success: false, message: "Already in your wishlist" });
     }
 
@@ -52,10 +55,10 @@ export const addToWishlist = async (req, res) => {
     });
 
     await newItem.save();
-
+logger.info(`Added to wishlist`, { userId, productId, variantId });
     res.json({ success: true, message: "Added to wishlist ❤️" });
   } catch (error) {
-    console.error("Add to wishlist error:", error);
+logger.error("Add to wishlist error", error);
     res.json({ success: false, message: "Failed to add" });
   }
 };
@@ -68,12 +71,13 @@ export const removeFromWishlist = async (req, res) => {
     const result = await Wishlist.deleteOne({ userId, productId, variantId });
 
     if (result.deletedCount === 0) {
+      logger.warn(`Wishlist item not found for removal: user ${userId}`, { productId, variantId });
       return res.json({ success: false, message: "Not found in wishlist" });
     }
-
+logger.info(`Removed from wishlist`, { userId, productId, variantId });
     res.json({ success: true, message: "Removed from wishlist" });
   } catch (error) {
-    console.error("Remove wishlist error:", error);
+logger.error("Remove wishlist error", error);
     res.json({ success: false, message: "Failed to remove" });
   }
 };
@@ -86,11 +90,13 @@ export const moveToCart = async (req, res) => {
 
     const deleteResult = await Wishlist.deleteOne({ userId, productId, variantId });
     if (deleteResult.deletedCount === 0) {
+      logger.warn(`Attempted to move non-existent wishlist item to cart: user ${userId}`, { productId, variantId });
       return res.json({ success: false, message: "Item not in wishlist" });
     }
 
     const product = await Product.findById(productId).lean();
     if (!product) {
+      logger.warn(`Product not found during moveToCart: ${productId}`);
       return res.json({ success: false, message: "Product not found" });
     }
 
@@ -115,10 +121,11 @@ export const moveToCart = async (req, res) => {
       });
       await newCartItem.save();
     }
+logger.info(`Moved wishlist item to cart`, { userId, productId, variantId });
 
     res.json({ success: true, message: "Moved to cart 🛒" });
   } catch (error) {
-    console.error("Move to cart error:", error);
+logger.error("Move to cart error", error);
     res.json({ success: false, message: "Failed to move to cart" });
   }
 };

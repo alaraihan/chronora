@@ -41,7 +41,6 @@ const userSchema = new Schema(
     referralCode: {
       type: String,
       unique: true,
-      required: true,
       uppercase: true,
       trim: true
     },

@@ -1,5 +1,6 @@
 import Order from "../../models/orderSchema.js";
 import Variant from "../../models/variantSchema.js";
+import logger from "../../helpers/logger.js";
 
 export const renderAdminOrdersPage = async (req, res) => {
   try {
@@ -16,9 +17,11 @@ export const renderAdminOrdersPage = async (req, res) => {
       status,
       page: "order"
     });
+    
+    logger.info("Admin orders page rendered", { page, search, status });
 
   } catch (error) {
-    console.error("RENDER ORDERS PAGE ERROR:", error);
+    logger.error("RENDER ORDERS PAGE ERROR:", error);
     res.status(500).send("Server error");
   }
 };
@@ -82,6 +85,7 @@ export const getAdminOrdersData = async (req, res) => {
     const total = filtered.length;
     const start = (page - 1) * limit;
     const paginated = filtered.slice(start, start + limit);
+    logger.info("Fetched admin orders data", { page, limit, total, status, search });
 
     res.json({
       success: true,
@@ -96,7 +100,7 @@ export const getAdminOrdersData = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("GET ADMIN ORDERS DATA CRASH:", err);
+    logger.error("GET ADMIN ORDERS DATA ERROR:", err);
     res.status(500).json({
       success: false,
       message: "Server error - see console for details",
@@ -126,6 +130,7 @@ export const getOrderDetails = async (req, res) => {
       .lean();
 
     if (!order || !order.products[index]) {
+            logger.warn("Order or item not found for details", { orderId, itemIndex });
       return res.status(404).send("Item not found");
     }
 
@@ -144,8 +149,9 @@ export const getOrderDetails = async (req, res) => {
       title: `Item Detail - #${order.orderId}`,
       page: "order-detail"
     });
+        logger.info("Order item detail rendered", { orderId, itemIndex });
   } catch (error) {
-    console.error("ORDER ITEM DETAIL ERROR:", error);
+    logger.error("ORDER ITEM DETAIL ERROR:", error);
     res.redirect("/admin/orders");
   }
 };
@@ -155,14 +161,15 @@ export const updateOrderStatus = async (req, res) => {
     const { orderId } = req.params;
     const { status } = req.body;
 
-    console.log("UPDATE OVERALL ORDER STATUS:", { orderId, status });
 
     if (!status) {
+            logger.warn("Update order status failed: status missing", { orderId });
       return res.status(400).json({ success: false, message: "Status is required" });
     }
 
     const order = await Order.findById(orderId);
     if (!order) {
+            logger.warn("Order not found for status update", { orderId });
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
@@ -208,6 +215,7 @@ export const updateOrderStatus = async (req, res) => {
     });
 
     await order.save();
+    logger.info("Order status updated successfully", { orderId, oldStatus, newStatus: status });
 
     res.json({
       success: true,
@@ -216,7 +224,7 @@ export const updateOrderStatus = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("UPDATE ORDER STATUS ERROR:", error);
+    logger.error("UPDATE ORDER STATUS ERROR:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -227,14 +235,19 @@ export const updateItemStatus = async (req, res) => {
     const { itemIndex, status } = req.body;
 
     if (itemIndex == null || !status) {
+            logger.warn("Missing data in updateItemStatus", { orderId, itemIndex, status });
       return res.status(400).json({ success: false, message: "Missing data" });
     }
 
     const order = await Order.findById(orderId);
-    if (!order) {return res.status(404).json({ success: false, message: "Order not found" });}
+    if (!order) {
+            logger.warn("Order not found in updateItemStatus", { orderId });
+            return res.status(404).json({ success: false, message: "Order not found" });}
 
     const item = order.products[itemIndex];
-    if (!item) {return res.status(400).json({ success: false, message: "Item not found" });}
+    if (!item) {
+            logger.warn("Item not found in updateItemStatus", { orderId, itemIndex });
+return res.status(400).json({ success: false, message: "Item not found" });}
 
     item.itemStatus = status;
 
@@ -253,10 +266,11 @@ export const updateItemStatus = async (req, res) => {
 
     order.markModified("products");
     await order.save();
+    logger.info("Item status updated", { orderId, itemIndex, oldStatus, newStatus: status });
 
     res.json({ success: true, message: "Item status updated successfully" });
   } catch (error) {
-    console.error("UPDATE ITEM ERROR:", error);
+    logger.error("UPDATE ITEM ERROR:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -266,7 +280,9 @@ export const approveItemReturn = async (req, res) => {
     const { orderId } = req.params;
     const { itemIndex } = req.body;
     const order = await Order.findById(orderId);
-    if (!order || order.products[itemIndex] == null) {return res.status(400).json({ message: "Invalid" });}
+    if (!order || order.products[itemIndex] == null) {
+            logger.warn("Invalid order or item in approveItemReturn", { orderId, itemIndex });
+return res.status(400).json({ message: "Invalid" });}
 
     const item = order.products[itemIndex];
     item.itemStatus = "ReturnApproved";
@@ -274,9 +290,11 @@ export const approveItemReturn = async (req, res) => {
 
     order.markModified("products");
     await order.save();
+    logger.info("Return approved for item", { orderId, itemIndex });
 
     res.json({ success: true, message: "Return approved" });
   } catch (error) {
+        logger.error("APPROVE ITEM RETURN ERROR:", error);
     res.status(500).json({ message: "Error" });
   }
 };
@@ -286,7 +304,9 @@ export const rejectItemReturn = async (req, res) => {
     const { orderId } = req.params;
     const { itemIndex } = req.body;
     const order = await Order.findById(orderId);
-    if (!order || order.products[itemIndex] == null) {return res.status(400).json({ message: "Invalid" });}
+    if (!order || order.products[itemIndex] == null) {
+            logger.warn("Invalid order or item in rejectItemReturn", { orderId, itemIndex });
+            return res.status(400).json({ message: "Invalid" });}
 
     const item = order.products[itemIndex];
     item.itemStatus = "Delivered";
@@ -294,9 +314,11 @@ export const rejectItemReturn = async (req, res) => {
 
     order.markModified("products");
     await order.save();
+    logger.info("Return rejected for item", { orderId, itemIndex });
 
     res.json({ success: true, message: "Return rejected" });
   } catch (error) {
+        logger.error("REJECT ITEM RETURN ERROR:", error);
     res.status(500).json({ message: "Error" });
   }
 };
@@ -311,6 +333,7 @@ export const printOrder = async (req, res) => {
       .lean();
 
     if (!order) {
+            logger.warn("Order not found for printing", { orderId });
       return res.status(404).send("Order not found");
     }
 
@@ -319,9 +342,9 @@ export const printOrder = async (req, res) => {
       title: `Invoice #${order.orderId}`,
       page: "order"
     });
-
+    logger.info("Order invoice rendered", { orderId });
   } catch (error) {
-    console.error("PRINT ORDER ERROR:", error);
+    logger.error("PRINT ORDER ERROR:", error);
     res.status(500).send("Server Error");
   }
 };
@@ -329,7 +352,9 @@ export const printOrder = async (req, res) => {
 export const markOrderAsReturned = async (req, res) => {
   try {
     const order = await Order.findById(req.params.orderId).populate("products.variantId");
-    if (!order) {return res.json({ success: false });}
+    if (!order) {
+            logger.warn("Order not found in markOrderAsReturned", { orderId: req.params.orderId });
+return res.json({ success: false });}
 
     order.status = "Returned";
 
@@ -354,10 +379,10 @@ export const markOrderAsReturned = async (req, res) => {
     });
 
     await order.save();
-
+    logger.info("Order marked as returned", { orderId: order._id });
     res.json({ success: true, message: "Order marked as returned" });
   } catch (error) {
-    console.error("MARK RETURNED ERROR:", error);
+    logger.error("MARK RETURNED ERROR:", error);
     res.json({ success: false });
   }
 };
@@ -370,11 +395,13 @@ export const markItemAsReturned = async (req, res) => {
 
     const order = await Order.findById(orderId).populate("products.variantId");
     if (!order || order.products[index] == null) {
+            logger.warn("Invalid order or item in markItemAsReturned", { orderId, itemIndex });
       return res.json({ success: false, message: "Invalid order or item" });
     }
 
     const item = order.products[index];
     if (item.itemStatus !== "ReturnApproved") {
+            logger.warn("Item not approved for return in markItemAsReturned", { orderId, itemIndex });
       return res.json({ success: false, message: "Item must be Return Approved first" });
     }
 
@@ -390,10 +417,10 @@ export const markItemAsReturned = async (req, res) => {
 
     order.markModified("products");
     await order.save();
-
+    logger.info("Item marked as returned and stock restored", { orderId, itemIndex });
     res.json({ success: true, message: "Item marked as returned and stock restored" });
   } catch (error) {
-    console.error("MARK ITEM RETURNED ERROR:", error);
+    logger.error("MARK ITEM RETURNED ERROR:", error);
     res.json({ success: false, message: "Server error" });
   }
 };

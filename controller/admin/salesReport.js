@@ -1,13 +1,16 @@
 import Order from "../../models/orderSchema.js";
 import PDFDocument from "pdfkit";
+import logger from "../../helpers/logger.js";
+
 export const getSalesReportPage = async (req, res) => {
   try {
+        logger.info("Accessed sales report page", { userId: req.user?._id });
     res.render("admin/salesReport", {
       title: "Sales Report",
       page:"Sales"
     });
   } catch (error) {
-    console.error("Sales report page error:", error);
+    logger.error("Sales report page error", { error });
     res.status(500).send("Server Error");
   }
 };
@@ -19,6 +22,8 @@ export const getSalesReportData = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const { search, dateFrom, dateTo } = req.query;
+        logger.info("Sales report data requested", { page, limit, search, dateFrom, dateTo });
+
     const matchConditions = {};
 
     if (dateFrom || dateTo) {
@@ -150,6 +155,7 @@ export const getSalesReportData = async (req, res) => {
       totalDiscount: 0,
       totalItemsSold: 0
     };
+    logger.info("Sales report data generated", { page, totalOrders, returnedCount: lineItems.length });
 
     res.json({
       success: true,
@@ -157,7 +163,8 @@ export const getSalesReportData = async (req, res) => {
         totalOrders: summary.totalOrders,
         totalRevenue: summary.totalRevenue,
         totalDiscount: summary.totalDiscount,
-        totalItemsSold: summary.totalItemsSold
+        totalItemsSold: summary.totalItemsSold,
+       
       },
       lineItems,
       pagination: {
@@ -168,7 +175,7 @@ export const getSalesReportData = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Sales report data error:", error);
+    logger.error("Sales report data error", { error });
     res.status(500).json({
       success: false,
       message: "Error loading sales data"
@@ -178,6 +185,7 @@ export const getSalesReportData = async (req, res) => {
 export const downloadSalesReport = async (req, res) => {
   try {
     const { search, dateFrom, dateTo, format = "csv" } = req.query;
+    logger.info("Sales report download requested", { search, dateFrom, dateTo, format });
 
     const matchConditions = {};
 
@@ -375,7 +383,7 @@ export const downloadSalesReport = async (req, res) => {
     res.send(csv);
 
   } catch (error) {
-    console.error("Download report error:", error);
+    logger.error("Download report error", { error });
     res.status(500).json({
       success: false,
       message: "Error downloading report"

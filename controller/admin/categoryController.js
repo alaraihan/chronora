@@ -2,7 +2,7 @@ import Category from "../../models/categorySchema.js";
 import cloudinary from "../../config/cloudinary.js";
 import fs from "fs";
 import { setFlash, getFlash } from "../../utils/flash.js";
-
+import logger from "../../helpers/logger.js";
 const render = (req, res, view, options = {}) => {
   const flash = getFlash(req);
   return res.render(view, { flash, ...options });
@@ -45,7 +45,7 @@ export const listCategories = async (req, res) => {
       pageCss: "categories"
     });
   } catch (err) {
-    console.error("listCategories error:", err);
+logger.error("listCategories error", err);
     return res.status(500).json({ success: false, message: "Failed to load categories" });
   }
 };
@@ -98,6 +98,8 @@ export const addCategory = async (req, res) => {
         public_id: result.public_id
       }
     });
+    logger.info(`Category created: ${category.name}`);
+    
 
     return res.status(201).json({
       success: true,
@@ -106,7 +108,7 @@ export const addCategory = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("addCategory error:", err);
+logger.error("addCategory error", err);
     return res.status(500).json({
       success: false,
       message: "Internal server error: Failed to add Category"
@@ -164,7 +166,7 @@ export const editCategory = async (req, res) => {
     const updated = await Category.findByIdAndUpdate(id, updateData, {
       new: true
     });
-
+logger.info(`Category updated: ${updated.name}`);
     return res.status(200).json({
       success: true,
       message: "Category updated successfully!",
@@ -179,7 +181,7 @@ export const editCategory = async (req, res) => {
       });
     }
 
-    console.error("editCategory error:", err);
+logger.error("editCategory error", err);
     return res.status(500).json({
       success: false,
       message: "Failed to update Category"
@@ -194,13 +196,14 @@ export const getCategory = async (req, res) => {
     const category = await Category.findById(id);
 
     if (!category) {
+      logger.warn(`Category not found: ${id}`);
       return res.status(404).json({ success: false, message: "Category not found" });
     }
 
     return res.status(200).json({ category });
 
   } catch (err) {
-    console.error("getCategory error:", err);
+logger.error("getCategory error", err);
     return res.status(500).json({ success: false, message: "Failed to fetch category" });
   }
 };
@@ -210,18 +213,20 @@ export const toggleListCategory=async (req,res)=>{
     const {id}=req.params;
     const category=await Category.findById(id).select("isListed");
     if (!category) {
+      logger.warn(`Category not found for toggle: ${id}`);
       return res.status(404).json({success:false,message:"Category not found!"});
     }
     const newStatus=!category.isListed;
     await Category.updateOne({_id:id},{isListed:newStatus});
     const action = newStatus ? "listed" : "unlisted ";
+    logger.info(`Category ${action}: ${category.name}`);
     return res.status(200).json({
       success: true,
       message: `Category successfully ${action}.`,
       isListed:newStatus
     });
   } catch (error) {
-    console.error("toggleListCategory error:", error);
+logger.error("toggleListCategory error", error);
     return res.status(500).json({ success: false, message: "Failed to toggle category status." });
   }
 };

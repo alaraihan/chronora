@@ -4,6 +4,8 @@ import Category from "../../models/categorySchema.js";
 import cloudinary from "../../config/cloudinary.js";
 import fs from "fs";
 import mongoose from "mongoose";
+import logger from "../../helpers/logger.js";
+
 export async function listProducts(req, res) {
   try {
     const searchQuery = (req.query.search || "").trim();
@@ -83,6 +85,7 @@ export async function listProducts(req, res) {
     const totalPages = totalCount > 0 ? Math.max(1, Math.ceil(totalCount / limit)) : 1;
 
     const categories = await Category.find({ isListed: true }).sort({ name: 1 }).lean();
+    logger.info("Products listed", { searchQuery, currentPage, limit, totalCount });
 
     return res.render("admin/product", {
       page: "products",
@@ -100,7 +103,7 @@ export async function listProducts(req, res) {
       title: "Products"
     });
   } catch (err) {
-    console.error("listProducts error:", err);
+    logger.error("listProducts error:", err);
     return res.status(500).send("Server error");
   }
 }
@@ -108,14 +111,18 @@ export async function listProducts(req, res) {
 export async function getProduct(req, res) {
   try {
     const id = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(id)) { return res.status(400).json({ success: false, message: "Invalid id" }); }
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+            logger.warn("Invalid product id in getProduct", { id });
+       return res.status(400).json({ success: false, message: "Invalid id" }); }
 
     const p = await Product.findById(id)
       .populate("category", "name")
       .populate({ path: "variants", model: "Variant" })
       .lean();
 
-    if (!p) { return res.status(404).json({ success: false, message: "Product not found" }); }
+    if (!p) { 
+            logger.warn("Product not found in getProduct", { id });
+return res.status(404).json({ success: false, message: "Product not found" }); }
 
     const data = {
       id: p._id.toString(),
@@ -130,10 +137,10 @@ export async function getProduct(req, res) {
         images: (v.images || []).slice()
       }))
     };
-
+    logger.info("Product fetched", { id });
     return res.json({ success: true, data });
   } catch (err) {
-    console.error("getProduct error", err);
+    logger.error("getProduct error:", err);
     return res.status(500).json({ success: false, message: "Server error" });
   }
 }
@@ -146,10 +153,10 @@ export async function addProduct(req, res) {
     const { name, category, description, price } = req.body;
 
     if (!name || !category || !price) {
+            logger.warn("Missing required fields in addProduct", { body: req.body });
       return res.status(400).json({ success: false, message: "Name & price required" });
     }
 
-    // ✅ SAFE variants parsing (fixes prod crash)
     let variants = [];
     try {
       variants =
@@ -157,12 +164,14 @@ export async function addProduct(req, res) {
           ? JSON.parse(req.body.variants)
           : req.body.variants || [];
     } catch (e) {
+            logger.warn("Invalid variants format in addProduct", { error: e.message });
       return res.status(400).json({ success: false, message: "Invalid variants format" });
     }
 
     const files = Array.isArray(req.files) ? req.files : [];
 
     if (files.length < 2) {
+            logger.warn("Insufficient images in addProduct");
       return res.status(400).json({
         success: false,
         message: "Please upload at least 2 images for the product",
@@ -175,11 +184,13 @@ export async function addProduct(req, res) {
     });
 
     if (existing) {
+            logger.warn("Product already exists in addProduct", { name });
       return res.status(400).json({ success: false, message: "Product already exists!" });
     }
 
     const cat = await Category.findById(category);
     if (!cat) {
+            logger.warn("Invalid category in addProduct", { category });
       return res.status(400).json({ success: false, message: "Invalid category" });
     }
 
@@ -201,18 +212,16 @@ export async function addProduct(req, res) {
         const f = files[fileIndex++];
         if (!f) break;
 
-        // ✅ Upload to Cloudinary from disk
         const uploadResult = await cloudinary.uploader.upload(f.path, {
           folder: "chronora/products",
           transformation: { width: 1200, crop: "limit" },
         });
         imgs.push(uploadResult.secure_url);
 
-        // ✅ Clean up temp file
         try {
           if (fs.existsSync(f.path)) fs.unlinkSync(f.path);
         } catch (e) {
-          console.warn("File cleanup failed:", e.message);
+          logger.warn("File cleanup failed:", e.message);
         }
       }
 
@@ -229,12 +238,12 @@ export async function addProduct(req, res) {
 
     product.variants = savedVariantIds;
     await product.save();
+    logger.info("Product created", { productId: product._id, name });
 
     return res.status(201).json({ success: true, message: "Product created" });
 
   } catch (err) {
-    console.error("ADD PRODUCT ERROR:", err.message);
-    console.error(err.stack);
+    logger.error("ADD PRODUCT ERROR:", err);
     return res.status(500).json({
       success: false,
       message: "Failed to add product",
@@ -247,17 +256,23 @@ export async function addProduct(req, res) {
 export async function updateProduct(req, res) {
   try {
     const id = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(id)) { return res.status(400).json({ success: false, message: "Invalid id" }); }
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+            logger.warn("Invalid product id in updateProduct", { id });
+ return res.status(400).json({ success: false, message: "Invalid id" }); }
 
     const { name, category, description, price } = req.body;
     const variants = JSON.parse(req.body.variants || "[]");
     const files = req.files || [];
 
     const product = await Product.findById(id);
-    if (!product) { return res.status(404).json({ success: false, message: "Product not found" }); }
+    if (!product) { 
+            logger.warn("Product not found in updateProduct", { id });
+return res.status(404).json({ success: false, message: "Product not found" }); }
 
     const cat = await Category.findById(category);
-    if (!cat) { return res.status(400).json({ success: false, message: "Invalid category" }); }
+    if (!cat) { 
+            logger.warn("Invalid category in updateProduct", { category });
+return res.status(400).json({ success: false, message: "Invalid category" }); }
 
     product.name = name?.trim() || product.name;
     product.description = description?.trim() || product.description;
@@ -275,14 +290,12 @@ export async function updateProduct(req, res) {
         const f = files[fileIndex++];
         if (!f) { break; }
 
-        // ✅ Upload to Cloudinary from disk
         const uploadResult = await cloudinary.uploader.upload(f.path, {
           folder: "chronora/products",
           transformation: { width: 1200, crop: "limit" }
         });
         existing.push(uploadResult.secure_url);
 
-        // ✅ Clean up temp file
         try {
           if (fs.existsSync(f.path)) fs.unlinkSync(f.path);
         } catch (e) {
@@ -314,14 +327,16 @@ export async function updateProduct(req, res) {
     const toDelete = currentIds.filter(x => !newVariantIds.includes(x));
     if (toDelete.length) {
       await Variant.deleteMany({ _id: { $in: toDelete } });
-    }
+          logger.info("Deleted removed variants in updateProduct", { productId: product._id, deletedVariantIds: toDelete });
+}
 
     product.variants = newVariantIds;
     await product.save();
+    logger.info("Product updated", { productId: product._id });
 
     return res.json({ success: true, message: "Product updated" });
   } catch (err) {
-    console.error("updateProduct error", err);
+    logger.error("updateProduct error:", err);
     return res.status(500).json({ success: false, message: "Failed to update product" });
   }
 }
@@ -332,10 +347,13 @@ export async function toggleBlock(req, res) {
     const action = req.body.action;
     const block = action === "block";
     const p = await Product.findByIdAndUpdate(id, { isBlocked: block }, { new: true });
-    if (!p) { return res.status(404).json({ success: false, message: "Product not found" }); }
+    if (!p) { 
+            logger.warn("Product not found in toggleBlock", { id });
+return res.status(404).json({ success: false, message: "Product not found" }); }
+    logger.info(`Product ${block ? "blocked" : "unblocked"}`, { productId: p._id });
     return res.json({ success: true, message: `Product ${block ? "blocked" : "unblocked"}` });
   } catch (err) {
-    console.error("toggleBlock error", err);
+    logger.error("toggleBlock error:", err);
     return res.status(500).json({ success: false, message: "Failed to update status" });
   }
 }

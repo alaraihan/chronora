@@ -3,6 +3,7 @@ import Order from "../../models/orderSchema.js";
 import User from "../../models/userSchema.js";
 import Variant from "../../models/variantSchema.js";
 import dotenv from "dotenv";
+import logger from "../../helpers/logger.js";
 
 dotenv.config();
 
@@ -15,18 +16,25 @@ export const processRefund = async (req, res) => {
   try {
     const { orderId, itemIndex } = req.body;
     const index = parseInt(itemIndex);
+    logger.info("Refund requested", { orderId, itemIndex: index });
 
     const order = await Order.findById(orderId)
       .populate("userId", "wallet")
       .populate("products.productId")
       .populate("products.variantId");
 
-    if (!order) {return res.json({ success: false, message: "Order not found" });}
+    if (!order) {      logger.warn("Order not found in processRefund", { orderId });
+
+    return res.json({ success: false, message: "Order not found" });}
 
     const item = order.products[index];
-    if (!item) {return res.json({ success: false, message: "Item not found in order" });}
+    if (!item) {
+            logger.warn("Item not found in order during refund", { orderId, itemIndex: index });
+return res.json({ success: false, message: "Item not found in order" });}
 
     if (item.itemStatus !== "ReturnApproved") {
+            logger.warn("Refund attempted for item not ReturnApproved", { orderId, itemIndex: index, itemStatus: item.itemStatus });
+
       return res.json({
         success: false,
         message: "Refund can only be processed when status is 'Return Approved'"
@@ -34,6 +42,7 @@ export const processRefund = async (req, res) => {
     }
 
     if (item.itemTimeline?.returnedAt) {
+            logger.warn("Refund already processed for item", { orderId, itemIndex: index });
       return res.json({
         success: false,
         message: "Refund has already been processed for this item"
@@ -51,6 +60,7 @@ export const processRefund = async (req, res) => {
     const refundableAmount = itemSubtotal - itemShareOfDiscount;
 
     if (refundableAmount <= 0) {
+            logger.info("Refund amount zero (fully covered by coupon)", { orderId, itemIndex: index });
       return res.json({
         success: false,
         message: "Refundable amount is zero (fully covered by coupon)"
@@ -74,12 +84,15 @@ export const processRefund = async (req, res) => {
         });
         razorpayRefundId = refund.id;
         refundMessage += " via Razorpay";
+                logger.info("Razorpay refund successful", { orderId, itemIndex: index, refundId: razorpayRefundId });
+
       } catch (err) {
-        console.error("Razorpay refund failed:", err);
+        logger.error("Razorpay refund failed", { orderId, itemIndex: index, error: err });
         refundMessage += " — Razorpay failed, credited to wallet instead";
       }
     } else {
       refundMessage += " (credited to wallet)";
+            logger.info("Refund credited to wallet (non-Razorpay)", { orderId, itemIndex: index });
     }
 
     await User.updateOne(
@@ -104,6 +117,8 @@ export const processRefund = async (req, res) => {
         item.variantId._id || item.variantId,
         { $inc: { stock: item.quantity } }
       );
+            logger.info("Stock restored for returned variant", { variantId: item.variantId, quantity: item.quantity });
+
     }
 
     item.itemStatus = "Returned";
@@ -119,7 +134,7 @@ export const processRefund = async (req, res) => {
     }
 
     await order.save();
-
+    logger.info("Order updated after refund", { orderId, itemIndex: index, newStatus: item.itemStatus });
     return res.json({
       success: true,
       message: refundMessage,
@@ -127,7 +142,7 @@ export const processRefund = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Refund Error:", error);
+    logger.error("Refund processing error", { error });
     return res.json({
       success: false,
       message: "Refund failed: " + (error.message || "Unknown error")

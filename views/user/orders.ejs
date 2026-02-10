@@ -53,8 +53,15 @@
                 </div>
 
                 <div class="item-actions">
-                  <a href="/profile/orders/<%= order.orderId %>?productId=<%= item.productId._id %>&variantId=<%= item.variantId._id %>" 
-                     class="btn btn-view">
+<% if (item.productId && item.variantId) { %>
+  <a href="/profile/orders/<%= order.orderId %>?productId=<%= item.productId._id %>&variantId=<%= item.variantId._id %>">
+    View Details
+  </a>
+<% } else { %>
+  <a href="/profile/orders/<%= order.orderId %>">
+    View Order
+  </a>
+<% } %>                     class="btn btn-view">
                     View Details
                   </a>
                 </div>

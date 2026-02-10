@@ -2,6 +2,7 @@ import Order from "../../models/orderSchema.js";
 import Variant from "../../models/variantSchema.js";
 import PDFDocument from "pdfkit";
 import User from "../../models/userSchema.js";
+import logger from "../../helpers/logger.js"; 
 
 export const getOrdersPage = async (req, res) => {
   try {
@@ -21,8 +22,9 @@ export const getOrdersPage = async (req, res) => {
       .lean();
 
     res.render("user/orders", { orders, active: "Orders" });
+        logger.info(`Orders page loaded for user ${userId}`);
   } catch (err) {
-    console.error("getOrdersPage ERROR:", err);
+    logger.error("getOrdersPage ERROR:", err);
     res.status(500).send("Server error");
   }
 };
@@ -38,6 +40,7 @@ export const getOrderDetails = async (req, res) => {
       .lean();
 
     if (!order || order.userId.toString() !== req.user._id.toString()) {
+            logger.warn(`Unauthorized order details access attempt by user ${req.user._id}`);
       return res.status(404).render("user/error", { message: "Order not found or access denied" });
     }
 
@@ -48,8 +51,9 @@ export const getOrderDetails = async (req, res) => {
       title: `Order ${order.orderId}`,
       active: "Orders"
     });
+        logger.info(`Order details loaded for order ${orderId}, user ${req.user._id}`);
   } catch (err) {
-    console.error("getOrderDetails ERROR:", err);
+    logger.error("getOrderDetails ERROR:", err);
     res.status(500).render("user/error", { message: "Server error" });
   }
 };
@@ -170,6 +174,7 @@ export const cancelOrderItem = async (req, res) => {
     }
 
     await order.save();
+    logger.info(`Order item ${index} cancelled for order ${orderId}, user ${req.user._id}`);
 
     const response = {
       success: true,
@@ -183,7 +188,7 @@ export const cancelOrderItem = async (req, res) => {
     return res.json(response);
 
   } catch (error) {
-    console.error("cancelOrderItem ERROR:", error);
+    logger.error("cancelOrderItem ERROR:", error);
     return res.status(500).json({
       success: false,
       message: "Server error while cancelling item"
@@ -221,10 +226,11 @@ export const returnOrderItem = async (req, res) => {
     order.markModified("products");
     await order.save();
 
+    logger.info(`Return requested for item ${index} in order ${orderId}, user ${req.user._id}`);
 
     res.json({ success: true, message: "Return request submitted" });
   } catch (err) {
-    console.error("returnOrderItem ERROR:", err);
+    logger.error("returnOrderItem ERROR:", err);
     res.json({ success: false, message: "Server error" });
   }
 };
@@ -294,6 +300,7 @@ export const reviewOrderItem = async (req, res) => {
     });
 
     await order.save();
+    logger.info(`Review submitted for item ${index} in order ${orderId}, user ${req.user._id}`);
 
     res.json({
       success: true,
@@ -301,7 +308,7 @@ export const reviewOrderItem = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("reviewOrderItem ERROR:", err);
+    logger.error("reviewOrderItem ERROR:", err);
     res.json({ success: false, message: "Server error. Please try again later." });
   }
 };
@@ -314,6 +321,7 @@ export const downloadInvoice = async (req, res) => {
       .populate("products.variantId", "colorName images");
 
     if (!order || order.userId.toString() !== req.user._id.toString()) {
+            logger.warn(`Unauthorized invoice download attempt by user ${req.user._id} for order ${orderId}`);
       return res.status(404).send("Invoice not found or access denied");
     }
 
@@ -321,8 +329,10 @@ export const downloadInvoice = async (req, res) => {
       order,
       title: `Invoice - ${order.orderId}`
     });
+        logger.info(`Invoice rendered for order ${orderId}, user ${req.user._id}`);
+
   } catch (err) {
-    console.error(err);
+    logger.error("downloadInvoice ERROR:", err);
     res.status(500).send("Server error");
   }
 };

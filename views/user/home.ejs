@@ -25,7 +25,9 @@
             <a href="/watch?category=<%= category._id %>" class="category-card-link">
               <div class="category-card">
                 <img 
-                  src="<%= category.image || '/images/default-category.jpg' %>" 
+src="<%= typeof category.image === 'string'
+        ? category.image
+        : category.image?.url || '/images/default-category.jpg' %>"
                   alt="<%= category.name %>"
                   class="category-img"
                 >

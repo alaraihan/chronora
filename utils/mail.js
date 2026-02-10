@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import crypto from "crypto";
-
+import logger from "../helpers/logger.js";
 dotenv.config();
 
 const transporter =
@@ -17,13 +17,13 @@ const transporter =
 
 export async function sendOtp(email, otp) {
   if (process.env.NODE_ENV !== "production") {
-    console.log(`\n[DEV MODE] OTP for ${email}: ${otp}\n`);
+    logger.info(`\n[DEV MODE] OTP for ${email}: ${otp}\n`);
     return true;
   }
 
  
     try {
-  console.log("Sending OTP to:", email);
+  logger.info("Sending OTP to:", email);
 
 
     const info = await transporter.sendMail({
@@ -38,7 +38,7 @@ export async function sendOtp(email, otp) {
 
     return info.accepted?.length > 0;
   } catch (error) {
-    console.error("[MAIL ERROR]", error.message);
+    logger.error("[MAIL ERROR]", error.message);
     return false;
   }
 }

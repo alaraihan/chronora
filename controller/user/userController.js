@@ -5,6 +5,7 @@ import { sendOtp, generateOtp } from "../../utils/mail.js";
 import bcrypt from "bcrypt";
 import { setFlash, getFlash } from "../../utils/flash.js";
 import Category from "../../models/categorySchema.js";
+import logger from "../../helpers/logger.js";
 export const render = (req, res, view, options = {}) => {
   const flash = getFlash(req);
   return res.render(view, { flash, ...options });
@@ -16,15 +17,14 @@ export const pageNotfound = async (req, res) => {
       title: "Chronora - 404 Page"
     });
   } catch (error) {
-    console.log("Page not found");
+logger.error("Page not found error", error);
     res.status(404).send();
   }
 };
 
 export const googleCallback = (req, res) => {
   try {
-    console.log("Google login successful, User:", req.user);
-
+logger.info("Google login successful", { user: req.user });
     req.session.userId = req.user._id;
     req.session.user = {
       id: req.user._id,
@@ -35,7 +35,7 @@ export const googleCallback = (req, res) => {
     setFlash(req, "success", "Login successful!");
     return res.redirect("/home");
   } catch (err) {
-    console.error("googleCallback error:", err);
+logger.error("googleCallback error", err);
     setFlash(req, "error", "Google login failed. Try again.");
     return res.redirect("/login");
   }
@@ -47,7 +47,7 @@ export const loadAboutpage = async (req, res) => {
       title: "Chronora - About"
     });
   } catch (error) {
-    console.log("About page not found");
+logger.error("About page load error", error);
     res.status(404).send(error);
   }
 };
@@ -58,7 +58,7 @@ export const loadContactpage = async (req, res) => {
       title: "Chronora - Contact"
     });
   } catch (error) {
-    console.log("Contact page not found");
+logger.error("Contact page load error", error);
     res.status(404).send(error);
   }
 };
@@ -77,7 +77,7 @@ export const loadHomepage = async (req, res) => {
       categories
     });
   } catch (error) {
-    console.log("Home page not found", error);
+logger.error("Home page load error", error);
     res.status(500).send("server error");
   }
 };
@@ -194,7 +194,7 @@ export const loadWatchPage = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error in loadWatchPage:", error);
+logger.error("Error in loadWatchPage", error);
     res.status(500).send("Something went wrong");
   }
 };
@@ -214,6 +214,7 @@ export const productDetails = async (req, res) => {
       return res.status(404).render("user/pageNotfound");
     }
     if (!product.category || !product.category.isListed) {
+      logger.warn(`Product not found or category not listed: ${productId}`);
       return res.status(404).render("user/pageNotfound");
     }
 
@@ -275,7 +276,7 @@ export const productDetails = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error loading product details:", error);
+logger.error("Error loading product details", error);
     return res.status(500).render("user/serverError");
   }
 };

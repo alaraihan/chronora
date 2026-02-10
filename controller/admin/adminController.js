@@ -5,12 +5,15 @@ import Product from "../../models/productSchema.js";
 
 import bcrypt from "bcrypt";
 import { setFlash, getFlash } from "../../utils/flash.js";
+import logger from "../../helpers/logger.js";
 const render = (req, res, view, options = {}) => {
   const flash = getFlash(req);
   return res.render(view, { flash, ...options });
 };
 const loadLogin = (req, res) => {
-  if (req.session.admin) {return res.redirect("/admin/dashboard");}
+  if (req.session.admin) {
+    logger.info(`Admin already logged in: ${req.session.admin.email}`);
+    return res.redirect("/admin/dashboard");}
 
   return render(req, res, "admin/adminLogin", {
     title: "Admin Login - Chronora",
@@ -25,6 +28,7 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
+      logger.warn("Admin login attempt with missing fields");
       return res
         .status(400)
         .json({ success: false, message: "Please fill all fields" });
@@ -32,6 +36,7 @@ const login = async (req, res) => {
 
     const admin = await Admin.findOne({ email: email.toLowerCase().trim() });
     if (!admin || !(await bcrypt.compare(password, admin.password))) {
+      logger.warn(`Invalid admin login attempt: ${email}`);
       return res
         .status(401)
         .json({ success: false, message: "Invalid email or password" });
@@ -43,10 +48,10 @@ const login = async (req, res) => {
       email: admin.email,
       name: admin.fullName || "Admin"
     };
-
+logger.info(`Admin logged in successfully: ${admin.email}`);
     res.status(200).json({ success: true, message: "Welcome back, Admin!" });
   } catch (err) {
-    console.error("Admin login error:", err);
+logger.error("Admin login error", err);
     return res
       .status(500)
       .json({ success: false, message: "Server error. Try again later." });
@@ -61,7 +66,7 @@ export const getDashboardPage = async (req, res) => {
       page: "dashboard"
     });
   } catch (error) {
-    console.error("Dashboard page error:", error);
+logger.error("Dashboard page error", error);
     res.status(500).send("Server Error");
   }
 };
@@ -201,7 +206,7 @@ export const getDashboardData = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Dashboard data error:", error);
+logger.error("Dashboard data error", error);
     res.status(500).json({
       success: false,
       message: "Error loading dashboard data"
@@ -211,6 +216,7 @@ export const getDashboardData = async (req, res) => {
 const logout = (req, res) => {
   delete req.session.adminId;
   delete req.session.admin;
+  logger.info("Admin logged out successfully");
   res.json({
     success: true,
     message: "Logged out successfully!"
@@ -243,6 +249,7 @@ const loadCustomers = async (req, res) => {
     for (const customer of customers) {
       customer.orderCount = await Order.countDocuments({userId: customer._id});
     }
+    logger.info(`Loaded customers page ${page}`, { count: customers.length, search });
 
     return render(req, res, "admin/customers", {
       title: "Customers - Chronora Admin",
@@ -255,7 +262,7 @@ const loadCustomers = async (req, res) => {
       totalCustomers
     });
   } catch (error) {
-    console.error("Load customers error:", error);
+logger.error("Load customers error", error);
     req.session.flash = { type: "error", message: "Failed to load customers" };
     return res.redirect("/admin/dashboard");
   }
@@ -265,6 +272,7 @@ const toggleBlockCustomer = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
+      logger.warn(`Attempted to block/unblock non-existent user: ${req.params.id}`);
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
@@ -276,14 +284,14 @@ const toggleBlockCustomer = async (req, res) => {
     const msg = user.isBlocked
       ? "User blocked successfully"
       : "User unblocked successfully";
-
+logger.info(`${msg} for user ${user.email}`);
     res.json({
       success: true,
       message: msg,
       isBlocked: user.isBlocked
     });
   } catch (error) {
-    console.error("Toggle block error:", error);
+logger.error("Toggle block error", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

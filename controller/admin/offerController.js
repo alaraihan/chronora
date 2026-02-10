@@ -1,6 +1,7 @@
 import Offer from "../../models/offerSchema.js";
 import Product from "../../models/productSchema.js";
 import Category from "../../models/categorySchema.js";
+import logger from "../../helpers/logger.js";
 
 export const loadOfferPage = async (req, res) => {
   try {
@@ -8,8 +9,9 @@ export const loadOfferPage = async (req, res) => {
       title: "Offers Management",
       page: "offer"
     });
+        logger.info("Offer page loaded successfully");
   } catch (error) {
-    console.error("LOAD OFFER PAGE ERROR:", error);
+    logger.error("LOAD OFFER PAGE ERROR:", error);
     res.status(500).send("Server error");
   }
 };
@@ -25,9 +27,10 @@ export const getOffersData = async (req, res) => {
       .populate("categoryId","name")
       .sort({ createdAt: -1 })
       .lean();
+          logger.info(`Fetched ${offers.length} offers`, { type, status });
     res.json({ success: true, offers });
   } catch (error) {
-    console.error("GET OFFERS DATA ERROR:", error);
+    logger.error("GET OFFERS DATA ERROR:", error);
     res.status(500).json({ success: false });
   }
 };
@@ -41,9 +44,10 @@ export const getOfferTargets = async (req, res) => {
     } else if (type === "category") {
       targets = await Category.find({}).select("_id name").lean();
     }
+        logger.info(`Fetched ${targets.length} targets for type: ${type}`);
     res.json({ success: true, targets });
   } catch (error) {
-    console.error("GET TARGETS ERROR:", error);
+    logger.error("GET TARGETS ERROR:", error);
     res.status(500).json({ success: false });
   }
 };
@@ -61,6 +65,7 @@ export const createOffer = async (req, res) => {
     } = req.body;
 
     if (!name || !type || !targetId || !discountType || !discountValue || !startDate || !endDate) {
+           logger.warn("Create offer failed: missing fields");
       return res.status(400).json({
         success: false,
         message: "All fields are required"
@@ -74,6 +79,7 @@ export const createOffer = async (req, res) => {
     });
 
     if (existing) {
+            logger.warn(`Create offer failed: offer already exists (${normalizedName})`);
       return res.status(400).json({
         success: false,
         message: "Offer already exists!"
@@ -146,6 +152,7 @@ export const createOffer = async (req, res) => {
     if (type === "category") {offerData.categoryId = targetId;}
 
     await Offer.create(offerData);
+    logger.info("Offer created successfully", { id: offer._id, name: offer.name, type });
 
     res.status(201).json({
       success: true,
@@ -153,7 +160,7 @@ export const createOffer = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("CREATE OFFER ERROR:", error);
+    logger.error("CREATE OFFER ERROR:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -173,6 +180,7 @@ export const updateOffer = async (req, res) => {
     } = req.body;
 
     if (!name || !type || !targetId || !discountType || !discountValue || !startDate || !endDate) {
+            logger.warn("Update offer failed: missing fields");
       return res.status(400).json({
         success: false,
         message: "All fields are required"
@@ -181,6 +189,7 @@ export const updateOffer = async (req, res) => {
 
     const existingOffer = await Offer.findById(id);
     if (!existingOffer) {
+            logger.warn(`Update offer failed: offer not found (${id})`);
       return res.status(404).json({
         success: false,
         message: "Offer not found"
@@ -195,6 +204,7 @@ export const updateOffer = async (req, res) => {
     });
 
     if (duplicate) {
+            logger.warn(`Update offer failed: duplicate name (${normalizedName})`);
       return res.status(400).json({
         success: false,
         message: "Another offer with this name already exists"
@@ -268,6 +278,7 @@ export const updateOffer = async (req, res) => {
     if (type === "category") {offerData.categoryId = targetId;}
 
     await Offer.findByIdAndUpdate(id, offerData, { new: true });
+    logger.info("Offer updated successfully", { id, name: normalizedName, type });
 
     res.json({
       success: true,
@@ -275,7 +286,7 @@ export const updateOffer = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("UPDATE OFFER ERROR:", error);
+    logger.error("UPDATE OFFER ERROR:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -285,9 +296,10 @@ export const deleteOffer = async (req, res) => {
   try {
     const { id } = req.params;
     await Offer.findByIdAndDelete(id);
+        logger.info("Offer deleted successfully", { id });
     res.json({ success: true, message: "Offer deleted successfully" });
   } catch (error) {
-    console.error("DELETE OFFER ERROR:", error);
+    logger.error("DELETE OFFER ERROR:", error);
     res.status(500).json({ success: false });
   }
 };
@@ -297,11 +309,13 @@ export const toggleOfferActive = async (req, res) => {
     const offer = await Offer.findById(id);
 
     if (!offer) {
+            logger.warn(`Toggle offer failed: offer not found (${id})`);
       return res.status(404).json({ success: false, message: "Offer not found" });
     }
 
     offer.active = !offer.active;
     await offer.save();
+    logger.info("Offer status toggled", { id, active: offer.active });
 
     res.json({
       success: true,
@@ -309,7 +323,7 @@ export const toggleOfferActive = async (req, res) => {
       active: offer.active
     });
   } catch (error) {
-    console.error("TOGGLE STATUS ERROR:", error);
+    logger.error("TOGGLE STATUS ERROR:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
