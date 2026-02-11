@@ -195,7 +195,7 @@ export const updateOrderStatus = async (req, res) => {
             item.itemTimeline[timelineMap[status]] = new Date();
           }
 
-          console.log(`Item ${index} updated: ${oldItemStatus} → ${status}`);
+          logger.info(`Item ${index} updated: ${oldItemStatus} → ${status}`);
         }
       });
 
@@ -266,7 +266,7 @@ return res.status(400).json({ success: false, message: "Item not found" });}
 
     order.markModified("products");
     await order.save();
-    logger.info("Item status updated", { orderId, itemIndex, oldStatus, newStatus: status });
+    logger.info("Item status updated", { orderId, itemIndex,  newStatus: status });
 
     res.json({ success: true, message: "Item status updated successfully" });
   } catch (error) {
