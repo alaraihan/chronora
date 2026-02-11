@@ -152,7 +152,7 @@ export const createOffer = async (req, res) => {
     if (type === "category") {offerData.categoryId = targetId;}
 
     await Offer.create(offerData);
-    logger.info("Offer created successfully", { id: offer._id, name: offer.name, type });
+    logger.info("Offer created successfully");
 
     res.status(201).json({
       success: true,
