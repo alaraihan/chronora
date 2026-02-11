@@ -520,3 +520,556 @@ Cannot read properties of null (reading '_id')
 2026-02-10 09:43:57 [INFO]: GET /js/main.js 404
 2026-02-10 09:43:57 [INFO]: GET /js/user/productDetail.js 304
 2026-02-10 09:43:57 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-11 10:48:24 [INFO]: Admin already logged in: admin@chronora.com
+2026-02-11 10:48:24 [INFO]: GET /admin/login 302
+2026-02-11 10:48:24 [INFO]: GET /admin/dashboard 200
+2026-02-11 10:48:24 [INFO]: GET /css/admin/header.css 304
+2026-02-11 10:48:24 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 10:48:24 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 10:48:24 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-11 10:48:24 [INFO]: GET /js/admin/dashboard.js 304
+2026-02-11 10:48:24 [INFO]: GET /js/main.js 404
+2026-02-11 10:48:36 [INFO]: GET /admin/dashboard/data 200
+2026-02-11 10:48:37 [INFO]: GET /favicon.ico 404
+2026-02-11 10:48:47 [INFO]: Loaded customers page 1
+2026-02-11 10:48:47 [INFO]: GET /admin/customers 200
+2026-02-11 10:48:47 [INFO]: GET /css/admin/header.css 304
+2026-02-11 10:48:47 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 10:48:47 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 10:48:47 [INFO]: GET /css/admin/customer.css 200
+2026-02-11 10:48:47 [INFO]: GET /js/admin/customer.js 200
+2026-02-11 10:48:47 [INFO]: GET /js/main.js 404
+2026-02-11 10:48:54 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 200
+2026-02-11 10:49:46 [INFO]: Loaded customers page 1
+2026-02-11 10:49:46 [INFO]: GET /admin/customers 200
+2026-02-11 10:49:46 [INFO]: GET /css/admin/header.css 304
+2026-02-11 10:49:46 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 10:49:46 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 10:49:46 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 10:49:46 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 10:49:46 [INFO]: GET /js/main.js 404
+2026-02-11 10:49:53 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 200
+2026-02-11 10:50:33 [INFO]: ordercount:
+2026-02-11 10:50:33 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 200
+2026-02-11 10:50:34 [INFO]: ordercount:
+2026-02-11 10:50:34 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 200
+2026-02-11 10:51:01 [INFO]: Loaded customers page 1
+2026-02-11 10:51:01 [INFO]: GET /admin/customers 200
+2026-02-11 10:51:01 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 10:51:01 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 10:51:01 [INFO]: GET /css/admin/header.css 304
+2026-02-11 10:51:01 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 10:51:01 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 10:51:01 [INFO]: GET /js/main.js 404
+2026-02-11 10:51:09 [ERROR]: Toggle block error userId is not defined
+2026-02-11 10:51:09 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 500
+2026-02-11 10:51:37 [ERROR]: Toggle block error userId is not defined
+2026-02-11 10:51:37 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 500
+2026-02-11 10:51:39 [ERROR]: Toggle block error userId is not defined
+2026-02-11 10:51:39 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 500
+2026-02-11 10:51:41 [ERROR]: Toggle block error userId is not defined
+2026-02-11 10:51:41 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 500
+2026-02-11 10:51:43 [INFO]: Loaded customers page 1
+2026-02-11 10:51:43 [INFO]: GET /admin/customers 200
+2026-02-11 10:51:43 [INFO]: GET /css/admin/header.css 304
+2026-02-11 10:51:43 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 10:51:43 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 10:51:43 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 10:51:43 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 10:51:43 [INFO]: GET /js/main.js 404
+2026-02-11 10:52:07 [INFO]: Loaded customers page 1
+2026-02-11 10:52:07 [INFO]: GET /admin/customers 200
+2026-02-11 10:52:07 [INFO]: GET /css/admin/header.css 304
+2026-02-11 10:52:07 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 10:52:07 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 10:52:07 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 10:52:07 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 10:52:07 [INFO]: GET /js/main.js 404
+2026-02-11 10:52:09 [INFO]: ordercount:
+2026-02-11 10:52:10 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 200
+2026-02-11 10:54:25 [INFO]: Loaded customers page 1
+2026-02-11 10:54:25 [INFO]: GET /admin/customers 200
+2026-02-11 10:54:25 [INFO]: GET /css/admin/header.css 304
+2026-02-11 10:54:25 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 10:54:25 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 10:54:25 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 10:54:25 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 10:54:25 [INFO]: GET /js/main.js 404
+2026-02-11 10:54:26 [INFO]: ordercount:
+2026-02-11 10:54:26 [INFO]: User blocked successfully for user xigofof744@2insp.com
+2026-02-11 10:54:26 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 200
+2026-02-11 10:55:04 [INFO]: User blocked successfully for user basilrdxmix@gmail.com
+2026-02-11 10:55:04 [INFO]: PATCH /admin/customers/toggle-block/698ab07963140088b4f33573 200
+2026-02-11 10:55:05 [INFO]: Loaded customers page 1
+2026-02-11 10:55:05 [INFO]: GET /admin/customers 200
+2026-02-11 10:55:05 [INFO]: GET /css/admin/header.css 304
+2026-02-11 10:55:05 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 10:55:05 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 10:55:05 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 10:55:05 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 10:55:05 [INFO]: GET /js/main.js 404
+2026-02-11 10:59:32 [INFO]: Loaded customers page 1
+2026-02-11 10:59:32 [INFO]: GET /admin/customers 200
+2026-02-11 10:59:32 [INFO]: GET /css/admin/header.css 304
+2026-02-11 10:59:32 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 10:59:32 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 10:59:32 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 10:59:32 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 10:59:32 [INFO]: GET /js/main.js 404
+2026-02-11 10:59:33 [ERROR]: Toggle block error Cast to ObjectId failed for value "{
+  userId: {
+    _id: new ObjectId('698ab07963140088b4f33573'),
+    fullName: 'basil',
+    email: 'basilrdxmix@gmail.com',
+    password: '$2b$12$3c.h/rhvRnV9MFbe1gn1fu2KqLbdTAsElyvnkKRe5f0r3aG4B6FOy',
+    profileImage: '',
+    isBlocked: true,
+    isVerified: true,
+    referralCode: '8GPX2JWE',
+    referredBy: null,
+    wallet: 10000,
+    walletTransactions: [ [Object] ],
+    createdAt: 2026-02-10T04:13:45.060Z,
+    updatedAt: 2026-02-11T05:25:04.563Z,
+    __v: 1
+  }
+}" (type Object) at path "_id" for model "Order"
+2026-02-11 10:59:33 [INFO]: PATCH /admin/customers/toggle-block/698ab07963140088b4f33573 500
+2026-02-11 10:59:35 [ERROR]: Toggle block error Cast to ObjectId failed for value "{
+  userId: {
+    _id: new ObjectId('69844fe9ad3bc1e41b33f150'),
+    fullName: 'Hasan mk 12',
+    email: 'h20913818@gmail.com',
+    profileImage: '',
+    googleId: '118422883487539978238',
+    isBlocked: false,
+    isVerified: true,
+    referralCode: 'M3LMWSCB',
+    referredBy: null,
+    wallet: 0,
+    walletTransactions: [],
+    createdAt: 2026-02-05T08:08:09.557Z,
+    updatedAt: 2026-02-05T08:08:09.557Z,
+    __v: 0
+  }
+}" (type Object) at path "_id" for model "Order"
+2026-02-11 10:59:35 [INFO]: PATCH /admin/customers/toggle-block/69844fe9ad3bc1e41b33f150 500
+2026-02-11 11:00:33 [INFO]: Loaded customers page 1
+2026-02-11 11:00:33 [INFO]: GET /admin/customers 200
+2026-02-11 11:00:33 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:00:33 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:00:33 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:00:33 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:00:33 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:00:33 [INFO]: GET /js/main.js 404
+2026-02-11 11:00:36 [ERROR]: Toggle block error Cast to ObjectId failed for value "{
+  user: {
+    _id: new ObjectId('69844e4fad3bc1e41b33f0b7'),
+    fullName: 'Fathimaliya',
+    email: 'fathimaliya337@gmail.com',
+    profileImage: '',
+    googleId: '100567724307599826167',
+    isBlocked: false,
+    isVerified: true,
+    referralCode: 'OL723AJS',
+    referredBy: null,
+    wallet: 0,
+    walletTransactions: [],
+    createdAt: 2026-02-05T08:01:19.986Z,
+    updatedAt: 2026-02-05T08:01:19.986Z,
+    __v: 0
+  }
+}" (type Object) at path "_id" for model "Order"
+2026-02-11 11:00:36 [INFO]: PATCH /admin/customers/toggle-block/69844e4fad3bc1e41b33f0b7 500
+2026-02-11 11:01:49 [INFO]: GET / 403
+2026-02-11 11:01:49 [INFO]: GET /css/user/header.css 304
+2026-02-11 11:01:49 [INFO]: GET /css/user/footer.css 304
+2026-02-11 11:01:49 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 11:01:49 [INFO]: GET /css/user/404.css 200
+2026-02-11 11:01:49 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 11:01:49 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 11:01:49 [INFO]: GET /js/main.js 404
+2026-02-11 11:03:04 [INFO]: GET /admin/customers 302
+2026-02-11 11:03:04 [INFO]: GET /admin/login 200
+2026-02-11 11:03:04 [INFO]: GET /css/admin/adminLogin.css 200
+2026-02-11 11:03:04 [INFO]: GET /js/admin/adminLogin.js 200
+2026-02-11 11:03:13 [INFO]: Admin logged in successfully: admin@chronora.com
+2026-02-11 11:03:13 [INFO]: POST /admin/login 200
+2026-02-11 11:03:13 [INFO]: GET /admin/dashboard 200
+2026-02-11 11:03:13 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:03:13 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:03:13 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:03:13 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-11 11:03:14 [INFO]: GET /js/admin/dashboard.js 304
+2026-02-11 11:03:14 [INFO]: GET /js/main.js 404
+2026-02-11 11:03:17 [INFO]: GET /admin/dashboard/data 200
+2026-02-11 11:03:24 [INFO]: Loaded customers page 1
+2026-02-11 11:03:24 [INFO]: GET /admin/customers 200
+2026-02-11 11:03:24 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:03:24 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:03:24 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:03:24 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:03:24 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:03:24 [INFO]: GET /js/main.js 404
+2026-02-11 11:03:33 [ERROR]: Toggle block error userOrder is not defined
+2026-02-11 11:03:33 [INFO]: PATCH /admin/customers/toggle-block/69844fe9ad3bc1e41b33f150 500
+2026-02-11 11:03:52 [INFO]: Loaded customers page 1
+2026-02-11 11:03:52 [INFO]: GET /admin/customers 200
+2026-02-11 11:03:52 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:03:52 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:03:52 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:03:52 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:03:52 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:03:52 [INFO]: GET /js/main.js 404
+2026-02-11 11:03:54 [INFO]: ordercount:
+2026-02-11 11:03:54 [INFO]: User blocked successfully for user h20913818@gmail.com
+2026-02-11 11:03:54 [INFO]: PATCH /admin/customers/toggle-block/69844fe9ad3bc1e41b33f150 200
+2026-02-11 11:05:06 [INFO]: Loaded customers page 1
+2026-02-11 11:05:07 [INFO]: GET /admin/customers 200
+2026-02-11 11:05:07 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:05:07 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:05:07 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:05:07 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:05:07 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:05:07 [INFO]: GET /js/main.js 404
+2026-02-11 11:05:13 [INFO]: ordercount:
+2026-02-11 11:05:14 [INFO]: User blocked successfully for user fathimaliya337@gmail.com
+2026-02-11 11:05:14 [INFO]: PATCH /admin/customers/toggle-block/69844e4fad3bc1e41b33f0b7 200
+2026-02-11 11:05:56 [INFO]: Loaded customers page 1
+2026-02-11 11:05:56 [INFO]: GET /admin/customers 200
+2026-02-11 11:05:56 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:05:56 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:05:56 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:05:56 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:05:56 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:05:56 [INFO]: GET /js/main.js 404
+2026-02-11 11:06:07 [INFO]: ordercount: 0
+2026-02-11 11:06:08 [INFO]: User blocked successfully for user mohammedshaadn@gmail.com
+2026-02-11 11:06:08 [INFO]: PATCH /admin/customers/toggle-block/69843ab8ad3bc1e41b33e7ad 200
+2026-02-11 11:06:09 [INFO]: ordercount: 0
+2026-02-11 11:06:09 [INFO]: User unblocked successfully for user mohammedshaadn@gmail.com
+2026-02-11 11:06:09 [INFO]: PATCH /admin/customers/toggle-block/69843ab8ad3bc1e41b33e7ad 200
+2026-02-11 11:06:21 [INFO]: ordercount: 0
+2026-02-11 11:06:21 [INFO]: User unblocked successfully for user fathimaliya337@gmail.com
+2026-02-11 11:06:21 [INFO]: PATCH /admin/customers/toggle-block/69844e4fad3bc1e41b33f0b7 200
+2026-02-11 11:06:22 [INFO]: ordercount: 0
+2026-02-11 11:06:22 [INFO]: User unblocked successfully for user h20913818@gmail.com
+2026-02-11 11:06:22 [INFO]: PATCH /admin/customers/toggle-block/69844fe9ad3bc1e41b33f150 200
+2026-02-11 11:06:23 [INFO]: ordercount: 0
+2026-02-11 11:06:23 [INFO]: User unblocked successfully for user basilrdxmix@gmail.com
+2026-02-11 11:06:23 [INFO]: PATCH /admin/customers/toggle-block/698ab07963140088b4f33573 200
+2026-02-11 11:06:23 [INFO]: ordercount: 0
+2026-02-11 11:06:24 [INFO]: User unblocked successfully for user xigofof744@2insp.com
+2026-02-11 11:06:24 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 200
+2026-02-11 11:06:29 [INFO]: ordercount: 0
+2026-02-11 11:06:30 [INFO]: User blocked successfully for user basilrdxmix@gmail.com
+2026-02-11 11:06:30 [INFO]: PATCH /admin/customers/toggle-block/698ab07963140088b4f33573 200
+2026-02-11 11:07:14 [INFO]: Loaded customers page 1
+2026-02-11 11:07:14 [INFO]: GET /admin/customers 200
+2026-02-11 11:07:14 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:07:14 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:07:14 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:07:14 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:07:14 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:07:14 [INFO]: GET /js/main.js 404
+2026-02-11 11:07:23 [INFO]: Order count: 0
+2026-02-11 11:07:23 [INFO]: User blocked successfully for user mohammedshaadn@gmail.com
+2026-02-11 11:07:23 [INFO]: PATCH /admin/customers/toggle-block/69843ab8ad3bc1e41b33e7ad 200
+2026-02-11 11:12:49 [INFO]: Order count: 0
+2026-02-11 11:12:49 [INFO]: User blocked successfully for user xigofof744@2insp.com
+2026-02-11 11:12:49 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 200
+2026-02-11 11:12:52 [INFO]: Order count: 3
+2026-02-11 11:12:52 [INFO]: User unblocked successfully for user mohammedshaadn@gmail.com
+2026-02-11 11:12:52 [INFO]: PATCH /admin/customers/toggle-block/69843ab8ad3bc1e41b33e7ad 200
+2026-02-11 11:12:53 [INFO]: Order count: 3
+2026-02-11 11:12:53 [INFO]: User blocked successfully for user mohammedshaadn@gmail.com
+2026-02-11 11:12:53 [INFO]: PATCH /admin/customers/toggle-block/69843ab8ad3bc1e41b33e7ad 200
+2026-02-11 11:14:35 [INFO]: Loaded customers page 1
+2026-02-11 11:14:35 [INFO]: GET /admin/customers 200
+2026-02-11 11:14:35 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:14:35 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:14:35 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:14:35 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:14:35 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:14:35 [INFO]: GET /js/main.js 404
+2026-02-11 11:14:36 [INFO]: Loaded customers page 2
+2026-02-11 11:14:36 [INFO]: GET /admin/customers?page=2 200
+2026-02-11 11:14:37 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:14:37 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:14:37 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:14:37 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:14:37 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:14:37 [INFO]: GET /js/main.js 404
+2026-02-11 11:14:42 [INFO]: Loaded customers page 3
+2026-02-11 11:14:42 [INFO]: GET /admin/customers?page=3 200
+2026-02-11 11:14:42 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:14:42 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:14:42 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:14:42 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:14:42 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:14:42 [INFO]: GET /js/main.js 404
+2026-02-11 11:14:45 [INFO]: Order count: 10
+2026-02-11 11:14:45 [INFO]: PATCH /admin/customers/toggle-block/6972fe40889f9beb0564c701 200
+2026-02-11 11:15:01 [INFO]: Order count: 10
+2026-02-11 11:15:01 [INFO]: PATCH /admin/customers/toggle-block/6972fe40889f9beb0564c701 200
+2026-02-11 11:15:35 [INFO]: Loaded customers page 3
+2026-02-11 11:15:35 [INFO]: GET /admin/customers?page=3 200
+2026-02-11 11:15:35 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:15:35 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:15:35 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:15:35 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:15:35 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:15:35 [INFO]: GET /js/main.js 404
+2026-02-11 11:15:45 [INFO]: Order count: 10
+2026-02-11 11:15:45 [INFO]: PATCH /admin/customers/toggle-block/6972fe40889f9beb0564c701 200
+2026-02-11 11:16:29 [INFO]: Loaded customers page 3
+2026-02-11 11:16:29 [INFO]: GET /admin/customers?page=3 200
+2026-02-11 11:16:29 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:16:29 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:16:29 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:16:29 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:16:29 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:16:29 [INFO]: GET /js/main.js 404
+2026-02-11 11:16:37 [INFO]: Order count: 10
+2026-02-11 11:16:37 [INFO]: PATCH /admin/customers/toggle-block/6972fe40889f9beb0564c701 200
+2026-02-11 11:17:29 [INFO]: Order count: 10
+2026-02-11 11:17:29 [INFO]: PATCH /admin/customers/toggle-block/6972fe40889f9beb0564c701 200
+2026-02-11 11:19:10 [INFO]: Order count: 10
+2026-02-11 11:19:10 [INFO]: PATCH /admin/customers/toggle-block/6972fe40889f9beb0564c701 200
+2026-02-11 11:19:14 [INFO]: Loaded customers page 3
+2026-02-11 11:19:14 [INFO]: GET /admin/customers?page=3 200
+2026-02-11 11:19:14 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:19:14 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:19:14 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:19:14 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:19:14 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:19:15 [INFO]: GET /js/main.js 404
+2026-02-11 11:19:24 [INFO]: Order count: 10
+2026-02-11 11:19:24 [INFO]: PATCH /admin/customers/toggle-block/6972fe40889f9beb0564c701 200
+2026-02-11 11:21:16 [INFO]: Loaded customers page 3
+2026-02-11 11:21:16 [INFO]: GET /admin/customers?page=3 200
+2026-02-11 11:21:16 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:21:16 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:21:16 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:21:16 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:21:16 [INFO]: GET /js/admin/customer.js 200
+2026-02-11 11:21:16 [INFO]: GET /js/main.js 404
+2026-02-11 11:21:38 [INFO]: Order count: 10
+2026-02-11 11:21:38 [INFO]: PATCH /admin/customers/toggle-block/6972fe40889f9beb0564c701 200
+2026-02-11 11:21:43 [INFO]: Order count: 0
+2026-02-11 11:21:43 [INFO]: User blocked successfully for user lala@gmail.com
+2026-02-11 11:21:43 [INFO]: PATCH /admin/customers/toggle-block/6971aa22a2bb01647d3d2e12 200
+2026-02-11 11:21:44 [INFO]: Order count: 0
+2026-02-11 11:21:44 [INFO]: User unblocked successfully for user lala@gmail.com
+2026-02-11 11:21:44 [INFO]: PATCH /admin/customers/toggle-block/6971aa22a2bb01647d3d2e12 200
+2026-02-11 11:22:25 [INFO]: Loaded customers page 3
+2026-02-11 11:22:26 [INFO]: GET /admin/customers?page=3 200
+2026-02-11 11:22:26 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:22:26 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:22:26 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:22:26 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:22:26 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:22:26 [INFO]: GET /js/main.js 404
+2026-02-11 11:22:28 [INFO]: User blocked successfully for user eee@gmail.com
+2026-02-11 11:22:28 [INFO]: PATCH /admin/customers/toggle-block/6972fe40889f9beb0564c701 200
+2026-02-11 11:22:29 [INFO]: User unblocked successfully for user eee@gmail.com
+2026-02-11 11:22:29 [INFO]: PATCH /admin/customers/toggle-block/6972fe40889f9beb0564c701 200
+2026-02-11 11:30:13 [INFO]: Loaded customers page 3
+2026-02-11 11:30:13 [INFO]: GET /admin/customers?page=3 200
+2026-02-11 11:30:13 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:30:13 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:30:13 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:30:13 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:30:13 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:30:13 [INFO]: GET /js/main.js 404
+2026-02-11 11:30:18 [INFO]: PATCH /admin/customers/toggle-block/697049e4f34663c26e3b2309 200
+2026-02-11 11:30:23 [INFO]: Admin orders page rendered
+2026-02-11 11:30:23 [INFO]: GET /admin/orders 200
+2026-02-11 11:30:23 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:30:23 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:30:23 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:30:23 [INFO]: GET /css/admin/orders.css 200
+2026-02-11 11:30:23 [INFO]: GET /js/main.js 404
+2026-02-11 11:30:24 [INFO]: Fetched admin orders data
+2026-02-11 11:30:24 [INFO]: GET /admin/orders/data? 200
+2026-02-11 11:30:28 [INFO]: Fetched admin orders data
+2026-02-11 11:30:28 [INFO]: GET /admin/orders/data?page=1&search=fthma 200
+2026-02-11 11:30:32 [INFO]: Admin orders page rendered
+2026-02-11 11:30:32 [INFO]: GET /admin/orders 200
+2026-02-11 11:30:32 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:30:32 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:30:32 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:30:32 [INFO]: GET /css/admin/orders.css 304
+2026-02-11 11:30:32 [INFO]: GET /js/main.js 404
+2026-02-11 11:30:33 [INFO]: Fetched admin orders data
+2026-02-11 11:30:33 [INFO]: GET /admin/orders/data? 200
+2026-02-11 11:30:36 [INFO]: Fetched admin orders data
+2026-02-11 11:30:36 [INFO]: GET /admin/orders/data?page=1&search=fthma 200
+2026-02-11 11:30:40 [INFO]: Admin orders page rendered
+2026-02-11 11:30:40 [INFO]: GET /admin/orders 200
+2026-02-11 11:30:40 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:30:40 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:30:40 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:30:40 [INFO]: GET /css/admin/orders.css 304
+2026-02-11 11:30:40 [INFO]: GET /js/main.js 404
+2026-02-11 11:30:41 [INFO]: Fetched admin orders data
+2026-02-11 11:30:41 [INFO]: GET /admin/orders/data? 200
+2026-02-11 11:30:45 [INFO]: Fetched admin orders data
+2026-02-11 11:30:45 [INFO]: GET /admin/orders/data?page=1&status=Confirmed 200
+2026-02-11 11:31:42 [INFO]: Loaded customers page 1
+2026-02-11 11:31:42 [INFO]: GET /admin/customers 200
+2026-02-11 11:31:42 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:31:42 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:31:42 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:31:42 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:31:42 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:31:42 [INFO]: GET /js/main.js 404
+2026-02-11 11:31:48 [INFO]: User unblocked successfully for user xigofof744@2insp.com
+2026-02-11 11:31:48 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 200
+2026-02-11 11:31:51 [INFO]: User unblocked successfully for user basilrdxmix@gmail.com
+2026-02-11 11:31:51 [INFO]: PATCH /admin/customers/toggle-block/698ab07963140088b4f33573 200
+2026-02-11 11:31:52 [INFO]: PATCH /admin/customers/toggle-block/69844fe9ad3bc1e41b33f150 200
+2026-02-11 11:34:11 [INFO]: Loaded customers page 1
+2026-02-11 11:34:11 [INFO]: GET /admin/customers 200
+2026-02-11 11:34:11 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:34:11 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:34:11 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:34:11 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:34:11 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:34:11 [INFO]: GET /js/main.js 404
+2026-02-11 11:34:31 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 200
+2026-02-11 11:38:09 [INFO]: Loaded customers page 1
+2026-02-11 11:38:09 [INFO]: GET /admin/customers 200
+2026-02-11 11:38:09 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:38:09 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:38:09 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:38:09 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 11:38:09 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 11:38:09 [INFO]: GET /js/main.js 404
+2026-02-11 11:38:16 [INFO]: User blocked successfully for user xigofof744@2insp.com
+2026-02-11 11:38:16 [INFO]: PATCH /admin/customers/toggle-block/698ab12aad3bc1e41b33f601 200
+2026-02-11 11:38:19 [INFO]: PATCH /admin/customers/toggle-block/698ab07963140088b4f33573 200
+2026-02-11 11:38:26 [INFO]: GET / 200
+2026-02-11 11:38:26 [INFO]: GET /css/user/header.css 304
+2026-02-11 11:38:26 [INFO]: GET /css/user/footer.css 304
+2026-02-11 11:38:26 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 11:38:26 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 11:38:26 [INFO]: GET /css/user/landing.css 304
+2026-02-11 11:38:26 [INFO]: GET /js/main.js 404
+2026-02-11 11:38:26 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 11:38:26 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-11 11:38:27 [INFO]: Admin already logged in: admin@chronora.com
+2026-02-11 11:38:27 [INFO]: GET /admin/login 302
+2026-02-11 11:38:27 [INFO]: GET /admin/dashboard 200
+2026-02-11 11:38:27 [INFO]: GET /css/admin/header.css 304
+2026-02-11 11:38:27 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 11:38:27 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 11:38:27 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-11 11:38:27 [INFO]: GET /js/admin/dashboard.js 304
+2026-02-11 11:38:27 [INFO]: GET /js/main.js 404
+2026-02-11 11:38:28 [INFO]: GET /admin/dashboard/data 200
+2026-02-11 11:38:50 [INFO]: GET / 200
+2026-02-11 11:38:50 [INFO]: GET /css/user/header.css 304
+2026-02-11 11:38:50 [INFO]: GET /css/user/footer.css 304
+2026-02-11 11:38:50 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 11:38:50 [INFO]: GET /css/user/landing.css 304
+2026-02-11 11:38:50 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 11:38:50 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 11:38:50 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-11 11:38:50 [INFO]: GET /js/main.js 404
+2026-02-11 11:38:53 [INFO]: GET /login 200
+2026-02-11 11:38:53 [INFO]: GET /css/user/login.css 304
+2026-02-11 11:38:53 [INFO]: GET /js/user/login.js 304
+2026-02-11 11:38:59 [INFO]: User logged in: basilrdxmix@gmail.com
+2026-02-11 11:38:59 [INFO]: POST /login 302
+2026-02-11 11:39:00 [INFO]: GET / 200
+2026-02-11 11:39:00 [INFO]: GET /css/user/header.css 304
+2026-02-11 11:39:00 [INFO]: GET /css/user/footer.css 304
+2026-02-11 11:39:00 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 11:39:00 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 11:39:00 [INFO]: GET /css/user/landing.css 304
+2026-02-11 11:39:00 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-11 11:39:00 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 11:39:00 [INFO]: GET /js/main.js 404
+2026-02-11 11:39:07 [INFO]: GET /profile 200
+2026-02-11 11:39:07 [INFO]: GET /css/user/header.css 304
+2026-02-11 11:39:07 [INFO]: GET /css/user/footer.css 304
+2026-02-11 11:39:07 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 11:39:07 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 11:39:07 [INFO]: GET /css/user/profile.css 304
+2026-02-11 11:39:07 [INFO]: GET /css/user/sidebar.css 304
+2026-02-11 11:39:07 [INFO]: GET /js/user/sidebar.js 304
+2026-02-11 11:39:07 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 11:39:07 [INFO]: GET /images/default.png 404
+2026-02-11 11:39:07 [INFO]: GET /js/main.js 404
+2026-02-11 11:39:09 [INFO]: Orders page loaded for user 698ab07963140088b4f33573
+2026-02-11 11:39:09 [INFO]: GET /profile/orders 200
+2026-02-11 11:39:09 [INFO]: GET /css/user/header.css 304
+2026-02-11 11:39:09 [INFO]: GET /css/user/footer.css 304
+2026-02-11 11:39:09 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 11:39:09 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 11:39:09 [INFO]: GET /css/user/sidebar.css 304
+2026-02-11 11:39:09 [INFO]: GET /css/user/orders.css 304
+2026-02-11 11:39:09 [INFO]: GET /js/user/sidebar.js 304
+2026-02-11 11:39:09 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 11:39:09 [INFO]: GET /js/main.js 404
+2026-02-11 11:39:17 [INFO]: User blocked successfully for user h20913818@gmail.com
+2026-02-11 11:39:17 [INFO]: PATCH /admin/customers/toggle-block/69844fe9ad3bc1e41b33f150 200
+2026-02-11 11:39:19 [INFO]: User unblocked successfully for user h20913818@gmail.com
+2026-02-11 11:39:19 [INFO]: PATCH /admin/customers/toggle-block/69844fe9ad3bc1e41b33f150 200
+2026-02-11 11:39:21 [INFO]: User unblocked successfully for user mohammedshaadn@gmail.com
+2026-02-11 11:39:21 [INFO]: PATCH /admin/customers/toggle-block/69843ab8ad3bc1e41b33e7ad 200
+2026-02-11 11:39:22 [INFO]: PATCH /admin/customers/toggle-block/69843ab8ad3bc1e41b33e7ad 200
+2026-02-11 11:39:24 [INFO]: PATCH /admin/customers/toggle-block/69843ab8ad3bc1e41b33e7ad 200
+2026-02-11 13:24:43 [INFO]: Loaded customers page 1
+2026-02-11 13:24:43 [INFO]: GET /admin/customers 200
+2026-02-11 13:24:43 [INFO]: GET /css/admin/header.css 304
+2026-02-11 13:24:43 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 13:24:43 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 13:24:43 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 13:24:43 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 13:24:43 [INFO]: GET /js/main.js 404
+2026-02-11 13:24:47 [INFO]: PATCH /admin/customers/toggle-block/69843ab8ad3bc1e41b33e7ad 200
+2026-02-11 13:24:51 [INFO]: PATCH /admin/customers/toggle-block/69844e4fad3bc1e41b33f0b7 200
+2026-02-11 13:25:33 [INFO]: Loaded customers page 1
+2026-02-11 13:25:33 [INFO]: GET /admin/customers 200
+2026-02-11 13:25:33 [INFO]: GET /css/admin/header.css 304
+2026-02-11 13:25:33 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 13:25:33 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 13:25:33 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 13:25:33 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 13:25:33 [INFO]: GET /js/main.js 404
+2026-02-11 13:25:36 [INFO]: User blocked successfully for user h20913818@gmail.com
+2026-02-11 13:25:36 [INFO]: PATCH /admin/customers/toggle-block/69844fe9ad3bc1e41b33f150 200
+2026-02-11 13:25:38 [INFO]: User blocked successfully for user fathimaliya337@gmail.com
+2026-02-11 13:25:38 [INFO]: PATCH /admin/customers/toggle-block/69844e4fad3bc1e41b33f0b7 200
+2026-02-11 13:25:39 [INFO]: User blocked successfully for user mohammedshaadn@gmail.com
+2026-02-11 13:25:39 [INFO]: PATCH /admin/customers/toggle-block/69843ab8ad3bc1e41b33e7ad 200
+2026-02-11 13:25:42 [INFO]: User blocked successfully for user basilrdxmix@gmail.com
+2026-02-11 13:25:43 [INFO]: PATCH /admin/customers/toggle-block/698ab07963140088b4f33573 200
+2026-02-11 13:25:47 [INFO]: User unblocked successfully for user h20913818@gmail.com
+2026-02-11 13:25:47 [INFO]: PATCH /admin/customers/toggle-block/69844fe9ad3bc1e41b33f150 200
+2026-02-11 13:25:47 [INFO]: User unblocked successfully for user fathimaliya337@gmail.com
+2026-02-11 13:25:47 [INFO]: PATCH /admin/customers/toggle-block/69844e4fad3bc1e41b33f0b7 200
+2026-02-11 13:25:49 [INFO]: User unblocked successfully for user mohammedshaadn@gmail.com
+2026-02-11 13:25:49 [INFO]: PATCH /admin/customers/toggle-block/69843ab8ad3bc1e41b33e7ad 200
+2026-02-11 13:25:52 [INFO]: Loaded customers page 2
+2026-02-11 13:25:52 [INFO]: GET /admin/customers?page=2 200
+2026-02-11 13:25:52 [INFO]: GET /css/admin/header.css 304
+2026-02-11 13:25:52 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 13:25:52 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 13:25:52 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 13:25:52 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 13:25:52 [INFO]: GET /js/main.js 404
+2026-02-11 13:25:55 [INFO]: Loaded customers page 3
+2026-02-11 13:25:55 [INFO]: GET /admin/customers?page=3 200
+2026-02-11 13:25:55 [INFO]: GET /css/admin/header.css 304
+2026-02-11 13:25:55 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-11 13:25:55 [INFO]: GET /css/admin/footer.css 304
+2026-02-11 13:25:55 [INFO]: GET /css/admin/customer.css 304
+2026-02-11 13:25:55 [INFO]: GET /js/admin/customer.js 304
+2026-02-11 13:25:55 [INFO]: GET /js/main.js 404
+2026-02-11 13:25:57 [INFO]: User blocked successfully for user eee@gmail.com
+2026-02-11 13:25:57 [INFO]: PATCH /admin/customers/toggle-block/6972fe40889f9beb0564c701 200
+2026-02-11 13:25:58 [INFO]: User unblocked successfully for user eee@gmail.com
+2026-02-11 13:25:58 [INFO]: PATCH /admin/customers/toggle-block/6972fe40889f9beb0564c701 200

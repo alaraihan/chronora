@@ -2,7 +2,6 @@ import Admin from "../../models/adminSchema.js";
 import User from "../../models/userSchema.js";
 import Order from "../../models/orderSchema.js";
 import Product from "../../models/productSchema.js";
-
 import bcrypt from "bcrypt";
 import { setFlash, getFlash } from "../../utils/flash.js";
 import logger from "../../helpers/logger.js";
@@ -267,34 +266,40 @@ logger.error("Load customers error", error);
     return res.redirect("/admin/dashboard");
   }
 };
-
 const toggleBlockCustomer = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
+
     if (!user) {
       logger.warn(`Attempted to block/unblock non-existent user: ${req.params.id}`);
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
     }
-
-    user.isBlocked = !user.isBlocked;
-    await user.save();
-
+user.isBlocked = !user.isBlocked;
+      await user.save();
     const msg = user.isBlocked
       ? "User blocked successfully"
       : "User unblocked successfully";
-logger.info(`${msg} for user ${user.email}`);
+
+    logger.info(`${msg} for user ${user.email}`);
+
     res.json({
       success: true,
       message: msg,
       isBlocked: user.isBlocked
     });
+
   } catch (error) {
-logger.error("Toggle block error", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    logger.error("Toggle block error", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
   }
 };
+
 
 export default {
   loadLogin,

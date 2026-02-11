@@ -34,9 +34,17 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const response = await axios.patch(`/admin/customers/toggle-block/${userId}`);
 
-        if (!response.data.success) {
-          throw new Error(response.data.message || "Action failed");
-        }
+     if (!response.data.success) {
+  Toastify({
+    text: response.data.message,
+    backgroundColor: "#e74c3c",
+    duration: 3000,
+    gravity: "bottom",
+    position: "right",
+  }).showToast();
+  return;
+}
+
 
         const isBlocked = response.data.isBlocked;
         document.getElementById(`status-${userId}`).textContent = isBlocked ? "Blocked" : "Active";

@@ -7,3 +7,62 @@
     59|                   </a>
 
 Cannot read properties of null (reading '_id')
+2026-02-11 10:51:09 [ERROR]: Toggle block error userId is not defined
+2026-02-11 10:51:37 [ERROR]: Toggle block error userId is not defined
+2026-02-11 10:51:39 [ERROR]: Toggle block error userId is not defined
+2026-02-11 10:51:41 [ERROR]: Toggle block error userId is not defined
+2026-02-11 10:59:33 [ERROR]: Toggle block error Cast to ObjectId failed for value "{
+  userId: {
+    _id: new ObjectId('698ab07963140088b4f33573'),
+    fullName: 'basil',
+    email: 'basilrdxmix@gmail.com',
+    password: '$2b$12$3c.h/rhvRnV9MFbe1gn1fu2KqLbdTAsElyvnkKRe5f0r3aG4B6FOy',
+    profileImage: '',
+    isBlocked: true,
+    isVerified: true,
+    referralCode: '8GPX2JWE',
+    referredBy: null,
+    wallet: 10000,
+    walletTransactions: [ [Object] ],
+    createdAt: 2026-02-10T04:13:45.060Z,
+    updatedAt: 2026-02-11T05:25:04.563Z,
+    __v: 1
+  }
+}" (type Object) at path "_id" for model "Order"
+2026-02-11 10:59:35 [ERROR]: Toggle block error Cast to ObjectId failed for value "{
+  userId: {
+    _id: new ObjectId('69844fe9ad3bc1e41b33f150'),
+    fullName: 'Hasan mk 12',
+    email: 'h20913818@gmail.com',
+    profileImage: '',
+    googleId: '118422883487539978238',
+    isBlocked: false,
+    isVerified: true,
+    referralCode: 'M3LMWSCB',
+    referredBy: null,
+    wallet: 0,
+    walletTransactions: [],
+    createdAt: 2026-02-05T08:08:09.557Z,
+    updatedAt: 2026-02-05T08:08:09.557Z,
+    __v: 0
+  }
+}" (type Object) at path "_id" for model "Order"
+2026-02-11 11:00:36 [ERROR]: Toggle block error Cast to ObjectId failed for value "{
+  user: {
+    _id: new ObjectId('69844e4fad3bc1e41b33f0b7'),
+    fullName: 'Fathimaliya',
+    email: 'fathimaliya337@gmail.com',
+    profileImage: '',
+    googleId: '100567724307599826167',
+    isBlocked: false,
+    isVerified: true,
+    referralCode: 'OL723AJS',
+    referredBy: null,
+    wallet: 0,
+    walletTransactions: [],
+    createdAt: 2026-02-05T08:01:19.986Z,
+    updatedAt: 2026-02-05T08:01:19.986Z,
+    __v: 0
+  }
+}" (type Object) at path "_id" for model "Order"
+2026-02-11 11:03:33 [ERROR]: Toggle block error userOrder is not defined
