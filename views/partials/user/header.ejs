@@ -4,7 +4,12 @@
       <img src="/images/screen-removebg-preview.png" alt="Chronora" class="logo-img" />
       <span class="logo-text">Chronora</span>
     </a>
-    <nav class="nav-links">
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle navigation" aria-expanded="false">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+    <nav class="nav-links" id="navLinks">
       <a href="/">Home</a>
       <a href="/watch">Watches</a>
       <a href="/about">About</a>
@@ -14,31 +19,32 @@
       <% if (!user) { %>
         <a href="/login" class="auth-btn login-btn">Log in</a>
         <a href="/signup" class="auth-btn signup-btn">Sign Up</a>
-      <% } else { %>
-        <!-- Wishlist Button (Heart Icon) -->
-        <a href="/wishlist" class="icon-btn" title="My Wishlist">
-          <i class="fas fa-heart"></i>
-          <!-- Optional: Add count badge later -->
-          <!-- <span class="badge">3</span> -->
-        </a>
+        <% } else { %>
+          <!-- Wishlist Button (Heart Icon) -->
+          <a href="/wishlist" class="icon-btn" title="My Wishlist">
+            <i class="fas fa-heart"></i>
+            <!-- Optional: Add count badge later -->
+            <!-- <span class="badge">3</span> -->
+          </a>
 
-        <!-- Cart Button -->
-        <a href="/cart" class="icon-btn" title="My Cart">
-          <i class="fas fa-shopping-cart"></i>
-        </a>
+          <!-- Cart Button -->
+          <a href="/cart" class="icon-btn" title="My Cart">
+            <i class="fas fa-shopping-cart"></i>
+          </a>
 
-        <!-- Profile Dropdown -->
-        <div class="profile-dropdown">
-          <button class="profile-btn" id="profileBtn" title="My Account">
-            <i class="fas fa-user" style="color: azure; background-color: black; padding: 8px; border-radius: 50%;"></i>
-          </button>
-          <div class="dropdown-menu" id="dropdownMenu">
-            <a href="/profile">My Profile</a>
-            <hr>
-            <a href="/logout" class="logout-link">Logout</a>
+          <!-- Profile Dropdown -->
+          <div class="profile-dropdown">
+            <button class="profile-btn" id="profileBtn" title="My Account">
+              <i class="fas fa-user"
+                style="color: azure; background-color: black; padding: 8px; border-radius: 50%;"></i>
+            </button>
+            <div class="dropdown-menu" id="dropdownMenu">
+              <a href="/profile">My Profile</a>
+              <hr>
+              <a href="/logout" class="logout-link">Logout</a>
+            </div>
           </div>
-        </div>
-      <% } %>
+          <% } %>
     </div>
   </div>
 </header>
@@ -64,6 +70,35 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && dropdownMenu.classList.contains('show')) {
         dropdownMenu.classList.remove('show');
+      }
+    });
+  }
+
+  // Hamburger Mobile Menu
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const navLinks = document.getElementById('navLinks');
+
+  if (hamburgerBtn && navLinks) {
+    hamburgerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = navLinks.classList.toggle('open');
+      hamburgerBtn.classList.toggle('active', isOpen);
+      hamburgerBtn.setAttribute('aria-expanded', isOpen);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!hamburgerBtn.contains(e.target) && !navLinks.contains(e.target) && navLinks.classList.contains('open')) {
+        navLinks.classList.remove('open');
+        hamburgerBtn.classList.remove('active');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && navLinks.classList.contains('open')) {
+        navLinks.classList.remove('open');
+        hamburgerBtn.classList.remove('active');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
       }
     });
   }

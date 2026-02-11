@@ -1,16 +1,20 @@
-:root{
-  --bg: #071224;        /* page background */
-  --card: #0f1724;      /* darker card bg */
-  --muted: #9ea9b3;     /* muted text */
+:root {
+  --bg: #071224;
+  /* page background */
+  --card: #0f1724;
+  /* darker card bg */
+  --muted: #9ea9b3;
+  /* muted text */
   --text: #ffffff;
-  --accent: #1963ff;    /* primary blue */
-  --glass: rgba(255,255,255,0.03);
+  --accent: #1963ff;
+  /* primary blue */
+  --glass: rgba(255, 255, 255, 0.03);
 }
 
 .contact-page {
   background: var(--bg);
   color: var(--text);
-  padding: 60px 20px;
+  padding: clamp(36px, 6vw, 60px) 20px;
   box-sizing: border-box;
 }
 
@@ -24,11 +28,13 @@
   text-align: center;
   margin-bottom: 34px;
 }
+
 .contact-header h1 {
-  font-size: 32px;
+  font-size: clamp(24px, 4vw, 32px);
   margin: 0 0 8px;
   font-weight: 700;
 }
+
 .contact-header .lead {
   color: var(--muted);
   font-size: 14px;
@@ -49,6 +55,7 @@
   margin: 0 0 18px;
   color: #fff;
 }
+
 .contact-list {
   list-style: none;
   margin: 0;
@@ -56,6 +63,7 @@
   display: grid;
   gap: 14px;
 }
+
 .contact-list li {
   display: flex;
   gap: 14px;
@@ -63,8 +71,15 @@
   background: var(--card);
   padding: 14px;
   border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(2,6,12,0.6);
+  box-shadow: 0 10px 30px rgba(2, 6, 12, 0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
+.contact-list li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 35px rgba(2, 6, 12, 0.7);
+}
+
 .contact-list .icon {
   width: 44px;
   height: 44px;
@@ -73,16 +88,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(25,99,255,0.12);
+  background: rgba(25, 99, 255, 0.12);
   color: var(--accent);
   font-size: 18px;
 }
+
 .contact-list .meta strong {
   display: block;
   font-size: 13px;
   margin-bottom: 4px;
   color: #fff;
 }
+
 .contact-list .meta span {
   color: var(--muted);
   font-size: 13px;
@@ -90,20 +107,23 @@
 
 /* showroom card */
 .showroom-card {
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   padding: 18px;
   border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(2,6,12,0.6);
+  box-shadow: 0 10px 30px rgba(2, 6, 12, 0.6);
 }
+
 .showroom-card h3 {
   margin: 0 0 12px;
   font-size: 16px;
 }
+
 .showroom-image {
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 12px;
 }
+
 .showroom-image img {
   display: block;
   width: 100%;
@@ -129,22 +149,38 @@
   .contact-grid {
     grid-template-columns: 1fr;
   }
-  .contact-header h1 { font-size: 26px; }
-  .showroom-card { margin-top: 8px; }
+
+  .contact-header h1 {
+    font-size: 26px;
+  }
+
+  .showroom-card {
+    margin-top: 8px;
+  }
 }
 
 /* small visual polish for links/buttons if you add them later */
 .btn {
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 14px;
-  border-radius:8px;
-  text-decoration:none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
   background: var(--accent);
   color: white;
-  font-weight:600;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  min-height: 44px;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(25, 99, 255, 0.3);
 }
 
 /* ensure footer icons visible (if using main-footer) */
-.main-footer { position: relative; z-index: 1; }
+.main-footer {
+  position: relative;
+  z-index: 1;
+}

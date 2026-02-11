@@ -1,19 +1,23 @@
+/* =============================================
+   Landing Page – Chronora Home
+   ============================================= */
+
 .home-container {
   background-color: #1e2430;
   color: #fff;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
   padding-bottom: 80px;
 }
 
 /* Hero Section */
 .hero {
   text-align: center;
-  padding: 100px 20px 60px;
+  padding: clamp(60px, 10vw, 100px) 20px clamp(40px, 6vw, 60px);
   background-color: #12161f;
 }
 
 .hero h1 {
-  font-size: 2.5rem;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 600;
   line-height: 1.4;
 }
@@ -22,31 +26,37 @@
   margin: 15px auto 25px;
   color: #cfcfcf;
   max-width: 600px;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 1.5vw, 1rem);
+  line-height: 1.6;
 }
 
 .btn {
   background-color: #f4c542;
   color: #000;
   padding: 12px 28px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-weight: 600;
   text-decoration: none;
-  transition: 0.3s;
+  transition: all 0.3s ease;
+  display: inline-block;
+  min-height: 44px;
+  line-height: 1.3;
 }
 
 .btn:hover {
   background-color: #ffda63;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(244, 197, 66, 0.3);
 }
 
 /* Collection */
 .collection {
   text-align: center;
-  padding: 60px 20px;
+  padding: clamp(40px, 6vw, 60px) 20px;
 }
 
 .collection h2 {
-  font-size: 1.8rem;
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
   margin-bottom: 40px;
 }
 
@@ -55,13 +65,15 @@
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 25px;
   justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .product-card {
   background-color: #2a2f3d;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 20px;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .product-card img {
@@ -82,6 +94,7 @@
 
 .product-card:hover {
   transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
 }
 
 /* Precision Section */
@@ -91,12 +104,12 @@
   align-items: center;
   justify-content: center;
   gap: 40px;
-  padding: 60px 20px;
+  padding: clamp(40px, 6vw, 60px) 20px;
   background-color: #181c25;
 }
 
 .precision-image img {
-  width: 350px;
+  width: clamp(260px, 30vw, 350px);
   border-radius: 12px;
 }
 
@@ -105,23 +118,25 @@
 }
 
 .precision-content h2 {
-  font-size: 1.8rem;
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
   margin-bottom: 15px;
 }
 
 .precision-content p {
   color: #bfbfbf;
   margin-bottom: 25px;
+  line-height: 1.7;
 }
-/* SHOP BY CATEGORY SECTION - LUXURY STYLE */
+
+/* SHOP BY CATEGORY SECTION */
 .categories-section {
-  padding: 80px 20px;
+  padding: clamp(50px, 8vw, 80px) 20px;
   background-color: #12161f;
   text-align: center;
 }
 
 .section-title {
-  font-size: 2.2rem;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   margin-bottom: 50px;
   color: #fff;
   font-weight: 600;
@@ -144,8 +159,8 @@
   position: relative;
   border-radius: 16px;
   overflow: hidden;
-  height: 380px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  height: clamp(280px, 35vw, 380px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   transition: all 0.4s ease;
 }
 
@@ -161,7 +176,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(transparent, rgba(0,0,0,0.85));
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
   color: white;
   padding: 50px 20px 30px;
   text-align: center;
@@ -169,7 +184,7 @@
 }
 
 .category-name {
-  font-size: 1.7rem;
+  font-size: clamp(1.3rem, 2.5vw, 1.7rem);
   font-weight: 600;
   margin: 0 0 8px 0;
   letter-spacing: 0.5px;
@@ -183,8 +198,8 @@
 
 /* HOVER EFFECTS */
 .category-card:hover {
-  transform: translateY(-15px);
-  box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+  transform: translateY(-12px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
 }
 
 .category-card:hover .category-img {
@@ -192,7 +207,7 @@
 }
 
 .category-card:hover .category-overlay {
-  background: linear-gradient(transparent, rgba(0,0,0,0.95));
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.95));
 }
 
 .no-categories {
@@ -201,16 +216,40 @@
   padding: 40px;
 }
 
-/* Mobile */
+/* Responsive */
 @media (max-width: 768px) {
   .categories-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 16px;
   }
-  .category-card {
-    height: 300px;
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
-  .section-title {
-    font-size: 1.9rem;
+
+  .product-card {
+    padding: 16px;
+  }
+
+  .home-container {
+    padding-bottom: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .categories-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .precision {
+    gap: 24px;
+    padding: 40px 16px;
   }
 }

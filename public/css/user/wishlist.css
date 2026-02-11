@@ -26,7 +26,7 @@
 }
 
 .page-title {
-  font-size: 3.2rem;
+  font-size: clamp(2rem, 5vw, 3.2rem);
   font-weight: 800;
   background: linear-gradient(90deg, #00ff9d, #00d4ff);
   -webkit-background-clip: text;
@@ -44,15 +44,17 @@
 /* Wishlist Grid */
 .wishlist-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: 2rem;
-  justify-items: center; /* Centers cards horizontally in their columns */
+  justify-items: center;
+  /* Centers cards horizontally in their columns */
 }
 
 /* Perfectly aligned cards on all screen sizes */
 .wishlist-card {
   width: 100%;
-  max-width: 380px; /* Consistent max width for uniformity */
+  max-width: 380px;
+  /* Consistent max width for uniformity */
   background: rgba(25, 32, 56, 0.8);
   backdrop-filter: blur(10px);
   border-radius: 24px;
@@ -70,7 +72,7 @@
 
 /* Image */
 .image-wrapper {
-  height: 320px;
+  height: clamp(220px, 30vw, 320px);
   overflow: hidden;
   background: #1a2338;
 }
@@ -155,6 +157,7 @@
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  min-height: 44px;
 }
 
 .btn-move-cart {

@@ -1,17 +1,20 @@
 :root {
-  --header-height: 70px;  /* Reduced from 84px → now super slim */
+  --header-height: 70px;
 }
 
 .main-header {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: var(--header-height);
   background: rgba(10, 10, 20, 0.98);
   backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(157, 78, 221, 0.2);
   z-index: 9999;
   padding: 0 4%;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .header-container {
@@ -21,6 +24,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
 }
 
 /* LEFT: Logo */
@@ -29,12 +33,13 @@
   align-items: center;
   gap: 12px;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .logo-img {
-  height: 44px;               /* Reduced from 52px */
+  height: 44px;
   filter: brightness(0) invert(1);
-  transition: 0.4s;
+  transition: transform 0.4s ease;
 }
 
 .logo:hover .logo-img {
@@ -42,12 +47,52 @@
 }
 
 .logo-text {
-  font-size: 26px;
+  font-size: clamp(20px, 2.5vw, 26px);
   font-weight: 800;
   background: linear-gradient(90deg, #e0bbff, #9d4edd);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: 0.8px;
+}
+
+/* ===== HAMBURGER BUTTON ===== */
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 10001;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.hamburger-line {
+  display: block;
+  width: 24px;
+  height: 2.5px;
+  background: #ddd;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+/* Hamburger → X animation */
+.hamburger-btn.active .hamburger-line:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
 }
 
 /* CENTER: Nav */
@@ -63,6 +108,7 @@
   font-size: 15px;
   padding: 6px 0;
   position: relative;
+  transition: color 0.25s ease;
 }
 
 .nav-links a:hover,
@@ -78,18 +124,21 @@
   width: 0;
   height: 2px;
   background: #9d4edd;
-  transition: 0.3s;
+  transition: width 0.3s ease, left 0.3s ease;
   transform: translateX(-50%);
 }
 
 .nav-links a:hover::after,
-.nav-links a.active::after { width: 100%; }
+.nav-links a.active::after {
+  width: 100%;
+}
 
 /* RIGHT: Buttons */
 .header-right {
   display: flex;
   align-items: center;
   gap: 14px;
+  flex-shrink: 0;
 }
 
 .auth-btn {
@@ -98,7 +147,8 @@
   font-weight: 600;
   font-size: 13.5px;
   text-decoration: none;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .login-btn {
@@ -109,6 +159,7 @@
 .login-btn:hover {
   background: #9d4edd;
   color: white;
+  transform: translateY(-1px);
 }
 
 .signup-btn {
@@ -126,9 +177,14 @@
   color: white;
   font-size: 18px;
   padding: 9px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 50%;
-  transition: 0.3s;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
 }
 
 .icon-btn:hover {
@@ -136,7 +192,23 @@
   transform: scale(1.1);
 }
 
-/* Dropdown */
+/* Profile Dropdown */
+.profile-dropdown {
+  position: relative;
+}
+
+.profile-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+}
+
 .dropdown-menu {
   position: absolute;
   right: 0;
@@ -144,12 +216,13 @@
   background: #1a1a2e;
   min-width: 200px;
   border-radius: 14px;
-  box-shadow: 0 12px 35px rgba(0,0,0,0.6);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(157, 78, 221, 0.25);
   opacity: 0;
   visibility: hidden;
   transform: translateY(-8px);
   transition: all 0.3s ease;
+  overflow: hidden;
 }
 
 .dropdown-menu.show {
@@ -164,6 +237,7 @@
   color: #ddd;
   text-decoration: none;
   font-size: 14px;
+  transition: all 0.2s ease;
 }
 
 .dropdown-menu a:hover {
@@ -171,10 +245,107 @@
   color: white;
 }
 
-/* RESPONSIVE */
+.dropdown-menu hr {
+  border: none;
+  border-top: 1px solid rgba(157, 78, 221, 0.2);
+  margin: 0;
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* Tablet */
+@media (max-width: 992px) {
+  .nav-links {
+    gap: 24px;
+  }
+
+  .nav-links a {
+    font-size: 14px;
+  }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
-  .nav-links { display: none; }
-  .logo-text { display: none; }
-  .logo-img { height: 40px; }
-  .auth-btn { padding: 7px 14px; font-size: 13px; }
+  .hamburger-btn {
+    display: flex;
+    order: -1;
+  }
+
+  .logo-text {
+    display: none;
+  }
+
+  .logo-img {
+    height: 38px;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background: rgba(10, 10, 20, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    flex-direction: column;
+    gap: 0;
+    padding: calc(var(--header-height) + 20px) 0 20px;
+    transform: translateX(-100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10000;
+    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5);
+    border-right: 1px solid rgba(157, 78, 221, 0.15);
+    overflow-y: auto;
+  }
+
+  .nav-links.open {
+    transform: translateX(0);
+  }
+
+  .nav-links a {
+    padding: 16px 24px;
+    font-size: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .nav-links a::after {
+    display: none;
+  }
+
+  .nav-links a:hover {
+    background: rgba(157, 78, 221, 0.15);
+  }
+
+  .header-right {
+    gap: 10px;
+  }
+
+  .auth-btn {
+    padding: 7px 14px;
+    font-size: 13px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .main-header {
+    padding: 0 3%;
+  }
+
+  .header-right {
+    gap: 8px;
+  }
+
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    padding: 7px;
+  }
+
+  .auth-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
 }

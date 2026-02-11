@@ -1,0 +1,103 @@
+/* =============================================
+   CHRONORA – Global CSS Foundation
+   Responsive utilities, transitions, accessibility
+   ============================================= */
+
+/* ----- Smooth Scrolling ----- */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ----- Universal Box Sizing ----- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ----- Focus-Visible Accessibility ----- */
+:focus-visible {
+  outline: 3px solid rgba(157, 78, 221, 0.6);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove outline on mouse click (non-keyboard) */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ----- Reduced Motion ----- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ----- Base Transition Utility ----- */
+.transition-smooth {
+  transition: all 0.25s ease;
+}
+
+/* ----- Touch Target Minimum ----- */
+button,
+a,
+input[type="submit"],
+input[type="button"],
+select {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Small inline links inside text don't need min-size */
+p a,
+li a,
+span a,
+.footer-col a,
+.breadcrumbs a,
+.nav-links a {
+  min-height: unset;
+  min-width: unset;
+}
+
+/* ----- Selection Color ----- */
+::selection {
+  background: rgba(157, 78, 221, 0.3);
+  color: #ffffff;
+}
+
+/* ----- Scrollbar Styling (WebKit) ----- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(157, 78, 221, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(157, 78, 221, 0.5);
+}
+
+/* ----- Image Responsiveness ----- */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ----- Prevent Horizontal Overflow ----- */
+body {
+  overflow-x: hidden;
+}
