@@ -493,18 +493,29 @@ export const successPage = async (req, res) => {
   try {
     const orderId = req.query.orderId || (req.session && req.session.lastOrderId);
     let order = null;
+
     if (orderId && mongoose.Types.ObjectId.isValid(orderId)) {
-      order = await Order.findById(orderId).lean();
+      order = await Order.findById(orderId)
+      order = await Order.findById(orderId)
+  .populate("products.productId", "name")
+  .populate("products.variantId", "images colorName size")
+  .lean();
     }
+
     res.render("user/order-success", {
       orderId: order ? (order.orderId || order._id) : (orderId || "—"),
       orderTotal: order ? order.totalAmount : null,
       order
     });
-        logger.info(`Order success page loaded for orderId ${orderId}`);
+
+    logger.info(`Order success page loaded for orderId ${orderId}`);
   } catch (e) {
     logger.error("successPage error:", e);
-    res.render("user/order-success", { orderId: "—", orderTotal: null, order: null });
+    res.render("user/order-success", {
+      orderId: "—",
+      orderTotal: null,
+      order: null
+    });
   }
 };
 

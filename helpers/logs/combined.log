@@ -1393,3 +1393,1032 @@ Cannot read properties of null (reading '_id')
 2026-02-11 17:19:27 [INFO]: GET /js/main.js 404
 2026-02-11 17:19:27 [INFO]: GET /checkout/check-stock 404
 2026-02-11 17:19:57 [INFO]: GET /checkout/check-stock 404
+2026-02-11 17:27:37 [INFO]: GET / 403
+2026-02-11 17:27:38 [INFO]: GET / 200
+2026-02-11 17:27:38 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:27:38 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:27:38 [INFO]: GET /css/global.css 200
+2026-02-11 17:27:38 [INFO]: GET /css/user/header.css 200
+2026-02-11 17:27:38 [INFO]: GET /css/user/footer.css 200
+2026-02-11 17:27:38 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:27:38 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-11 17:27:38 [INFO]: GET /css/user/landing.css 200
+2026-02-11 17:27:38 [INFO]: GET /js/main.js 404
+2026-02-11 17:27:42 [INFO]: GET /login 200
+2026-02-11 17:27:42 [INFO]: GET /js/user/login.js 304
+2026-02-11 17:27:42 [INFO]: GET /css/style.css 404
+2026-02-11 17:27:42 [INFO]: GET /css/user/login.css 200
+2026-02-11 17:27:49 [INFO]: GET /signup 200
+2026-02-11 17:27:49 [INFO]: GET /js/user/signup.js 304
+2026-02-11 17:27:49 [INFO]: GET /css/style.css 404
+2026-02-11 17:27:49 [INFO]: GET /css/user/signup.css 200
+2026-02-11 17:27:51 [INFO]: GET /login 200
+2026-02-11 17:27:51 [INFO]: GET /css/user/login.css 304
+2026-02-11 17:27:51 [INFO]: GET /js/user/login.js 304
+2026-02-11 17:27:51 [INFO]: GET /css/style.css 404
+2026-02-11 17:27:58 [INFO]: POST /login 302
+2026-02-11 17:27:58 [INFO]: GET /login 200
+2026-02-11 17:27:58 [INFO]: GET /css/user/login.css 304
+2026-02-11 17:27:58 [INFO]: GET /js/user/login.js 304
+2026-02-11 17:27:58 [INFO]: GET /css/style.css 404
+2026-02-11 17:28:06 [INFO]: GET /checkout/check-stock 404
+2026-02-11 17:28:06 [INFO]: User logged in: eee@gmail.com
+2026-02-11 17:28:06 [INFO]: POST /login 302
+2026-02-11 17:28:06 [INFO]: GET / 200
+2026-02-11 17:28:06 [INFO]: GET /css/global.css 304
+2026-02-11 17:28:06 [INFO]: GET /css/user/header.css 304
+2026-02-11 17:28:06 [INFO]: GET /css/user/footer.css 304
+2026-02-11 17:28:06 [INFO]: GET /js/main.js 404
+2026-02-11 17:28:06 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:28:06 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:28:07 [INFO]: GET /css/user/landing.css 304
+2026-02-11 17:28:07 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:28:07 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-11 17:28:14 [INFO]: GET /watch 200
+2026-02-11 17:28:14 [INFO]: GET /css/global.css 304
+2026-02-11 17:28:14 [INFO]: GET /css/user/header.css 304
+2026-02-11 17:28:14 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:28:14 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:28:14 [INFO]: GET /css/user/footer.css 304
+2026-02-11 17:28:14 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:28:14 [INFO]: GET /js/main.js 404
+2026-02-11 17:28:14 [INFO]: GET /css/user/watch.css 200
+2026-02-11 17:28:18 [INFO]: GET /product/69843e99ad3bc1e41b33eb5d 200
+2026-02-11 17:28:18 [INFO]: GET /css/global.css 304
+2026-02-11 17:28:18 [INFO]: GET /css/user/header.css 304
+2026-02-11 17:28:18 [INFO]: GET /css/user/footer.css 304
+2026-02-11 17:28:18 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:28:18 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:28:18 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:28:18 [INFO]: GET /js/main.js 404
+2026-02-11 17:28:23 [INFO]: Added to cart: product 69843e99ad3bc1e41b33eb5d, variant 69843e9dad3bc1e41b33eb5f, user 6972fe40889f9beb0564c701
+2026-02-11 17:28:23 [INFO]: POST /cart/add 200
+2026-02-11 17:28:25 [INFO]: GET /about 200
+2026-02-11 17:28:25 [INFO]: GET /css/global.css 304
+2026-02-11 17:28:25 [INFO]: GET /css/user/header.css 304
+2026-02-11 17:28:25 [INFO]: GET /css/user/footer.css 304
+2026-02-11 17:28:25 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:28:25 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:28:25 [INFO]: GET /css/user/about.css 200
+2026-02-11 17:28:25 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:28:25 [INFO]: GET /js/main.js 404
+2026-02-11 17:28:25 [INFO]: GET /images/dcf5b2078ba077da2fa300de4053ad5d.jpg 200
+2026-02-11 17:28:25 [INFO]: GET /images/5c61d909d29c7ea559483e3464f636e8.jpg 200
+2026-02-11 17:28:26 [INFO]: GET /contact 200
+2026-02-11 17:28:26 [INFO]: GET /css/global.css 304
+2026-02-11 17:28:26 [INFO]: GET /css/user/header.css 304
+2026-02-11 17:28:26 [INFO]: GET /css/user/footer.css 304
+2026-02-11 17:28:26 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:28:26 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:28:27 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:28:27 [INFO]: GET /css/user/contact.css 200
+2026-02-11 17:28:27 [INFO]: GET /images/showroom.jpg 404
+2026-02-11 17:28:27 [INFO]: GET /js/main.js 404
+2026-02-11 17:28:30 [INFO]: Cart loaded for user: 6972fe40889f9beb0564c701
+2026-02-11 17:28:30 [INFO]: GET /cart 200
+2026-02-11 17:28:30 [INFO]: GET /css/global.css 304
+2026-02-11 17:28:30 [INFO]: GET /css/user/header.css 304
+2026-02-11 17:28:30 [INFO]: GET /css/user/footer.css 304
+2026-02-11 17:28:30 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:28:30 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:28:30 [INFO]: GET /js/user/cart.js 304
+2026-02-11 17:28:30 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:28:30 [INFO]: GET /css/user/cart.css 200
+2026-02-11 17:28:30 [INFO]: GET /js/main.js 404
+2026-02-11 17:28:33 [INFO]: Cart item quantity updated: item 698c6ee04dac9672f7f50715, user 6972fe40889f9beb0564c701, new qty: 2
+2026-02-11 17:28:33 [INFO]: POST /cart/update/698c6ee04dac9672f7f50715 200
+2026-02-11 17:28:36 [INFO]: Checkout page loaded for user 6972fe40889f9beb0564c701
+2026-02-11 17:28:36 [INFO]: GET /checkout 200
+2026-02-11 17:28:36 [INFO]: GET /css/global.css 304
+2026-02-11 17:28:36 [INFO]: GET /css/user/header.css 304
+2026-02-11 17:28:36 [INFO]: GET /css/user/footer.css 304
+2026-02-11 17:28:36 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:28:36 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:28:36 [INFO]: GET /css/user/checkout.css 304
+2026-02-11 17:28:36 [INFO]: GET /js/user/checkout.js 304
+2026-02-11 17:28:36 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:28:36 [INFO]: GET /js/main.js 404
+2026-02-11 17:28:37 [INFO]: GET /checkout/check-stock 404
+2026-02-11 17:28:41 [INFO]: GET /coupons/available 200
+2026-02-11 17:28:43 [INFO]: Coupon A8EYRZZ applied by user 6972fe40889f9beb0564c701, discount ₹6000
+2026-02-11 17:28:43 [INFO]: POST /checkout/apply-coupon 200
+2026-02-11 17:28:45 [INFO]: Razorpay order created: order_SEpY8ZcWpUMPa2, amount: 2400000
+2026-02-11 17:28:45 [INFO]: POST /create-order 200
+2026-02-11 17:29:05 [INFO]: Order placed successfully by user 6972fe40889f9beb0564c701, orderId 698c6f096153e9a50d2f717b
+2026-02-11 17:29:05 [INFO]: POST /checkout/place-order 200
+2026-02-11 17:29:06 [INFO]: GET /checkout/check-stock 404
+2026-02-11 17:29:07 [INFO]: Order success page loaded for orderId 698c6f096153e9a50d2f717b
+2026-02-11 17:29:07 [INFO]: GET /checkout/success?orderId=698c6f096153e9a50d2f717b 200
+2026-02-11 17:29:07 [INFO]: GET /css/global.css 304
+2026-02-11 17:29:07 [INFO]: GET /css/user/header.css 304
+2026-02-11 17:29:07 [INFO]: GET /css/user/footer.css 304
+2026-02-11 17:29:07 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:29:07 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:29:07 [INFO]: GET /css/user/order-success.css 304
+2026-02-11 17:29:07 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:29:07 [INFO]: GET /js/order-success.js 404
+2026-02-11 17:29:07 [INFO]: GET /js/main.js 404
+2026-02-11 17:29:08 [INFO]: Wishlist loaded for user 6972fe40889f9beb0564c701
+2026-02-11 17:29:08 [INFO]: GET /wishlist 200
+2026-02-11 17:29:08 [INFO]: GET /css/global.css 304
+2026-02-11 17:29:08 [INFO]: GET /css/user/header.css 304
+2026-02-11 17:29:08 [INFO]: GET /css/user/footer.css 304
+2026-02-11 17:29:08 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:29:08 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:29:08 [INFO]: GET /js/user/sidebar.js 304
+2026-02-11 17:29:08 [INFO]: GET /js/user/wishlist.js 304
+2026-02-11 17:29:08 [INFO]: GET /css/user/wishlist.css 200
+2026-02-11 17:29:08 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:29:08 [INFO]: GET /css/user/sidebar.css 200
+2026-02-11 17:29:08 [INFO]: GET /js/main.js 404
+2026-02-11 17:29:12 [INFO]: GET /profile 200
+2026-02-11 17:29:12 [INFO]: GET /css/global.css 304
+2026-02-11 17:29:12 [INFO]: GET /css/user/header.css 304
+2026-02-11 17:29:12 [INFO]: GET /css/user/footer.css 304
+2026-02-11 17:29:12 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:29:12 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:29:12 [INFO]: GET /css/user/profile.css 304
+2026-02-11 17:29:12 [INFO]: GET /css/user/sidebar.css 304
+2026-02-11 17:29:12 [INFO]: GET /js/user/sidebar.js 304
+2026-02-11 17:29:13 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:29:14 [INFO]: GET /js/main.js 404
+2026-02-11 17:29:15 [INFO]: Loaded addresses for user: 6972fe40889f9beb0564c701
+2026-02-11 17:29:15 [INFO]: GET /profile/addresses 200
+2026-02-11 17:29:15 [INFO]: GET /css/global.css 304
+2026-02-11 17:29:15 [INFO]: GET /css/user/header.css 304
+2026-02-11 17:29:15 [INFO]: GET /css/user/footer.css 304
+2026-02-11 17:29:15 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:29:15 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:29:15 [INFO]: GET /css/user/address.css 200
+2026-02-11 17:29:16 [INFO]: GET /css/user/sidebar.css 304
+2026-02-11 17:29:16 [INFO]: GET /js/user/sidebar.js 304
+2026-02-11 17:29:16 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:29:16 [INFO]: GET /js/user/profile-address-edit.js 200
+2026-02-11 17:29:16 [INFO]: GET /js/main.js 404
+2026-02-11 17:29:18 [INFO]: Orders page loaded for user 6972fe40889f9beb0564c701
+2026-02-11 17:29:18 [INFO]: GET /profile/orders 200
+2026-02-11 17:29:18 [INFO]: GET /css/global.css 304
+2026-02-11 17:29:18 [INFO]: GET /css/user/header.css 304
+2026-02-11 17:29:18 [INFO]: GET /css/user/footer.css 304
+2026-02-11 17:29:19 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:29:19 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:29:19 [INFO]: GET /css/user/orders.css 304
+2026-02-11 17:29:19 [INFO]: GET /css/user/sidebar.css 304
+2026-02-11 17:29:19 [INFO]: GET /js/user/sidebar.js 304
+2026-02-11 17:29:19 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:29:19 [INFO]: GET /js/main.js 404
+2026-02-11 17:29:24 [INFO]: Wishlist loaded for user 6972fe40889f9beb0564c701
+2026-02-11 17:29:24 [INFO]: GET /wishlist 200
+2026-02-11 17:29:24 [INFO]: GET /css/global.css 304
+2026-02-11 17:29:24 [INFO]: GET /css/user/header.css 304
+2026-02-11 17:29:24 [INFO]: GET /css/user/footer.css 304
+2026-02-11 17:29:24 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:29:24 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:29:24 [INFO]: GET /css/user/wishlist.css 304
+2026-02-11 17:29:24 [INFO]: GET /css/user/sidebar.css 304
+2026-02-11 17:29:24 [INFO]: GET /js/user/sidebar.js 304
+2026-02-11 17:29:24 [INFO]: GET /js/user/wishlist.js 304
+2026-02-11 17:29:24 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:29:25 [INFO]: GET /js/main.js 404
+2026-02-11 17:29:27 [INFO]: GET /profile/change-password 200
+2026-02-11 17:29:27 [INFO]: GET /css/global.css 304
+2026-02-11 17:29:27 [INFO]: GET /css/user/header.css 304
+2026-02-11 17:29:27 [INFO]: GET /css/user/footer.css 304
+2026-02-11 17:29:27 [INFO]: GET /css/user/productDetail.css 304
+2026-02-11 17:29:27 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-11 17:29:27 [INFO]: GET /css/user/change-password.css 200
+2026-02-11 17:29:27 [INFO]: GET /css/user/sidebar.css 304
+2026-02-11 17:29:27 [INFO]: GET /js/user/sidebar.js 304
+2026-02-11 17:29:27 [INFO]: GET /js/user/productDetail.js 304
+2026-02-11 17:29:27 [INFO]: GET /js/user/change-password.js 200
+2026-02-11 17:29:27 [INFO]: GET /js/main.js 404
+2026-02-12 10:06:20 [INFO]: GET / 200
+2026-02-12 10:06:20 [INFO]: GET /css/user/header.css 304
+2026-02-12 10:06:20 [INFO]: GET /css/global.css 304
+2026-02-12 10:06:20 [INFO]: GET /css/user/footer.css 304
+2026-02-12 10:06:20 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 10:06:20 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 10:06:20 [INFO]: GET /css/user/landing.css 304
+2026-02-12 10:06:20 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 10:06:20 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-12 10:06:20 [INFO]: GET /js/main.js 404
+2026-02-12 10:06:23 [INFO]: GET /admin/categories 302
+2026-02-12 10:06:23 [INFO]: GET /admin/login 200
+2026-02-12 10:06:23 [INFO]: GET /css/admin/adminLogin.css 304
+2026-02-12 10:06:23 [INFO]: GET /js/admin/adminLogin.js 304
+2026-02-12 10:06:23 [INFO]: GET /favicon.ico 404
+2026-02-12 10:06:36 [INFO]: Admin logged in successfully: admin@chronora.com
+2026-02-12 10:06:36 [INFO]: POST /admin/login 200
+2026-02-12 10:06:37 [ERROR]: GET /admin/dashboard - C:\Users\DELL\Desktop\CHRONORA\views\admin\dashboard.ejs:21
+    19|   </header>
+    20|  <div class="card-content">
+ >> 21|         <h6><%=ordersByStatus %></h6>
+    22|       </div>
+    23| 
+    24|   <div class="overview-grid">
+
+ordersByStatus is not defined
+2026-02-12 10:06:37 [INFO]: GET /admin/dashboard 500
+2026-02-12 10:07:17 [ERROR]: GET /admin/dashboard - C:\Users\DELL\Desktop\CHRONORA\views\admin\dashboard.ejs:21
+    19|   </header>
+    20|  <div class="card-content">
+ >> 21|         <h6><%=ordersByStatus %></h6>
+    22|       </div>
+    23| 
+    24|   <div class="overview-grid">
+
+ordersByStatus is not defined
+2026-02-12 10:07:17 [INFO]: GET /admin/dashboard 500
+2026-02-12 10:09:27 [INFO]: GET /admin/dashboard 200
+2026-02-12 10:09:27 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 10:09:27 [INFO]: GET /css/admin/header.css 304
+2026-02-12 10:09:27 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 10:09:27 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-12 10:09:27 [INFO]: GET /js/admin/dashboard.js 304
+2026-02-12 10:09:27 [INFO]: GET /js/main.js 404
+2026-02-12 10:09:29 [INFO]: GET /admin/dashboard/data 200
+2026-02-12 10:14:06 [INFO]: GET /admin/dashboard 200
+2026-02-12 10:14:06 [INFO]: GET /css/admin/header.css 304
+2026-02-12 10:14:06 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 10:14:06 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 10:14:06 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-12 10:14:06 [INFO]: GET /js/admin/dashboard.js 200
+2026-02-12 10:14:06 [INFO]: GET /js/main.js 404
+2026-02-12 10:14:09 [INFO]: GET /admin/dashboard/data 200
+2026-02-12 10:14:29 [INFO]: GET /admin/dashboard 200
+2026-02-12 10:14:29 [INFO]: GET /css/admin/header.css 304
+2026-02-12 10:14:30 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 10:14:30 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 10:14:30 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-12 10:14:30 [INFO]: GET /js/admin/dashboard.js 200
+2026-02-12 10:14:30 [INFO]: GET /js/main.js 404
+2026-02-12 10:14:31 [INFO]: GET /admin/dashboard/data 200
+2026-02-12 16:40:45 [INFO]: GET / 200
+2026-02-12 16:40:45 [INFO]: GET /css/global.css 304
+2026-02-12 16:40:45 [INFO]: GET /css/user/header.css 304
+2026-02-12 16:40:45 [INFO]: GET /css/user/footer.css 304
+2026-02-12 16:40:45 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 16:40:46 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 16:40:46 [INFO]: GET /css/user/landing.css 304
+2026-02-12 16:40:46 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 16:40:46 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-12 16:40:46 [INFO]: GET /js/main.js 404
+2026-02-12 16:40:46 [INFO]: GET /favicon.ico 404
+2026-02-12 16:40:50 [INFO]: Admin already logged in: admin@chronora.com
+2026-02-12 16:40:50 [INFO]: GET /admin/login 302
+2026-02-12 16:40:50 [INFO]: GET /admin/dashboard 200
+2026-02-12 16:40:50 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:40:51 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:40:51 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:40:51 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-12 16:40:51 [INFO]: GET /js/admin/dashboard.js 304
+2026-02-12 16:40:51 [INFO]: GET /js/main.js 404
+2026-02-12 16:40:52 [INFO]: GET /admin/dashboard/data 200
+2026-02-12 16:40:55 [INFO]: Products listed
+2026-02-12 16:40:55 [INFO]: GET /admin/products 200
+2026-02-12 16:40:55 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:40:55 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:40:55 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:40:55 [INFO]: GET /css/admin/products.css 200
+2026-02-12 16:40:55 [INFO]: GET /js/main.js 404
+2026-02-12 16:40:55 [INFO]: GET /js/admin/products.js 200
+2026-02-12 16:40:59 [INFO]: Products listed
+2026-02-12 16:40:59 [INFO]: GET /admin/products?search=the 200
+2026-02-12 16:40:59 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:40:59 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:40:59 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:40:59 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:40:59 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:40:59 [INFO]: GET /js/main.js 404
+2026-02-12 16:48:58 [INFO]: Products listed
+2026-02-12 16:48:58 [INFO]: GET /admin/products?search=the 200
+2026-02-12 16:48:58 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:48:58 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:48:58 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:48:58 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:48:58 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:48:58 [INFO]: GET /js/main.js 404
+2026-02-12 16:49:04 [INFO]: Products listed
+2026-02-12 16:49:04 [INFO]: GET /admin/products?search=the 200
+2026-02-12 16:49:04 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:49:04 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:49:04 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:49:04 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:49:04 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:49:04 [INFO]: GET /js/main.js 404
+2026-02-12 16:49:09 [INFO]: Products listed
+2026-02-12 16:49:09 [INFO]: GET /admin/products?search=THE 200
+2026-02-12 16:49:09 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:49:09 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:49:09 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:49:09 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:49:09 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:49:09 [INFO]: GET /js/main.js 404
+2026-02-12 16:49:16 [INFO]: Products listed
+2026-02-12 16:49:16 [INFO]: GET /admin/products 200
+2026-02-12 16:49:16 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:49:16 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:49:16 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:49:16 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:49:16 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:49:16 [INFO]: GET /js/main.js 404
+2026-02-12 16:49:21 [INFO]: Products listed
+2026-02-12 16:49:21 [INFO]: GET /admin/products?search=The%20Grand%20Watc 200
+2026-02-12 16:49:21 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:49:21 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:49:21 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:49:21 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:49:21 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:49:21 [INFO]: GET /js/main.js 404
+2026-02-12 16:49:24 [INFO]: Products listed
+2026-02-12 16:49:24 [INFO]: GET /admin/products 200
+2026-02-12 16:49:24 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:49:24 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:49:24 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:49:24 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:49:24 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:49:24 [INFO]: GET /js/main.js 404
+2026-02-12 16:49:27 [INFO]: Products listed
+2026-02-12 16:49:27 [INFO]: GET /admin/products?search=THE 200
+2026-02-12 16:49:27 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:49:27 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:49:27 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:49:27 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:49:27 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:49:27 [INFO]: GET /js/main.js 404
+2026-02-12 16:49:31 [INFO]: Products listed
+2026-02-12 16:49:31 [INFO]: GET /admin/products?search=THE 200
+2026-02-12 16:49:31 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:49:31 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:49:31 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:49:31 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:49:31 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:49:31 [INFO]: GET /js/main.js 404
+2026-02-12 16:49:34 [INFO]: Products listed
+2026-02-12 16:49:34 [INFO]: GET /admin/products 200
+2026-02-12 16:49:34 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:49:34 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:49:34 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:49:34 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:49:34 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:49:34 [INFO]: GET /js/main.js 404
+2026-02-12 16:51:05 [INFO]: Products listed
+2026-02-12 16:51:06 [INFO]: GET /admin/products 200
+2026-02-12 16:51:06 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:51:06 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:51:06 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:51:06 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:51:06 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:51:06 [INFO]: GET /js/main.js 404
+2026-02-12 16:51:19 [INFO]: Products listed
+2026-02-12 16:51:19 [INFO]: GET /admin/products?search=THE 200
+2026-02-12 16:51:19 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:51:19 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:51:19 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:51:19 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:51:19 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:51:19 [INFO]: GET /js/main.js 404
+2026-02-12 16:51:22 [INFO]: Products listed
+2026-02-12 16:51:22 [INFO]: GET /admin/products 200
+2026-02-12 16:51:22 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:51:22 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:51:22 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:51:22 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:51:22 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:51:22 [INFO]: GET /js/main.js 404
+2026-02-12 16:51:25 [INFO]: Products listed
+2026-02-12 16:51:25 [INFO]: GET /admin/products?search=the 200
+2026-02-12 16:51:26 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:51:26 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:51:26 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:51:26 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:51:26 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:51:26 [INFO]: GET /js/main.js 404
+2026-02-12 16:51:27 [INFO]: Products listed
+2026-02-12 16:51:27 [INFO]: GET /admin/products 200
+2026-02-12 16:51:27 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:51:27 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:51:27 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:51:27 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:51:27 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:51:28 [INFO]: GET /js/main.js 404
+2026-02-12 16:51:32 [INFO]: Products listed
+2026-02-12 16:51:32 [INFO]: GET /admin/products?search=The%20Grand%20Watch 200
+2026-02-12 16:51:32 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:51:32 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:51:32 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:51:32 [INFO]: GET /js/main.js 404
+2026-02-12 16:51:32 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:51:32 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:51:35 [INFO]: Products listed
+2026-02-12 16:51:35 [INFO]: GET /admin/products 200
+2026-02-12 16:51:35 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:51:35 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:51:35 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:51:35 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:51:35 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:51:35 [INFO]: GET /js/main.js 404
+2026-02-12 16:58:40 [INFO]: Products listed
+2026-02-12 16:58:40 [INFO]: GET /admin/products 200
+2026-02-12 16:58:40 [INFO]: GET /css/admin/header.css 304
+2026-02-12 16:58:40 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 16:58:40 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 16:58:40 [INFO]: GET /css/admin/products.css 304
+2026-02-12 16:58:40 [INFO]: GET /js/admin/products.js 304
+2026-02-12 16:58:40 [INFO]: GET /js/main.js 404
+2026-02-12 16:58:43 [INFO]: GET / 200
+2026-02-12 16:58:43 [INFO]: GET /css/global.css 304
+2026-02-12 16:58:43 [INFO]: GET /css/user/header.css 304
+2026-02-12 16:58:43 [INFO]: GET /css/user/footer.css 304
+2026-02-12 16:58:43 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 16:58:43 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 16:58:43 [INFO]: GET /css/user/landing.css 304
+2026-02-12 16:58:43 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 16:58:43 [INFO]: GET /js/main.js 404
+2026-02-12 16:58:43 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-12 16:58:46 [INFO]: GET /watch 200
+2026-02-12 16:58:46 [INFO]: GET /css/global.css 304
+2026-02-12 16:58:46 [INFO]: GET /css/user/header.css 304
+2026-02-12 16:58:46 [INFO]: GET /css/user/footer.css 304
+2026-02-12 16:58:46 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 16:58:46 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 16:58:46 [INFO]: GET /css/user/watch.css 304
+2026-02-12 16:58:47 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 16:58:47 [INFO]: GET /js/main.js 404
+2026-02-12 16:58:49 [INFO]: GET /product/69843e99ad3bc1e41b33eb5d 200
+2026-02-12 16:58:49 [INFO]: GET /css/global.css 304
+2026-02-12 16:58:49 [INFO]: GET /css/user/header.css 304
+2026-02-12 16:58:49 [INFO]: GET /css/user/footer.css 304
+2026-02-12 16:58:49 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 16:58:49 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 16:58:49 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 16:58:49 [INFO]: GET /js/main.js 404
+2026-02-12 16:58:53 [INFO]: Added to cart: product 69843e99ad3bc1e41b33eb5d, variant 69843e9dad3bc1e41b33eb5f, user 6972fe40889f9beb0564c701
+2026-02-12 16:58:53 [INFO]: POST /cart/add 200
+2026-02-12 16:58:54 [INFO]: Added to cart: product 69843e99ad3bc1e41b33eb5d, variant 69843e9dad3bc1e41b33eb5f, user 6972fe40889f9beb0564c701
+2026-02-12 16:58:54 [INFO]: POST /cart/add 200
+2026-02-12 16:58:57 [INFO]: Added to cart: product 69843e99ad3bc1e41b33eb5d, variant 69843e9dad3bc1e41b33eb5f, user 6972fe40889f9beb0564c701
+2026-02-12 16:58:57 [INFO]: POST /cart/add 200
+2026-02-12 16:58:59 [INFO]: Cart loaded for user: 6972fe40889f9beb0564c701
+2026-02-12 16:58:59 [INFO]: GET /cart 200
+2026-02-12 16:58:59 [INFO]: GET /css/global.css 304
+2026-02-12 16:58:59 [INFO]: GET /css/user/header.css 304
+2026-02-12 16:58:59 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 16:58:59 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 16:58:59 [INFO]: GET /css/user/footer.css 304
+2026-02-12 16:58:59 [INFO]: GET /css/user/cart.css 304
+2026-02-12 16:58:59 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 16:58:59 [INFO]: GET /js/user/cart.js 200
+2026-02-12 16:58:59 [INFO]: GET /js/main.js 404
+2026-02-12 16:59:02 [INFO]: Cart item quantity updated: item 698db9754dac9672f7f533ec, user 6972fe40889f9beb0564c701, new qty: 4
+2026-02-12 16:59:02 [INFO]: POST /cart/update/698db9754dac9672f7f533ec 200
+2026-02-12 16:59:03 [INFO]: POST /cart/update/698db9754dac9672f7f533ec 200
+2026-02-12 16:59:04 [INFO]: POST /cart/update/698db9754dac9672f7f533ec 200
+2026-02-12 16:59:08 [INFO]: POST /cart/update/698db9754dac9672f7f533ec 200
+2026-02-12 16:59:09 [INFO]: POST /cart/update/698db9754dac9672f7f533ec 200
+2026-02-12 16:59:54 [INFO]: POST /cart/update/698db9754dac9672f7f533ec 200
+2026-02-12 16:59:56 [INFO]: Cart item quantity updated: item 698db9754dac9672f7f533ec, user 6972fe40889f9beb0564c701, new qty: 3
+2026-02-12 16:59:56 [INFO]: POST /cart/update/698db9754dac9672f7f533ec 200
+2026-02-12 16:59:59 [INFO]: Cart item quantity updated: item 698db9754dac9672f7f533ec, user 6972fe40889f9beb0564c701, new qty: 4
+2026-02-12 16:59:59 [INFO]: POST /cart/update/698db9754dac9672f7f533ec 200
+2026-02-12 17:00:14 [INFO]: POST /cart/update/698db9754dac9672f7f533ec 200
+2026-02-12 17:06:38 [INFO]: Cart loaded for user: 6972fe40889f9beb0564c701
+2026-02-12 17:06:38 [INFO]: GET /cart 200
+2026-02-12 17:06:38 [INFO]: GET /css/global.css 304
+2026-02-12 17:06:38 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:06:38 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:06:38 [INFO]: GET /css/user/cart.css 304
+2026-02-12 17:06:38 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:06:38 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:06:38 [INFO]: GET /js/user/cart.js 304
+2026-02-12 17:06:38 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:06:38 [INFO]: GET /js/main.js 404
+2026-02-12 17:06:41 [INFO]: Cart item quantity updated: item 698db9754dac9672f7f533ec, user 6972fe40889f9beb0564c701, new qty: 3
+2026-02-12 17:06:41 [INFO]: POST /cart/update/698db9754dac9672f7f533ec 200
+2026-02-12 17:06:43 [INFO]: Cart item quantity updated: item 698db9754dac9672f7f533ec, user 6972fe40889f9beb0564c701, new qty: 2
+2026-02-12 17:06:43 [INFO]: POST /cart/update/698db9754dac9672f7f533ec 200
+2026-02-12 17:06:46 [INFO]: GET /watch 200
+2026-02-12 17:06:46 [INFO]: GET /css/global.css 304
+2026-02-12 17:06:46 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:06:46 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:06:46 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:06:46 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:06:46 [INFO]: GET /css/user/watch.css 304
+2026-02-12 17:06:46 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:06:46 [INFO]: GET /js/main.js 404
+2026-02-12 17:06:48 [INFO]: GET /product/693916ecdeee193883ea663f 200
+2026-02-12 17:06:48 [INFO]: GET /css/global.css 304
+2026-02-12 17:06:48 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:06:48 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:06:48 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:06:48 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:06:48 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:06:48 [INFO]: GET /js/main.js 404
+2026-02-12 17:06:52 [INFO]: GET /product/692d5a508b2f0bdb967e64cc 200
+2026-02-12 17:06:52 [INFO]: GET /css/global.css 304
+2026-02-12 17:06:52 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:06:52 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:06:52 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:06:52 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:06:52 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:06:52 [INFO]: GET /js/main.js 404
+2026-02-12 17:06:55 [INFO]: Added to cart: product 692d5a508b2f0bdb967e64cc, variant 692d5a678b2f0bdb967e64ce, user 6972fe40889f9beb0564c701
+2026-02-12 17:06:55 [INFO]: POST /cart/add 200
+2026-02-12 17:06:58 [INFO]: Cart loaded for user: 6972fe40889f9beb0564c701
+2026-02-12 17:06:58 [INFO]: GET /cart 200
+2026-02-12 17:06:58 [INFO]: GET /css/global.css 304
+2026-02-12 17:06:58 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:06:58 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:06:58 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:06:58 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:06:58 [INFO]: GET /css/user/cart.css 304
+2026-02-12 17:06:58 [INFO]: GET /js/user/cart.js 304
+2026-02-12 17:06:58 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:06:58 [INFO]: GET /js/main.js 404
+2026-02-12 17:07:00 [INFO]: Checkout page loaded for user 6972fe40889f9beb0564c701
+2026-02-12 17:07:00 [INFO]: GET /checkout 200
+2026-02-12 17:07:00 [INFO]: GET /css/global.css 304
+2026-02-12 17:07:00 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:07:00 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:07:00 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:07:00 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:07:00 [INFO]: GET /css/user/checkout.css 304
+2026-02-12 17:07:00 [INFO]: GET /js/user/checkout.js 304
+2026-02-12 17:07:00 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:07:00 [INFO]: GET /js/main.js 404
+2026-02-12 17:07:02 [INFO]: GET /checkout/check-stock 404
+2026-02-12 17:07:05 [INFO]: Razorpay order created: order_SFDiMOReKl5qoJ, amount: 5800000
+2026-02-12 17:07:05 [INFO]: POST /create-order 200
+2026-02-12 17:07:17 [INFO]: Order failure page loaded
+2026-02-12 17:07:17 [INFO]: GET /checkout/failure?error=Amount%20exceeds%20maximum%20amount%20allowed. 200
+2026-02-12 17:07:17 [INFO]: GET /css/global.css 304
+2026-02-12 17:07:17 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:07:17 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:07:17 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:07:17 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:07:17 [INFO]: GET /css/user/order-failure.css 200
+2026-02-12 17:07:17 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:07:17 [INFO]: GET /js/main.js 404
+2026-02-12 17:07:29 [INFO]: Cart loaded for user: 6972fe40889f9beb0564c701
+2026-02-12 17:07:29 [INFO]: GET /cart 200
+2026-02-12 17:07:29 [INFO]: GET /css/global.css 304
+2026-02-12 17:07:29 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:07:29 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:07:29 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:07:29 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:07:29 [INFO]: GET /css/user/cart.css 304
+2026-02-12 17:07:29 [INFO]: GET /js/user/cart.js 304
+2026-02-12 17:07:29 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:07:29 [INFO]: GET /js/main.js 404
+2026-02-12 17:07:32 [INFO]: Cart item quantity updated: item 698db9754dac9672f7f533ec, user 6972fe40889f9beb0564c701, new qty: 1
+2026-02-12 17:07:32 [INFO]: POST /cart/update/698db9754dac9672f7f533ec 200
+2026-02-12 17:07:38 [INFO]: Cart item removed: 698db9754dac9672f7f533ec, user 6972fe40889f9beb0564c701
+2026-02-12 17:07:39 [INFO]: POST /cart/remove/698db9754dac9672f7f533ec 200
+2026-02-12 17:07:41 [INFO]: Cart item removed: 698dbb574dac9672f7f533f1, user 6972fe40889f9beb0564c701
+2026-02-12 17:07:41 [INFO]: POST /cart/remove/698dbb574dac9672f7f533f1 200
+2026-02-12 17:07:42 [INFO]: Cart loaded for user: 6972fe40889f9beb0564c701
+2026-02-12 17:07:42 [INFO]: GET /cart 200
+2026-02-12 17:07:42 [INFO]: GET /css/global.css 304
+2026-02-12 17:07:42 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:07:42 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:07:42 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:07:42 [INFO]: GET /css/user/cart.css 304
+2026-02-12 17:07:42 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:07:42 [INFO]: GET /js/user/cart.js 304
+2026-02-12 17:07:42 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:07:42 [INFO]: GET /js/main.js 404
+2026-02-12 17:07:44 [INFO]: GET / 200
+2026-02-12 17:07:44 [INFO]: GET /css/global.css 304
+2026-02-12 17:07:44 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:07:44 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:07:44 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:07:44 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:07:44 [INFO]: GET /css/user/landing.css 304
+2026-02-12 17:07:44 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:07:44 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-12 17:07:45 [INFO]: GET /js/main.js 404
+2026-02-12 17:07:48 [INFO]: GET /watch 200
+2026-02-12 17:07:48 [INFO]: GET /css/global.css 304
+2026-02-12 17:07:48 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:07:48 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:07:48 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:07:48 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:07:48 [INFO]: GET /css/user/watch.css 304
+2026-02-12 17:07:49 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:07:49 [INFO]: GET /js/main.js 404
+2026-02-12 17:07:54 [INFO]: Product fetched
+2026-02-12 17:07:54 [INFO]: GET /admin/products/get/693916ecdeee193883ea663f 200
+2026-02-12 17:07:59 [INFO]: Product updated
+2026-02-12 17:07:59 [INFO]: PUT /admin/products/edit/693916ecdeee193883ea663f 200
+2026-02-12 17:08:00 [INFO]: Products listed
+2026-02-12 17:08:00 [INFO]: GET /admin/products 200
+2026-02-12 17:08:00 [INFO]: GET /css/admin/header.css 304
+2026-02-12 17:08:00 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 17:08:00 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 17:08:00 [INFO]: GET /css/admin/products.css 304
+2026-02-12 17:08:01 [INFO]: GET /js/admin/products.js 304
+2026-02-12 17:08:01 [INFO]: GET /js/main.js 404
+2026-02-12 17:08:04 [INFO]: GET /watch 200
+2026-02-12 17:08:04 [INFO]: GET /css/global.css 304
+2026-02-12 17:08:04 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:08:04 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:08:04 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:08:04 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:08:04 [INFO]: GET /css/user/watch.css 304
+2026-02-12 17:08:04 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:08:04 [INFO]: GET /js/main.js 404
+2026-02-12 17:08:06 [INFO]: GET /product/693916ecdeee193883ea663f 200
+2026-02-12 17:08:06 [INFO]: GET /css/global.css 304
+2026-02-12 17:08:06 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:08:06 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:08:06 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:08:06 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:08:06 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:08:06 [INFO]: GET /js/main.js 404
+2026-02-12 17:08:09 [INFO]: Added to cart: product 693916ecdeee193883ea663f, variant 693916f4deee193883ea6641, user 6972fe40889f9beb0564c701
+2026-02-12 17:08:10 [INFO]: POST /cart/add 200
+2026-02-12 17:08:12 [INFO]: GET /watch 200
+2026-02-12 17:08:12 [INFO]: GET /css/global.css 304
+2026-02-12 17:08:12 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:08:12 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:08:12 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:08:12 [INFO]: GET /css/user/watch.css 304
+2026-02-12 17:08:12 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:08:12 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:08:12 [INFO]: GET /js/main.js 404
+2026-02-12 17:08:15 [INFO]: GET /product/69843e99ad3bc1e41b33eb5d 200
+2026-02-12 17:08:15 [INFO]: GET /css/global.css 304
+2026-02-12 17:08:15 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:08:15 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:08:15 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:08:15 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:08:15 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:08:15 [INFO]: GET /js/main.js 404
+2026-02-12 17:08:18 [INFO]: Added to cart: product 69843e99ad3bc1e41b33eb5d, variant 69843e9dad3bc1e41b33eb5f, user 6972fe40889f9beb0564c701
+2026-02-12 17:08:19 [INFO]: POST /cart/add 200
+2026-02-12 17:08:20 [INFO]: Cart loaded for user: 6972fe40889f9beb0564c701
+2026-02-12 17:08:20 [INFO]: GET /cart 200
+2026-02-12 17:08:20 [INFO]: GET /css/global.css 304
+2026-02-12 17:08:20 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:08:20 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:08:20 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:08:20 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:08:20 [INFO]: GET /css/user/cart.css 304
+2026-02-12 17:08:20 [INFO]: GET /js/user/cart.js 304
+2026-02-12 17:08:20 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:08:21 [INFO]: GET /js/main.js 404
+2026-02-12 17:08:23 [INFO]: Cart item quantity updated: item 698dbbab4dac9672f7f533f3, user 6972fe40889f9beb0564c701, new qty: 1
+2026-02-12 17:08:23 [INFO]: POST /cart/update/698dbbab4dac9672f7f533f3 200
+2026-02-12 17:08:25 [INFO]: Checkout page loaded for user 6972fe40889f9beb0564c701
+2026-02-12 17:08:25 [INFO]: GET /checkout 200
+2026-02-12 17:08:25 [INFO]: GET /css/global.css 304
+2026-02-12 17:08:25 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:08:25 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:08:25 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:08:25 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:08:25 [INFO]: GET /css/user/checkout.css 304
+2026-02-12 17:08:26 [INFO]: GET /js/user/checkout.js 304
+2026-02-12 17:08:26 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:08:26 [INFO]: GET /js/main.js 404
+2026-02-12 17:08:26 [INFO]: GET /checkout/check-stock 404
+2026-02-12 17:08:29 [INFO]: Razorpay order created: order_SFDjqPFgedsAA5, amount: 1450000
+2026-02-12 17:08:29 [INFO]: POST /create-order 200
+2026-02-12 17:08:51 [INFO]: Order placed successfully by user 6972fe40889f9beb0564c701, orderId 698dbbcaf345eabe1e9ae49f
+2026-02-12 17:08:51 [INFO]: POST /checkout/place-order 200
+2026-02-12 17:08:52 [INFO]: Order success page loaded for orderId 698dbbcaf345eabe1e9ae49f
+2026-02-12 17:08:52 [INFO]: GET /checkout/success?orderId=698dbbcaf345eabe1e9ae49f 200
+2026-02-12 17:08:52 [INFO]: GET /css/global.css 304
+2026-02-12 17:08:52 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:08:52 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:08:52 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:08:52 [INFO]: GET /css/user/order-success.css 304
+2026-02-12 17:08:52 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:08:52 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:08:52 [INFO]: GET /images/no-image.png 404
+2026-02-12 17:08:52 [INFO]: GET /js/order-success.js 404
+2026-02-12 17:08:52 [INFO]: GET /js/main.js 404
+2026-02-12 17:11:18 [INFO]: Order success page loaded for orderId 698dbbcaf345eabe1e9ae49f
+2026-02-12 17:11:18 [INFO]: GET /checkout/success?orderId=698dbbcaf345eabe1e9ae49f 200
+2026-02-12 17:11:18 [INFO]: GET /css/global.css 304
+2026-02-12 17:11:18 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:11:18 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:11:18 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:11:18 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:11:18 [INFO]: GET /css/user/order-success.css 304
+2026-02-12 17:11:18 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:11:18 [INFO]: GET /js/order-success.js 404
+2026-02-12 17:11:18 [INFO]: GET /js/main.js 404
+2026-02-12 17:13:54 [INFO]: Products listed
+2026-02-12 17:13:55 [INFO]: GET /admin/products 200
+2026-02-12 17:13:55 [INFO]: GET /css/admin/header.css 304
+2026-02-12 17:13:55 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 17:13:55 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 17:13:55 [INFO]: GET /css/admin/products.css 304
+2026-02-12 17:13:55 [INFO]: GET /js/admin/products.js 304
+2026-02-12 17:13:55 [INFO]: GET /js/main.js 404
+2026-02-12 17:14:05 [INFO]: Order success page loaded for orderId 698dbbcaf345eabe1e9ae49f
+2026-02-12 17:14:05 [INFO]: GET /checkout/success?orderId=698dbbcaf345eabe1e9ae49f 200
+2026-02-12 17:14:05 [INFO]: GET /css/global.css 304
+2026-02-12 17:14:05 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:14:05 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:14:05 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:14:05 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:14:05 [INFO]: GET /css/user/order-success.css 304
+2026-02-12 17:14:05 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:14:05 [INFO]: GET /js/order-success.js 404
+2026-02-12 17:14:05 [INFO]: GET /js/main.js 404
+2026-02-12 17:14:13 [INFO]: GET / 200
+2026-02-12 17:14:13 [INFO]: GET /css/global.css 304
+2026-02-12 17:14:13 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:14:13 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:14:13 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:14:13 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:14:13 [INFO]: GET /css/user/landing.css 304
+2026-02-12 17:14:13 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:14:13 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-12 17:14:13 [INFO]: GET /js/main.js 404
+2026-02-12 17:14:15 [INFO]: Admin already logged in: admin@chronora.com
+2026-02-12 17:14:15 [INFO]: GET /admin/login 302
+2026-02-12 17:14:15 [INFO]: GET /admin/dashboard 200
+2026-02-12 17:14:15 [INFO]: GET /css/admin/header.css 304
+2026-02-12 17:14:15 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 17:14:15 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 17:14:15 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-12 17:14:15 [INFO]: GET /js/admin/dashboard.js 304
+2026-02-12 17:14:15 [INFO]: GET /js/main.js 404
+2026-02-12 17:14:16 [INFO]: GET /erfrd 404
+2026-02-12 17:14:16 [INFO]: GET /css/global.css 304
+2026-02-12 17:14:16 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:14:16 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:14:16 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:14:16 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:14:16 [INFO]: GET /css/user/404.css 304
+2026-02-12 17:14:16 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:14:16 [INFO]: GET /js/main.js 404
+2026-02-12 17:14:20 [INFO]: Admin already logged in: admin@chronora.com
+2026-02-12 17:14:20 [INFO]: GET /admin/login 302
+2026-02-12 17:14:20 [INFO]: GET /admin/dashboard 200
+2026-02-12 17:14:20 [INFO]: GET /css/admin/header.css 304
+2026-02-12 17:14:20 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 17:14:20 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 17:14:20 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-12 17:14:20 [INFO]: GET /js/admin/dashboard.js 304
+2026-02-12 17:14:20 [INFO]: GET /js/main.js 404
+2026-02-12 17:14:21 [INFO]: GET /admin/dashboard/data 200
+2026-02-12 17:14:23 [ERROR]: GET /admin/;34re3jfrelrvg - C:\Users\DELL\Desktop\CHRONORA\views\layouts\adminLayouts\main.ejs:6
+    4|   <meta charset="utf-8" />
+    5|   <meta name="viewport" content="width=device-width,initial-scale=1" />
+ >> 6|   <title><%= title || 'Chronora Admin' %></title>
+    7| 
+    8|   <!-- ===== CSS ===== -->
+    9|   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+title is not defined
+2026-02-12 17:14:23 [INFO]: GET /admin/;34re3jfrelrvg 500
+2026-02-12 17:18:49 [ERROR]: GET /admin/;34re3jfrelrvg - Failed to lookup view "admin/404" in views directory "C:\Users\DELL\Desktop\CHRONORA\views"
+2026-02-12 17:18:49 [INFO]: GET /admin/;34re3jfrelrvg 500
+2026-02-12 17:18:52 [ERROR]: GET /admin/;34re3jfrelrvg - Failed to lookup view "admin/404" in views directory "C:\Users\DELL\Desktop\CHRONORA\views"
+2026-02-12 17:18:52 [INFO]: GET /admin/;34re3jfrelrvg 500
+2026-02-12 17:18:54 [ERROR]: GET /admin/;34re3jfrelrvg - Failed to lookup view "admin/404" in views directory "C:\Users\DELL\Desktop\CHRONORA\views"
+2026-02-12 17:18:54 [INFO]: GET /admin/;34re3jfrelrvg 500
+2026-02-12 17:19:11 [ERROR]: GET /admin/;34re3jfrelrvg - C:\Users\DELL\Desktop\CHRONORA\views\layouts\adminLayouts\main.ejs:141
+    139| 
+    140|   <%- include('../../partials/admin/header') %>
+ >> 141|   <%- include('../../partials/admin/sidebar') %>
+    142| 
+    143|   <main id="main" class="p-4">
+    144|     <%- body %>
+
+C:\Users\DELL\Desktop\CHRONORA\views\partials\admin\sidebar.ejs:11
+    9| 
+    10|   <nav class="sidebar-nav">
+ >> 11|     <a href="/admin/dashboard" class="nav-link <%= page === 'dashboard' ? 'active' : '' %>">
+    12|       <i class="fas fa-tachometer-alt"></i>
+    13|       <span>Dashboard</span>
+    14|     </a>
+
+page is not defined
+2026-02-12 17:19:11 [INFO]: GET /admin/;34re3jfrelrvg 500
+2026-02-12 17:19:12 [ERROR]: GET /admin/;34re3jfrelrvg - C:\Users\DELL\Desktop\CHRONORA\views\layouts\adminLayouts\main.ejs:141
+    139| 
+    140|   <%- include('../../partials/admin/header') %>
+ >> 141|   <%- include('../../partials/admin/sidebar') %>
+    142| 
+    143|   <main id="main" class="p-4">
+    144|     <%- body %>
+
+C:\Users\DELL\Desktop\CHRONORA\views\partials\admin\sidebar.ejs:11
+    9| 
+    10|   <nav class="sidebar-nav">
+ >> 11|     <a href="/admin/dashboard" class="nav-link <%= page === 'dashboard' ? 'active' : '' %>">
+    12|       <i class="fas fa-tachometer-alt"></i>
+    13|       <span>Dashboard</span>
+    14|     </a>
+
+page is not defined
+2026-02-12 17:19:12 [INFO]: GET /admin/;34re3jfrelrvg 500
+2026-02-12 17:23:52 [INFO]: GET /admin/;34re3jfrelrvg 404
+2026-02-12 17:23:52 [INFO]: GET /css/admin/header.css 304
+2026-02-12 17:23:52 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 17:23:52 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 17:23:52 [INFO]: GET /js/main.js 404
+2026-02-12 17:24:08 [INFO]: Products listed
+2026-02-12 17:24:08 [INFO]: GET /admin/products 200
+2026-02-12 17:24:08 [INFO]: GET /css/admin/header.css 304
+2026-02-12 17:24:08 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 17:24:08 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 17:24:08 [INFO]: GET /css/admin/products.css 304
+2026-02-12 17:24:08 [INFO]: GET /js/admin/products.js 304
+2026-02-12 17:24:08 [INFO]: GET /js/main.js 404
+2026-02-12 17:24:09 [INFO]: GET /admin/erdfdf 404
+2026-02-12 17:24:09 [INFO]: GET /css/admin/header.css 304
+2026-02-12 17:24:09 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 17:24:09 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 17:24:09 [INFO]: GET /js/main.js 404
+2026-02-12 17:24:12 [INFO]: GET /admin/43rfhrfucjbrv 404
+2026-02-12 17:24:12 [INFO]: GET /css/admin/header.css 304
+2026-02-12 17:24:12 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 17:24:12 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 17:24:12 [INFO]: GET /js/main.js 404
+2026-02-12 17:24:14 [INFO]: Admin orders page rendered
+2026-02-12 17:24:14 [INFO]: GET /admin/orders 200
+2026-02-12 17:24:14 [INFO]: GET /css/admin/header.css 304
+2026-02-12 17:24:14 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 17:24:14 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 17:24:14 [INFO]: GET /css/admin/orders.css 304
+2026-02-12 17:24:14 [INFO]: GET /js/main.js 404
+2026-02-12 17:24:15 [INFO]: Fetched admin orders data
+2026-02-12 17:24:15 [INFO]: GET /admin/orders/data? 200
+2026-02-12 17:24:16 [INFO]: GET /admin/dashboard 200
+2026-02-12 17:24:16 [INFO]: GET /css/admin/header.css 304
+2026-02-12 17:24:16 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 17:24:16 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 17:24:16 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-12 17:24:16 [INFO]: GET /js/admin/dashboard.js 304
+2026-02-12 17:24:16 [INFO]: GET /js/main.js 404
+2026-02-12 17:24:20 [INFO]: GET /admin/dashboard/data 200
+2026-02-12 17:24:24 [INFO]: GET / 200
+2026-02-12 17:24:24 [INFO]: GET /css/global.css 304
+2026-02-12 17:24:24 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:24:24 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:24:24 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:24:24 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:24:24 [INFO]: GET /css/user/landing.css 304
+2026-02-12 17:24:24 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:24:24 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-12 17:24:24 [INFO]: GET /js/main.js 404
+2026-02-12 17:24:28 [INFO]: GET / 200
+2026-02-12 17:24:28 [INFO]: GET /css/global.css 304
+2026-02-12 17:24:28 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:24:28 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:24:28 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:24:28 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:24:28 [INFO]: GET /css/user/landing.css 304
+2026-02-12 17:24:28 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:24:28 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-12 17:24:28 [INFO]: GET /js/main.js 404
+2026-02-12 17:24:31 [INFO]: Admin already logged in: admin@chronora.com
+2026-02-12 17:24:31 [INFO]: GET /admin/login 302
+2026-02-12 17:24:31 [INFO]: GET /admin/dashboard 200
+2026-02-12 17:24:31 [INFO]: GET /css/admin/header.css 304
+2026-02-12 17:24:31 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 17:24:31 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 17:24:31 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-12 17:24:31 [INFO]: GET /js/admin/dashboard.js 304
+2026-02-12 17:24:31 [INFO]: GET /js/main.js 404
+2026-02-12 17:24:32 [INFO]: GET /fkvjngrf 404
+2026-02-12 17:24:32 [INFO]: GET /css/global.css 304
+2026-02-12 17:24:32 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:24:32 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:24:32 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:24:32 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:24:32 [INFO]: GET /css/user/404.css 304
+2026-02-12 17:24:32 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:24:32 [INFO]: GET /js/main.js 404
+2026-02-12 17:24:36 [INFO]: GET /fkvjngrf/fvfg]/ 404
+2026-02-12 17:24:36 [INFO]: GET /css/global.css 304
+2026-02-12 17:24:36 [INFO]: GET /css/user/header.css 304
+2026-02-12 17:24:36 [INFO]: GET /css/user/footer.css 304
+2026-02-12 17:24:36 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 17:24:36 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 17:24:36 [INFO]: GET /css/user/404.css 304
+2026-02-12 17:24:36 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 17:24:36 [INFO]: GET /js/main.js 404
+2026-02-12 17:32:45 [INFO]: Admin already logged in: admin@chronora.com
+2026-02-12 17:32:45 [INFO]: GET /admin/login 302
+2026-02-12 17:32:45 [INFO]: GET /admin/dashboard 200
+2026-02-12 17:32:45 [INFO]: GET /css/admin/header.css 304
+2026-02-12 17:32:45 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 17:32:45 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 17:32:45 [INFO]: GET /css/admin/Dashboard.css 200
+2026-02-12 17:32:45 [INFO]: GET /js/admin/dashboard.js 200
+2026-02-12 17:32:45 [INFO]: GET /js/main.js 404
+2026-02-12 17:32:48 [INFO]: GET /admin/dashboard/data?filter=7days&fromDate=&toDate= 200
+2026-02-12 18:05:40 [INFO]: GET /admin/dashboard 200
+2026-02-12 18:05:40 [INFO]: GET /css/admin/header.css 304
+2026-02-12 18:05:40 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 18:05:40 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 18:05:40 [INFO]: GET /js/main.js 404
+2026-02-12 18:05:40 [INFO]: GET /css/admin/Dashboard.css 200
+2026-02-12 18:05:40 [INFO]: GET /js/admin/dashboard.js 200
+2026-02-12 18:05:42 [INFO]: GET /admin/dashboard/data?filter=all&fromDate=&toDate= 200
+2026-02-12 18:05:50 [INFO]: GET /admin/dashboard/data?filter=today&fromDate=&toDate= 200
+2026-02-12 18:05:59 [INFO]: GET /admin/dashboard/data?filter=7days&fromDate=&toDate= 200
+2026-02-12 18:06:07 [INFO]: GET /admin/dashboard/data?filter=month&fromDate=&toDate= 200
+2026-02-12 18:06:16 [INFO]: GET /admin/dashboard/data?filter=year&fromDate=&toDate= 200
+2026-02-12 18:06:20 [INFO]: GET /admin/dashboard/data?filter=all&fromDate=&toDate= 200
+2026-02-12 18:07:47 [INFO]: GET /admin/dashboard 200
+2026-02-12 18:07:47 [INFO]: GET /css/admin/header.css 304
+2026-02-12 18:07:47 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 18:07:47 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 18:07:47 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-12 18:07:47 [INFO]: GET /js/admin/dashboard.js 304
+2026-02-12 18:07:47 [INFO]: GET /js/main.js 404
+2026-02-12 18:07:49 [INFO]: GET /admin/dashboard/data?filter=all&fromDate=&toDate= 200
+2026-02-12 18:07:54 [INFO]: GET /admin/dashboard/data?filter=today&fromDate=&toDate= 200
+2026-02-12 18:08:03 [INFO]: GET /admin/dashboard/data?filter=all&fromDate=&toDate= 200
+2026-02-12 18:08:07 [INFO]: GET /admin/dashboard/data?filter=today&fromDate=&toDate= 200
+2026-02-12 18:08:20 [INFO]: GET /admin/dashboard 200
+2026-02-12 18:08:20 [INFO]: GET /css/admin/header.css 304
+2026-02-12 18:08:20 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 18:08:20 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 18:08:20 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-12 18:08:20 [INFO]: GET /js/admin/dashboard.js 304
+2026-02-12 18:08:20 [INFO]: GET /js/main.js 404
+2026-02-12 18:08:21 [INFO]: GET /admin/dashboard/data?filter=all&fromDate=&toDate= 200
+2026-02-12 18:08:25 [INFO]: GET /admin/dashboard/data?filter=today&fromDate=&toDate= 200
+2026-02-12 18:08:29 [INFO]: GET /admin/dashboard/data?filter=7days&fromDate=&toDate= 200
+2026-02-12 18:08:35 [INFO]: GET /admin/dashboard/data?filter=year&fromDate=&toDate= 200
+2026-02-12 18:08:46 [INFO]: GET /admin/dashboard/data?filter=custom&fromDate=2026-02-11&toDate=2026-02-12 200
+2026-02-12 18:08:53 [INFO]: GET /admin/dashboard/data?filter=custom&fromDate=2026-02-12&toDate=2026-02-12 200
+2026-02-12 18:09:12 [INFO]: GET /admin/dashboard/data?filter=all&fromDate=2026-02-12&toDate=2026-02-12 200
+2026-02-12 18:09:20 [INFO]: GET /admin/dashboard/data?filter=7days&fromDate=2026-02-12&toDate=2026-02-12 200
+2026-02-12 18:09:28 [INFO]: GET /admin/dashboard/data?filter=all&fromDate=2026-02-12&toDate=2026-02-12 200
+2026-02-12 18:11:35 [INFO]: GET /admin/dashboard 200
+2026-02-12 18:11:35 [INFO]: GET /css/admin/header.css 304
+2026-02-12 18:11:35 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 18:11:35 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 18:11:35 [INFO]: GET /js/admin/dashboard.js 304
+2026-02-12 18:11:35 [INFO]: GET /css/admin/Dashboard.css 200
+2026-02-12 18:11:35 [INFO]: GET /js/main.js 404
+2026-02-12 18:11:35 [INFO]: GET /admin/dashboard/data?filter=all&fromDate=&toDate= 200
+2026-02-12 18:11:40 [INFO]: GET /admin/dashboard/data?filter=today&fromDate=&toDate= 200
+2026-02-12 18:11:51 [INFO]: GET /admin/dashboard/data?filter=custom&fromDate=2026-02-12&toDate=2026-02-12 200
+2026-02-12 18:12:40 [INFO]: GET /admin/dashboard/data?filter=all&fromDate=2026-02-12&toDate=2026-02-12 200
+2026-02-12 18:22:26 [INFO]: GET /admin/categories 200
+2026-02-12 18:22:26 [INFO]: GET /css/admin/header.css 304
+2026-02-12 18:22:26 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 18:22:26 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 18:22:26 [INFO]: GET /css/admin/categories.css 200
+2026-02-12 18:22:27 [INFO]: GET /js/main.js 404
+2026-02-12 18:22:27 [INFO]: GET /js/admin/categories.js 200
+2026-02-12 18:22:30 [INFO]: Category unlisted : undefined
+2026-02-12 18:22:30 [INFO]: PATCH /admin/categories/toggle/698c05310cdf47753d6b7537 200
+2026-02-12 18:22:32 [INFO]: Category listed: undefined
+2026-02-12 18:22:32 [INFO]: PATCH /admin/categories/toggle/698c05310cdf47753d6b7537 200
+2026-02-12 18:22:33 [INFO]: GET /admin/categories/698c05310cdf47753d6b7537 200
+2026-02-12 18:22:40 [INFO]: PUT /admin/categories/698c05310cdf47753d6b7537 409
+2026-02-12 18:22:45 [INFO]: PUT /admin/categories/698c05310cdf47753d6b7537 409
+2026-02-12 18:22:51 [INFO]: Category updated: parr
+2026-02-12 18:22:51 [INFO]: PUT /admin/categories/698c05310cdf47753d6b7537 200
+2026-02-12 18:22:51 [INFO]: GET /admin/categories 200
+2026-02-12 18:22:51 [INFO]: GET /css/admin/header.css 304
+2026-02-12 18:22:51 [INFO]: GET /css/admin/categories.css 304
+2026-02-12 18:22:51 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-12 18:22:51 [INFO]: GET /css/admin/footer.css 304
+2026-02-12 18:22:51 [INFO]: GET /js/admin/categories.js 304
+2026-02-12 18:22:52 [INFO]: GET /js/main.js 404
+2026-02-12 18:24:13 [INFO]: GET / 200
+2026-02-12 18:24:13 [INFO]: GET /css/global.css 304
+2026-02-12 18:24:13 [INFO]: GET /css/user/header.css 304
+2026-02-12 18:24:13 [INFO]: GET /css/user/footer.css 304
+2026-02-12 18:24:13 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 18:24:13 [INFO]: GET /css/user/landing.css 304
+2026-02-12 18:24:13 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 18:24:13 [INFO]: GET /js/main.js 404
+2026-02-12 18:24:13 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 18:24:13 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-12 18:24:26 [INFO]: GET /profile 200
+2026-02-12 18:24:26 [INFO]: GET /css/global.css 304
+2026-02-12 18:24:26 [INFO]: GET /css/user/header.css 304
+2026-02-12 18:24:26 [INFO]: GET /css/user/footer.css 304
+2026-02-12 18:24:26 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 18:24:26 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 18:24:26 [INFO]: GET /css/user/profile.css 304
+2026-02-12 18:24:26 [INFO]: GET /css/user/sidebar.css 304
+2026-02-12 18:24:26 [INFO]: GET /js/user/sidebar.js 304
+2026-02-12 18:24:27 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 18:24:28 [INFO]: GET /js/main.js 404
+2026-02-12 18:24:32 [INFO]: GET /profile/edit/email 200
+2026-02-12 18:24:32 [INFO]: GET /css/global.css 304
+2026-02-12 18:24:32 [INFO]: GET /css/user/header.css 304
+2026-02-12 18:24:32 [INFO]: GET /css/user/footer.css 304
+2026-02-12 18:24:32 [INFO]: GET /css/user/productDetail.css 304
+2026-02-12 18:24:32 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-12 18:24:32 [INFO]: GET /css/user/profile.css 304
+2026-02-12 18:24:32 [INFO]: GET /css/user/sidebar.css 304
+2026-02-12 18:24:32 [INFO]: GET /js/user/sidebar.js 304
+2026-02-12 18:24:32 [INFO]: GET /js/user/productDetail.js 304
+2026-02-12 18:24:32 [INFO]: GET /js/user/profile-email-edit.js 200
+2026-02-12 18:24:32 [INFO]: GET /js/main.js 404
+2026-02-12 18:24:33 [INFO]: GET /profile/pending-email 200

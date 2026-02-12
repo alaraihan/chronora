@@ -315,7 +315,17 @@ function renderPaymentMethods(payments) {
 function loadDashboardData() {
   showLoading();
 
-  axios.get('/admin/dashboard/data')
+  const filter = document.getElementById("dateFilter")?.value || "7days";
+  const fromDate = document.getElementById("fromDate")?.value;
+  const toDate = document.getElementById("toDate")?.value;
+
+  axios.get('/admin/dashboard/data', {
+    params: {
+      filter,
+      fromDate,
+      toDate
+    }
+  })
     .then(response => {
       if (!response.data.success) {
         toast("Failed to load dashboard data", "error");
@@ -323,7 +333,7 @@ function loadDashboardData() {
       }
 
       const data = response.data;
-      
+
       updateOverviewCards(data.overview);
       renderSalesChart(data.salesChartData);
       renderStatusChart(data.statusDistribution);
@@ -339,5 +349,16 @@ function loadDashboardData() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  loadDashboardData("all");
+});
+
+document.getElementById("applyFilter")?.addEventListener("click", () => {
   loadDashboardData();
+});
+
+document.getElementById("dateFilter")?.addEventListener("change", function () {
+  const custom = this.value === "custom";
+
+  document.getElementById("fromDate").style.display = custom ? "inline-block" : "none";
+  document.getElementById("toDate").style.display = custom ? "inline-block" : "none";
 });

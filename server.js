@@ -56,9 +56,20 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(setUser);
 app.use(checkBlockedUser);
+app.use((req, res, next) => {
+  res.locals.page = '';
+  next();
+});
 
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
+app.use((req, res) => {
+  if (req.originalUrl.startsWith("/admin")) {
+    res.status(404).render("admin/pageNotfound", { title: "Page Not Found" });
+  } else {
+    res.status(404).render("user/pageNotfound", { title: "Page Not Found" });
+  }
+});
 
 app.use(errorLogger);
 

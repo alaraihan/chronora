@@ -138,12 +138,24 @@ export const editCategory = async (req, res) => {
       });
     }
 
+    
+
     const updateData = {
       name: trimmedName,
       description: trimmedDescription,
       isListed: isListed === "true"
     };
 
+      const exists = await Category.findOne({
+      name: { $regex: `^${trimmedName}$`, $options: "i" }
+    });
+
+    if (exists) {
+      return res.status(409).json({
+        success: false,
+        message: "Category already exists!"
+      });
+    }
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "chronora/categories"

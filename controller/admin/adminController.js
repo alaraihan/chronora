@@ -72,11 +72,51 @@ logger.error("Dashboard page error", error);
 
 export const getDashboardData = async (req, res) => {
   try {
-    const totalOrders = await Order.countDocuments();
+   const { filter, fromDate, toDate } = req.query;
+
+let startDate = null;
+let endDate = new Date();
+
+switch (filter) {
+  case "today":
+    startDate = new Date();
+    startDate.setHours(0,0,0,0);
+    break;
+
+  case "7days":
+    startDate = new Date();
+    startDate.setDate(startDate.getDate() - 6);
+    break;
+
+  case "month":
+    startDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    break;
+
+  case "year":
+    startDate = new Date(new Date().getFullYear(), 0, 1);
+    break;
+
+  case "custom":
+    startDate = new Date(fromDate);
+    endDate = new Date(toDate);
+    endDate.setHours(23,59,59,999);
+    break;
+
+  case "all":
+  default:
+    startDate = null;
+}
+const dateFilter = startDate
+  ? { createdAt: { $gte: startDate, $lte: endDate } }
+  : {};
+
+
+const totalOrders = await Order.countDocuments(dateFilter);
     const totalUsers = await User.countDocuments();
     const totalProducts = await Product.countDocuments();
-
+    
     const revenueResult = await Order.aggregate([
+      { $match: dateFilter },
       { $unwind: "$products" },
       { $match: { "products.itemStatus": "Delivered" } },
       {
@@ -87,20 +127,16 @@ export const getDashboardData = async (req, res) => {
       }
     ]);
     const totalRevenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
-
-    const recentOrders = await Order.find()
+    const recentOrders = await Order.find(dateFilter)
       .populate("userId", "email")
       .sort({ createdAt: -1 })
       .limit(10)
       .select("orderId userId totalAmount status createdAt paymentMethod");
 
     const statusDistribution = await Order.aggregate([
-      {
-        $group: {
-          _id: "$status",
-          count: { $sum: 1 }
-        }
-      }
+     
+     { $group: { _id: "$status", count: { $sum: 1 } } }
+
     ]);
     const last7Days = [];
     for (let i = 6; i >= 0; i--) {
@@ -117,7 +153,8 @@ export const getDashboardData = async (req, res) => {
 
         const dailyRevenue = await Order.aggregate([
           {
-            $match: {
+            $match:{
+              dateFilter,
               createdAt: { $gte: date, $lt: nextDay }
             }
           },
@@ -173,6 +210,7 @@ export const getDashboardData = async (req, res) => {
     ]);
 
     const paymentDistribution = await Order.aggregate([
+      { $match: dateFilter },
       {
         $group: {
           _id: "$paymentMethod",
@@ -188,7 +226,8 @@ export const getDashboardData = async (req, res) => {
         totalOrders,
         totalUsers,
         totalProducts,
-        totalRevenue
+        totalRevenue,
+        
       },
       recentOrders: recentOrders.map(order => ({
         orderId: order.orderId,
@@ -201,7 +240,7 @@ export const getDashboardData = async (req, res) => {
       statusDistribution,
       salesChartData,
       topProducts,
-      paymentDistribution
+      paymentDistribution,
     });
 
   } catch (error) {

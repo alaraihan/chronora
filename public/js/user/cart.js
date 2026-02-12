@@ -92,10 +92,18 @@ cartContainer.addEventListener("click", async (e) => {
     try {
       const res = await axios.post(`/cart/update/${id}`, { action });
 
-      if (!res.data.success) {
-        showToast(res.data.message || "Failed to update", "error");
-        return;
-      }
+     if (!res.data.success) {
+  showToast(res.data.message || "Stock finished", "warning");
+
+  const row = document.querySelector(`[data-item-id="${id}"]`);
+  if (row) {
+    const incBtn = row.querySelector(".increment");
+    if (incBtn) incBtn.disabled = true;
+  }
+
+  return;
+}
+
 
       const row = document.querySelector(`[data-item-id="${id}"]`);
       if (!row) return;

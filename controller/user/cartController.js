@@ -156,8 +156,23 @@ export const updateQuantity = async (req, res) => {
     const offerData = await getBestOfferForProduct(product);
     const currentPrice = offerData ? offerData.offerPrice : product.price;
 
-    if (action === "increment" && cartItem.quantity < variant.stock) cartItem.quantity += 1;
-    else if (action === "decrement" && cartItem.quantity > 1) cartItem.quantity -= 1;
+    if (action === "increment") {
+  if (cartItem.quantity >= variant.stock) {
+    return res.json({
+      success: false,
+      message: "Stock finished",
+      stock: variant.stock
+    });
+  }
+  cartItem.quantity += 1;
+}
+
+if (action === "decrement") {
+  if (cartItem.quantity > 1) {
+    cartItem.quantity -= 1;
+  }
+}
+
 
     cartItem.price = currentPrice;
     await cartItem.save();

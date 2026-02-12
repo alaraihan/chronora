@@ -13,7 +13,15 @@ export async function listProducts(req, res) {
     const limit = Math.max(1, parseInt(req.query.limit || "8", 10));
     const skip = (currentPage - 1) * limit;
 
-    const matchStage = searchQuery ? { $match: { name: { $regex: searchQuery, $options: "i" } } } : { $match: {} };
+const matchStage = searchQuery
+  ? {
+      $match: {
+        $and: searchQuery.split(/\s+/).map(word => ({
+          name: { $regex: word, $options: "i" }
+        }))
+      }
+    }
+  : { $match: {} };
 
     const agg = await Product.aggregate([
       matchStage,
@@ -78,7 +86,7 @@ export async function listProducts(req, res) {
           totalCount: [{ $count: "count" }]
         }
       }
-    ]);
+    ]).collation({ locale: "en", strength: 2 });
 
     const results = (agg[0] && Array.isArray(agg[0].results)) ? agg[0].results : [];
     const totalCount = (agg[0] && agg[0].totalCount && agg[0].totalCount[0] && Number(agg[0].totalCount[0].count)) ? Number(agg[0].totalCount[0].count) : 0;

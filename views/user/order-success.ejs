@@ -27,12 +27,17 @@
             <% order.products.forEach(item => { %>
               <div class="item-row">
                 <div class="item-info">
-                  <% if (item.productId?.image) { %>
-                    <img src="<%= item.productId.image %>" alt="<%= item.productId.name %>" class="item-thumbnail">
-                  <% } %>
+ <% if (item.variantId?.images?.length) { %>
+  <img src="<%= item.variantId.images[0] %>" 
+       alt="<%= item.productId?.name %>"
+       class="item-thumbnail">
+<% } else { %>
+  <img src="/images/no-image.png" class="item-thumbnail">
+<% } %>
+
+
                   <div class="item-details">
-                    <div class="item-name"><%= item.productId?.name %> × <%= item.quantity %></div>
-                    <small><%= item.variantId?.colorName || 'Standard' %></small>
+                    <div class="item-name"><%= item.productId?.name||"Product"%> × <%= item.quantity %></div>
                   </div>
                 </div>
                 <div class="item-price">
