@@ -183,20 +183,9 @@ cartContainer.addEventListener("click", async (e) => {
       showToast("Added to cart");
       updateOrderSummary();
       setCheckoutState(res.data.canCheckout ?? true);
-     } catch (err) {
-  if (err.response?.status === 401) {
-    showToast("Please login first", "error");
-
-    setTimeout(() => {
-      window.location.href = "/login";
-    }, 1500);
-
-    return;
-  }
-
-  showToast(err.response?.data?.message || "Error adding to cart", "error");
-}
- finally {
+    } catch (err) {
+      showToast(err.response?.data?.message || "Error adding to cart", "error");
+    } finally {
       inFlightRequests.delete(key);
       btn.disabled = false;
     }
