@@ -1,66 +1,70 @@
 
-    const params = new URLSearchParams(window.location.search);
-    const overlay = document.getElementById("loadingOverlay");
+const params = new URLSearchParams(window.location.search);
+const overlay = document.getElementById("loadingOverlay");
 
-    function showLoading() {
-        if (overlay) overlay.style.display = "flex";
+function showLoading() {
+    if (overlay) overlay.style.display = "flex";
+}
+
+function hideLoading() {
+    if (overlay) overlay.style.display = "none";
+}
+
+function toast(message, type = "error") {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
+    Toast.fire({
+        icon: type,
+        title: message
+    });
+}
+
+function applyFilters() {
+    const searchInput = document.getElementById("searchInput");
+    const statusSelect = document.getElementById("statusFilter");
+
+    const search = searchInput?.value.trim();
+    const status = statusSelect?.value;
+
+    params.set("page", "1");
+
+    if (search) {
+        params.set("search", search);
+    } else {
+        params.delete("search");
     }
 
-    function hideLoading() {
-        if (overlay) overlay.style.display = "none";
+    if (status) {
+        params.set("status", status);
+    } else {
+        params.delete("status");
     }
 
-    function toast(message, type = "error") {
-        Toastify({
-            text: message,
-            duration: 3000,
-            gravity: "bottom",
-            position: "right",
-            backgroundColor: type === "success" ? "#28a745" : "#dc3545"
-        }).showToast();
-    }
+    updateURLAndLoad();
+}
 
-    function applyFilters() {
-        const searchInput = document.getElementById("searchInput");
-        const statusSelect = document.getElementById("statusFilter");
+function goToPage(page) {
+    params.set("page", page);
+    updateURLAndLoad();
+}
 
-        const search = searchInput?.value.trim();
-        const status = statusSelect?.value;
+function updateURLAndLoad() {
+    const newUrl = `/admin/orders?${params.toString()}`;
+    window.history.pushState({}, "", newUrl);
+    loadOrders();
+}
 
-        params.set("page", "1"); 
+function loadOrders() {
+    showLoading();
 
-        if (search) {
-            params.set("search", search);
-        } else {
-            params.delete("search");
-        }
-
-        if (status) {
-            params.set("status", status);
-        } else {
-            params.delete("status");
-        }
-
-        updateURLAndLoad();
-    }
-
-    function goToPage(page) {
-        params.set("page", page);
-        updateURLAndLoad();
-    }
-
-    function updateURLAndLoad() {
-        const newUrl = `/admin/orders?${params.toString()}`;
-        window.history.pushState({}, "", newUrl);
-        loadOrders();
-    }
-
-    function loadOrders() {
-        showLoading();
-
-        axios.get(`/admin/orders?${params.toString()}`, {
-            headers: { Accept: "application/json" }
-        })
+    axios.get(`/admin/orders?${params.toString()}`, {
+        headers: { Accept: "application/json" }
+    })
         .then(response => {
             const data = response.data;
 
@@ -97,13 +101,13 @@
         .finally(() => {
             hideLoading();
         });
-    }
+}
 
-    function renderLineItems(items) {
-        const tbody = document.getElementById("ordersTableBody");
+function renderLineItems(items) {
+    const tbody = document.getElementById("ordersTableBody");
 
-        if (items.length === 0) {
-            tbody.innerHTML = `
+    if (items.length === 0) {
+        tbody.innerHTML = `
                 <tr>
                     <td colspan="9" class="text-center py-5">
                         <i class="bi bi-inbox" style="font-size: 3rem; opacity: 0.5;"></i>
@@ -111,36 +115,36 @@
                         <p>No matching orders or products with current filters.</p>
                     </td>
                 </tr>`;
-            return;
-        }
+        return;
+    }
 
-        tbody.innerHTML = items.map(item => {
-            const prod = item.product;
+    tbody.innerHTML = items.map(item => {
+        const prod = item.product;
 
-            const productName = 
-                prod.productId?.name || 
-                prod.product?.name || 
-                "Unknown Product";
+        const productName =
+            prod.productId?.name ||
+            prod.product?.name ||
+            "Unknown Product";
 
-            const variantObj = prod.variantId || prod.variant;
-            const variantInfo = [];
-            if (variantObj?.colorName) variantInfo.push(variantObj.colorName);
-            if (variantObj?.size) variantInfo.push(variantObj.size);
-            const variant = variantInfo.length ? ` (${variantInfo.join(" - ")})` : "";
+        const variantObj = prod.variantId || prod.variant;
+        const variantInfo = [];
+        if (variantObj?.colorName) variantInfo.push(variantObj.colorName);
+        if (variantObj?.size) variantInfo.push(variantObj.size);
+        const variant = variantInfo.length ? ` (${variantInfo.join(" - ")})` : "";
 
-            const price = prod.price || prod.productId?.price || prod.product?.price || 0;
-            const qty = prod.quantity || 1;
-            const subtotal = price * qty;
+        const price = prod.price || prod.productId?.price || prod.product?.price || 0;
+        const qty = prod.quantity || 1;
+        const subtotal = price * qty;
 
-            const statusClass = item.status.toLowerCase().replace(/ /g, '-');
+        const statusClass = item.status.toLowerCase().replace(/ /g, '-');
 
-            return `
+        return `
                 <tr>
                     <td><strong>#${item.orderId}</strong><br><small class="text-muted">${item.shortId}</small></td>
                     <td><strong>${item.customerName}</strong><br><small>${item.customerContact}</small></td>
                     <td>
                         ${new Date(item.createdAt).toLocaleDateString("en-IN")}<br>
-                        <small>${new Date(item.createdAt).toLocaleTimeString("en-IN", {hour: "2-digit", minute: "2-digit"})}</small>
+                        <small>${new Date(item.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</small>
                     </td>
                     <td><strong>${productName}${variant}</strong></td>
                     <td class="text-center">${qty}</td>
@@ -158,55 +162,55 @@
                         </div>
                     </td>
                 </tr>`;
-        }).join("");
+    }).join("");
+}
+
+function renderPagination(pag) {
+    const container = document.getElementById("paginationContainer");
+
+    if (!pag || pag.totalPages <= 1) {
+        container.innerHTML = "";
+        return;
     }
 
-    function renderPagination(pag) {
-        const container = document.getElementById("paginationContainer");
+    let html = "";
 
-        if (!pag || pag.totalPages <= 1) {
-            container.innerHTML = "";
-            return;
-        }
-
-        let html = "";
-
-        if (pag.currentPage > 1) {
-            html += `<a href="javascript:goToPage(${pag.currentPage - 1})" class="page-link prev">
+    if (pag.currentPage > 1) {
+        html += `<a href="javascript:goToPage(${pag.currentPage - 1})" class="page-link prev">
                         <i class="bi bi-chevron-left"></i> Previous
                      </a>`;
-        }
-
-        html += '<div class="page-numbers">';
-        for (let i = 1; i <= pag.totalPages; i++) {
-            if (i === pag.currentPage) {
-                html += `<span class="page-number active">${i}</span>`;
-            } else {
-                html += `<a href="javascript:goToPage(${i})" class="page-number">${i}</a>`;
-            }
-        }
-        html += '</div>';
-
-        if (pag.currentPage < pag.totalPages) {
-            html += `<a href="javascript:goToPage(${pag.currentPage + 1})" class="page-link next">
-                        Next <i class="bi bi-chevron-right"></i>
-                     </a>`;
-        }
-
-        container.innerHTML = html;
     }
 
-    document.getElementById("searchInput")?.addEventListener("keypress", e => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            applyFilters();
+    html += '<div class="page-numbers">';
+    for (let i = 1; i <= pag.totalPages; i++) {
+        if (i === pag.currentPage) {
+            html += `<span class="page-number active">${i}</span>`;
+        } else {
+            html += `<a href="javascript:goToPage(${i})" class="page-number">${i}</a>`;
         }
-    });
+    }
+    html += '</div>';
 
-    document.getElementById("statusFilter")?.addEventListener("change", () => {
+    if (pag.currentPage < pag.totalPages) {
+        html += `<a href="javascript:goToPage(${pag.currentPage + 1})" class="page-link next">
+                        Next <i class="bi bi-chevron-right"></i>
+                     </a>`;
+    }
+
+    container.innerHTML = html;
+}
+
+document.getElementById("searchInput")?.addEventListener("keypress", e => {
+    if (e.key === "Enter") {
+        e.preventDefault();
         applyFilters();
-    });
+    }
+});
 
-    document.addEventListener("DOMContentLoaded", () => {
-        loadOrders();
-    });
+document.getElementById("statusFilter")?.addEventListener("change", () => {
+    applyFilters();
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadOrders();
+});

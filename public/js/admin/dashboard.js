@@ -2,30 +2,32 @@ const overlay = document.getElementById("loadingOverlay");
 let salesChart = null;
 let statusChart = null;
 
-function showLoading() { 
-  overlay.style.display = "flex"; 
+function showLoading() {
+  overlay.style.display = "flex";
 }
 
-function hideLoading() { 
-  overlay.style.display = "none"; 
+function hideLoading() {
+  overlay.style.display = "none";
 }
 
 function toast(message, type = "error") {
-  Toastify({
-    text: message,
-    duration: 3000,
-    gravity: "bottom",
-    position: "right",
-    backgroundColor: type === "success" ? "#28a745" : "#dc3545",
-    stopOnFocus: true,
-    close: true
-  }).showToast();
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true
+  });
+  Toast.fire({
+    icon: type,
+    title: message
+  });
 }
 
 function formatCurrency(amount) {
-  return amount.toLocaleString('en-IN', { 
-    minimumFractionDigits: 2, 
-    maximumFractionDigits: 2 
+  return amount.toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   });
 }
 
@@ -38,7 +40,7 @@ function updateOverviewCards(overview) {
 
 function renderSalesChart(salesData) {
   const ctx = document.getElementById('salesChart').getContext('2d');
-  
+
   if (salesChart) {
     salesChart.destroy();
   }
@@ -81,7 +83,7 @@ function renderSalesChart(salesData) {
         },
         tooltip: {
           callbacks: {
-            label: function(context) {
+            label: function (context) {
               let label = context.dataset.label || '';
               if (label) {
                 label += ': ';
@@ -111,7 +113,7 @@ function renderSalesChart(salesData) {
             text: 'Revenue (₹)'
           },
           ticks: {
-            callback: function(value) {
+            callback: function (value) {
               return '₹' + value.toLocaleString('en-IN');
             }
           }
@@ -135,7 +137,7 @@ function renderSalesChart(salesData) {
 
 function renderStatusChart(statusData) {
   const ctx = document.getElementById('statusChart').getContext('2d');
-  
+
   if (statusChart) {
     statusChart.destroy();
   }
@@ -180,7 +182,7 @@ function renderStatusChart(statusData) {
         },
         tooltip: {
           callbacks: {
-            label: function(context) {
+            label: function (context) {
               const label = context.label || '';
               const value = context.parsed || 0;
               const total = context.dataset.data.reduce((a, b) => a + b, 0);
@@ -211,7 +213,7 @@ function renderRecentOrders(orders) {
 
   orders.forEach(order => {
     const row = document.createElement('tr');
-    
+
     const statusClass = getStatusClass(order.status);
     const date = new Date(order.date).toLocaleDateString('en-IN', {
       day: '2-digit',

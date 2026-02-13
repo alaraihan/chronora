@@ -182,24 +182,28 @@
   </div>
 </div>
 
-<script>
-  // === IMMEDIATELY REMOVE ANY OLD/GHOST TOASTS ===
-  document.querySelectorAll('.toastify').forEach(el => el.remove());
+<!-- Include SweetAlert2 CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
+<script>
   const ORDER_ID = "<%= order._id %>";
   const ITEM_INDEX = <%= itemIndex %>;
 
   function toast(msg, type = "info") {
-    Toastify({
-      text: msg,
-      duration: 4000,
-      gravity: "bottom",
-      position: "right",
-      backgroundColor: type === "success" ? "#16a34a" : type === "error" ? "#dc2626" : "#f59e0b"
-    }).showToast();
+    Swal.fire({
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 4000,
+      timerProgressBar: true,
+      icon: type === "success" ? "success" : type === "error" ? "error" : "warning",
+      title: msg,
+      background: type === "success" ? "#16a34a" : type === "error" ? "#dc2626" : "#f59e0b",
+      color: "#fff"
+    });
   }
 
-  // Hide status dropdown if no options
   document.addEventListener('DOMContentLoaded', () => {
     const statusUpdateGroup = document.getElementById('statusUpdateGroup');
     const select = document.getElementById('statusSelect');
@@ -208,7 +212,6 @@
     }
   });
 
-  // Update Status
   document.getElementById('updateStatus')?.addEventListener('click', async () => {
     const status = document.getElementById('statusSelect').value;
     if (!status) return toast('Please select a status', 'error');
@@ -223,9 +226,16 @@
     }
   });
 
-  // Approve Return
   document.getElementById('approveReturn')?.addEventListener('click', async () => {
-    if (!confirm('Approve this return request?')) return;
+    const result = await Swal.fire({
+      title: 'Approve this return request?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, approve',
+      cancelButtonText: 'Cancel'
+    });
+    if (!result.isConfirmed) return;
+
     try {
       const res = await axios.post(`/admin/orders/${ORDER_ID}/approve-return`, { itemIndex: ITEM_INDEX });
       toast(res.data.success ? 'Return approved!' : res.data.message || 'Failed', 
@@ -236,9 +246,16 @@
     }
   });
 
-  // Reject Return
   document.getElementById('rejectReturn')?.addEventListener('click', async () => {
-    if (!confirm('Reject this return request?')) return;
+    const result = await Swal.fire({
+      title: 'Reject this return request?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, reject',
+      cancelButtonText: 'Cancel'
+    });
+    if (!result.isConfirmed) return;
+
     try {
       const res = await axios.post(`/admin/orders/${ORDER_ID}/reject-return`, { itemIndex: ITEM_INDEX });
       toast(res.data.success ? 'Return rejected' : res.data.message || 'Failed', 
@@ -251,22 +268,28 @@
 
   // Process Refund (MAIN ACTION)
   document.getElementById('processRefund')?.addEventListener('click', async function () {
-    if (!confirm('Process refund for this item?\n\n• Amount will be refunded via Razorpay\n• Money instantly credited to customer wallet\n• Stock will be restored\n\nContinue?')) {
-      return;
-    }
+    const result = await Swal.fire({
+      title: 'Process refund for this item?',
+      html: `
+        • Amount will be refunded via Razorpay<br>
+        • Money instantly credited to customer wallet<br>
+        • Stock will be restored<br><br>
+        Continue?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, process refund',
+      cancelButtonText: 'Cancel'
+    });
+    if (!result.isConfirmed) return;
 
     const orderId = this.dataset.orderId;
     const itemIndex = parseInt(this.dataset.itemIndex);
 
     try {
       const res = await axios.post(`/admin/orders/${orderId}/refund-item`, { orderId, itemIndex });
-
       toast(res.data.message || (res.data.success ? 'Refund processed successfully!' : 'Refund failed'),
             res.data.success ? 'success' : 'error');
-
-      if (res.data.success) {
-        setTimeout(() => location.reload(), 2000);
-      }
+      if (res.data.success) setTimeout(() => location.reload(), 2000);
     } catch (err) {
       toast('Server error during refund. Check console.', 'error');
       console.error(err);

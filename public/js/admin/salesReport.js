@@ -1,24 +1,26 @@
 const params = new URLSearchParams(window.location.search);
 const overlay = document.getElementById("loadingOverlay");
 
-function showLoading() { 
-  overlay.style.display = "flex"; 
+function showLoading() {
+  overlay.style.display = "flex";
 }
 
-function hideLoading() { 
-  overlay.style.display = "none"; 
+function hideLoading() {
+  overlay.style.display = "none";
 }
 
 function toast(message, type = "error") {
-  Toastify({
-    text: message,
-    duration: 3000,
-    gravity: "bottom",
-    position: "right",
-    backgroundColor: type === "success" ? "#28a745" : "#dc3545",
-    stopOnFocus: true,
-    close: true
-  }).showToast();
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true
+  });
+  Toast.fire({
+    icon: type,
+    title: message
+  });
 }
 
 function setQuickPeriodDates(period) {
@@ -28,16 +30,16 @@ function setQuickPeriodDates(period) {
 
   if (period === 'today') {
     from.setHours(0, 0, 0, 0);
-  } 
+  }
   else if (period === 'week') {
     const day = today.getDay();
     const diff = day === 0 ? -6 : 1 - day;
     from.setDate(today.getDate() + diff);
     from.setHours(0, 0, 0, 0);
-  } 
+  }
   else if (period === 'month') {
     from = new Date(today.getFullYear(), today.getMonth(), 1);
-  } 
+  }
   else if (period === 'year') {
     from = new Date(today.getFullYear(), 0, 1);
   }
@@ -78,12 +80,12 @@ function clearFilters() {
   if (document.getElementById("quickPeriod")) {
     document.getElementById("quickPeriod").value = "custom";
   }
-  
+
   params.delete("search");
   params.delete("dateFrom");
   params.delete("dateTo");
   params.set("page", "1");
-  
+
   updateURLAndLoad();
 }
 
@@ -104,13 +106,13 @@ function updateSummary(summary) {
   const totalItemsSold = summary.totalItemsSold || 0;
 
   document.getElementById("totalOrders").textContent = totalOrders.toLocaleString('en-IN');
-  document.getElementById("totalRevenue").textContent = `₹${totalRevenue.toLocaleString('en-IN', { 
-    minimumFractionDigits: 2, 
-    maximumFractionDigits: 2 
+  document.getElementById("totalRevenue").textContent = `₹${totalRevenue.toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   })}`;
-  document.getElementById("totalDiscount").textContent = `₹${totalDiscount.toLocaleString('en-IN', { 
-    minimumFractionDigits: 2, 
-    maximumFractionDigits: 2 
+  document.getElementById("totalDiscount").textContent = `₹${totalDiscount.toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   })}`;
   document.getElementById("totalItemsSold").textContent = totalItemsSold.toLocaleString('en-IN');
 }
@@ -133,20 +135,20 @@ function renderTable(lineItems) {
 
   lineItems.forEach(item => {
     const row = document.createElement("tr");
-    
-    const orderDate = new Date(item.orderDate).toLocaleDateString('en-IN', { 
-      day: '2-digit', month: '2-digit', year: 'numeric' 
+
+    const orderDate = new Date(item.orderDate).toLocaleDateString('en-IN', {
+      day: '2-digit', month: '2-digit', year: 'numeric'
     });
 
     const customerName = item.customer?.fullName || item.customer?.email || 'Guest';
     const productName = item.productName || 'Unknown Product';
     const variantInfo = item.variantInfo || '';
 
-    const unitPrice = (item.price || 0).toLocaleString('en-IN', { 
-      minimumFractionDigits: 2, maximumFractionDigits: 2 
+    const unitPrice = (item.price || 0).toLocaleString('en-IN', {
+      minimumFractionDigits: 2, maximumFractionDigits: 2
     });
-    const lineTotal = (item.lineTotal || 0).toLocaleString('en-IN', { 
-      minimumFractionDigits: 2, maximumFractionDigits: 2 
+    const lineTotal = (item.lineTotal || 0).toLocaleString('en-IN', {
+      minimumFractionDigits: 2, maximumFractionDigits: 2
     });
 
     const paymentMethod = (item.paymentMethod || 'N/A').toUpperCase();
@@ -209,7 +211,7 @@ function loadSalesData() {
       }
 
       const data = response.data;
-      
+
       updateSummary(data.summary || {});
       renderTable(data.lineItems || []);
       renderPagination(data.pagination || {});
@@ -233,50 +235,50 @@ function downloadReport(type = 'csv') {
   const url = `/admin/sales-report/download?${params.toString()}&format=${type}`;
 
   axios.get(url, {
-    responseType: 'blob'  
+    responseType: 'blob'
   })
-  .then(response => {
-    const contentType = response.headers['content-type'] || '';
-    let blobType = 'text/csv';
-    let extension = 'csv';
+    .then(response => {
+      const contentType = response.headers['content-type'] || '';
+      let blobType = 'text/csv';
+      let extension = 'csv';
 
-    if (contentType.includes('pdf') || type === 'pdf') {
-      blobType = 'application/pdf';
-      extension = 'pdf';
-    }
+      if (contentType.includes('pdf') || type === 'pdf') {
+        blobType = 'application/pdf';
+        extension = 'pdf';
+      }
 
-    const blob = new Blob([response.data], { type: blobType });
-    const downloadUrl = window.URL.createObjectURL(blob);
+      const blob = new Blob([response.data], { type: blobType });
+      const downloadUrl = window.URL.createObjectURL(blob);
 
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = `sales-report-${new Date().toISOString().split('T')[0]}.${extension}`;
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `sales-report-${new Date().toISOString().split('T')[0]}.${extension}`;
 
-    document.body.appendChild(link);
-    link.click();
+      document.body.appendChild(link);
+      link.click();
 
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(downloadUrl);
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
 
-    toast(`${type.toUpperCase()} downloaded successfully!`, "success");
-  })
-  .catch(err => {
-    console.error("Download failed:", err);
-    let message = `Failed to download ${type.toUpperCase()}`;
+      toast(`${type.toUpperCase()} downloaded successfully!`, "success");
+    })
+    .catch(err => {
+      console.error("Download failed:", err);
+      let message = `Failed to download ${type.toUpperCase()}`;
 
-    if (err.response) {
-      err.response.data.text().then(text => {
-        try {
-          const json = JSON.parse(text);
-          message = json.message || message;
-        } catch {}
+      if (err.response) {
+        err.response.data.text().then(text => {
+          try {
+            const json = JSON.parse(text);
+            message = json.message || message;
+          } catch { }
+          toast(message, "error");
+        }).catch(() => toast(message, "error"));
+      } else {
         toast(message, "error");
-      }).catch(() => toast(message, "error"));
-    } else {
-      toast(message, "error");
-    }
-  })
-  .finally(() => hideLoading());
+      }
+    })
+    .finally(() => hideLoading());
 }
 
 document.addEventListener("DOMContentLoaded", () => {

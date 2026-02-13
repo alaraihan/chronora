@@ -1,34 +1,38 @@
 <!doctype html>
 <html>
-       <head>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-          <% if (typeof pageCss !== 'undefined' && pageCss) { %>
-  <link rel="stylesheet" href="/css/admin/<%= pageCss %>.css" />
-  <% } %>
-  </head>
+
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <% if (typeof pageCss !=='undefined' && pageCss) { %>
+    <link rel="stylesheet" href="/css/admin/<%= pageCss %>.css" />
+    <% } %>
+</head>
+
 <body>
   <main>
     <%- body %>
   </main>
-      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script>
-const flash = <%- JSON.stringify(typeof flash !== "undefined" ? flash : null) %>;
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const flash = <% - JSON.stringify(typeof flash !== "undefined" ? flash : null) %>;
 
-   
-      Toastify({
-        text: flash.message,
-        duration: 4000,
-        close: true,
-        gravity: "bottom",
-        position: "right",
-        backgroundColor: flash.type === "success" ? "#4ade80" : "#ef4444",
-        stopOnFocus: true,
-      }).showToast();
-    
+
+    Toastify({
+      text: flash.message,
+      duration: 4000,
+      close: true,
+      gravity: "bottom",
+      position: "right",
+      backgroundColor: flash.type === "success" ? "#4ade80" : "#ef4444",
+      stopOnFocus: true,
+    }).showToast();
+
   </script>
-    <% if (typeof pageJs !== 'undefined' && pageJs) { %>
-  <script src="/js/admin/<%= pageJs %>.js"></script>
-  <% } %>
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <% if (typeof pageJs !=='undefined' && pageJs) { %>
+    <script src="/js/admin/<%= pageJs %>.js"></script>
+    <% } %>
+      <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
+
 </html>

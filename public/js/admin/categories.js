@@ -1,20 +1,20 @@
 
-  const searchInput = document.querySelector('input[name="search"]');
-  let debounceTimeout;
+const searchInput = document.querySelector('input[name="search"]');
+let debounceTimeout;
 
-  searchInput?.addEventListener('input', function() {
+searchInput?.addEventListener('input', function () {
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(() => {
-      document.getElementById('searchForm').submit();
+        document.getElementById('searchForm').submit();
     }, 600);
-  });
+});
 
-  document.querySelectorAll('.clear-search').forEach(btn => {
+document.querySelectorAll('.clear-search').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = '/admin/categories';
+        e.preventDefault();
+        window.location.href = '/admin/categories';
     });
-  });
+});
 
 function previewImage(e) {
     const file = e.target.files[0];
@@ -36,6 +36,20 @@ function openAddModal() {
     document.getElementById('currentLogo').style.display = 'none';
 }
 
+function showToast(msg, type = 'success') {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
+    Toast.fire({
+        icon: type,
+        title: msg
+    });
+}
+
 async function openEditModal(id) {
     try {
         const { data } = await axios.get(`/admin/categories/${id}`);
@@ -47,12 +61,12 @@ async function openEditModal(id) {
         document.getElementById('categoryDescription').value = c.description || '';
         document.getElementById('categoryStatus').value = c.isListed;
 
-        document.getElementById('currentLogoImg').src = c.image || ''||c.image.url;
-        document.getElementById('currentLogo').style.display = c.image ||c.image.url? 'block' : 'none';
+        document.getElementById('currentLogoImg').src = c.image || '' || c.image.url;
+        document.getElementById('currentLogo').style.display = c.image || c.image.url ? 'block' : 'none';
 
         new bootstrap.Modal(document.getElementById('categoryModal')).show();
     } catch (err) {
-        Toastify({ text: 'Failed to load category', backgroundColor: '#ef4444' }).showToast();
+        showToast('Failed to load category', 'error');
     }
 }
 
@@ -72,11 +86,11 @@ async function saveCategory() {
         } else {
             await axios.post('/admin/categories', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
         }
-        Toastify({ text: 'Saved!', backgroundColor: '#4ade80' }).showToast();
+        showToast('Saved!', 'success');
         bootstrap.Modal.getInstance(document.getElementById('categoryModal')).hide();
         setTimeout(() => location.reload(), 600);
     } catch (err) {
-        Toastify({ text: err.response?.data?.message || 'Save failed', backgroundColor: '#ef4444' }).showToast();
+        showToast(err.response?.data?.message || 'Save failed', 'error');
     }
 }
 
@@ -94,21 +108,21 @@ async function toggleCategoryStatus(categoryId, currentListed) {
         btn.textContent = newListed ? 'Listed' : 'Unlisted';
         btn.onclick = () => toggleCategoryStatus(categoryId, newListed);
 
-        Toastify({ text: `Category ${newListed ? 'listed' : 'unlisted'}!`, backgroundColor: '#4ade80' }).showToast();
+        showToast(`Category ${newListed ? 'listed' : 'unlisted'}!`, 'success');
     } catch (err) {
-        Toastify({ text: 'Failed to update', backgroundColor: '#ef4444' }).showToast();
+        showToast('Failed to update', 'error');
     }
 }
 let cropper = null;
 let currentFile = null;
 
-document.getElementById('categoryLogo').addEventListener('change', function(e) {
+document.getElementById('categoryLogo').addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (!file) return;
 
     currentFile = file;
     const reader = new FileReader();
-    reader.onload = function(ev) {
+    reader.onload = function (ev) {
         document.getElementById('logoPreview').src = ev.target.result;
         document.getElementById('logoPreviewContainer').style.display = 'block';
         document.getElementById('currentLogo').style.display = 'none'; // Hide old one
@@ -118,19 +132,19 @@ document.getElementById('categoryLogo').addEventListener('change', function(e) {
 
 function openCropper() {
     if (!currentFile) return;
-    
+
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         const img = document.getElementById('imageToCrop');
         img.src = e.target.result;
-        
+
         const modal = new bootstrap.Modal(document.getElementById('cropperModal'));
         modal.show();
 
         document.getElementById('cropperModal').addEventListener('shown.bs.modal', function initCropper() {
             if (cropper) cropper.destroy();
             cropper = new Cropper(img, {
-                aspectRatio: 1,          
+                aspectRatio: 1,
                 viewMode: 1,
                 dragMode: 'move',
                 autoCropArea: 0.9,
@@ -148,7 +162,7 @@ function openCropper() {
     reader.readAsDataURL(currentFile);
 }
 
-document.getElementById('cropDoneBtn').addEventListener('click', function() {
+document.getElementById('cropDoneBtn').addEventListener('click', function () {
     if (!cropper) return;
 
     const canvas = cropper.getCroppedCanvas({
@@ -157,18 +171,18 @@ document.getElementById('cropDoneBtn').addEventListener('click', function() {
         imageSmoothingQuality: 'high'
     });
 
-    const croppedBase64 = canvas.toDataURL('image/webp', 0.85); 
+    const croppedBase64 = canvas.toDataURL('image/webp', 0.85);
 
     document.getElementById('croppedLogo').value = croppedBase64;
 
-    
+
     document.getElementById('logoPreview').src = croppedBase64;
 
-    
+
     bootstrap.Modal.getInstance(document.getElementById('cropperModal')).hide();
 });
 
-document.getElementById('cropperModal').addEventListener('hidden.bs.modal', function() {
+document.getElementById('cropperModal').addEventListener('hidden.bs.modal', function () {
     if (cropper) {
         cropper.destroy();
         cropper = null;
@@ -207,10 +221,10 @@ async function saveCategory() {
         } else {
             await axios.post('/admin/categories', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
         }
-        Toastify({ text: 'Category saved successfully!', backgroundColor: '#4ade80' }).showToast();
+        showToast('Category saved successfully!', 'success');
         bootstrap.Modal.getInstance(document.getElementById('categoryModal')).hide();
         setTimeout(() => location.reload(), 600);
     } catch (err) {
-        Toastify({ text: err.response?.data?.message || 'Save failed', backgroundColor: '#ef4444' }).showToast();
+        showToast(err.response?.data?.message || 'Save failed', 'error');
     }
 }

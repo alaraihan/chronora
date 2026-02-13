@@ -137,14 +137,28 @@ resendLink.addEventListener('click', async (e) => {
       updateTimerDisplay();
       startTimer();
 
-      alert('New OTP sent to your email!');
+      Swal.fire({
+        icon: 'success',
+        title: 'OTP Sent',
+        text: 'New OTP sent to your email!',
+        timer: 3000,
+        showConfirmButton: false
+      });
     } else {
-      alert(data.message || 'Failed to resend OTP');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: data.message || 'Failed to resend OTP'
+      });
       resendLink.classList.remove('disabled');
     }
   } catch (err) {
     console.error('Network error:', err);
-    alert('Network error. Try again.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Network Error',
+      text: 'Network error. Try again.'
+    });
     resendLink.classList.remove('disabled');
   } finally {
     resendLink.textContent = previousText;
@@ -155,13 +169,21 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   if (timeLeft <= 0) {
-    alert('OTP expired. Please click resend to get a new code.');
+    Swal.fire({
+      icon: 'warning',
+      title: 'Expired',
+      text: 'OTP expired. Please click resend to get a new code.'
+    });
     return;
   }
 
   const otp = inputs.map(i => i.value).join('');
   if (otp.length !== inputs.length) {
-    alert(`Enter all ${inputs.length} digits`);
+    Swal.fire({
+      icon: 'info',
+      title: 'Partial OTP',
+      text: `Enter all ${inputs.length} digits`
+    });
     return;
   }
 
@@ -175,7 +197,7 @@ form.addEventListener('submit', async (e) => {
   try {
     const response = await fetch('/verifyOtp', {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
@@ -186,18 +208,32 @@ form.addEventListener('submit', async (e) => {
     const data = await response.json();
 
     if (data.success) {
-      alert(data.message);
-      
-      window.location.href = data.redirect || '/login';
+      Swal.fire({
+        icon: 'success',
+        title: 'Verified',
+        text: data.message,
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        window.location.href = data.redirect || '/login';
+      });
     } else {
-      alert(data.message || 'Verification failed');
-      
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed',
+        text: data.message || 'Verification failed'
+      });
+
       inputs.forEach(i => i.value = '');
       if (inputs[0]) inputs[0].focus();
     }
   } catch (err) {
     console.error('Verification error:', err);
-    alert('Network error. Please try again.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Network error. Please try again.'
+    });
   } finally {
     if (submitBtn) {
       submitBtn.disabled = false;

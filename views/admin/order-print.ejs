@@ -1,58 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
+    <title>
+        <%= title %>
+    </title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            padding: 20px; 
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
             margin-left: 170px;
             margin-top: 50px;
             margin-bottom: 50px;
             background: #f5f5f5;
         }
-        
+
         .invoice-container {
             background: white;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             max-width: 1000px;
             margin: 0 auto;
         }
-        
-        .invoice-header { 
-            text-align: center; 
-            margin-bottom: 30px; 
-            border-bottom: 2px solid #000; 
-            padding-bottom: 20px; 
+
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 20px;
         }
-        
-        .invoice-header h1 { 
-            margin: 0; 
-            color: #333; 
+
+        .invoice-header h1 {
+            margin: 0;
+            color: #333;
             font-size: 32px;
         }
-        
-        .company-info { 
-            margin-top: 10px; 
-            color: #666; 
+
+        .company-info {
+            margin-top: 10px;
+            color: #666;
             font-size: 14px;
         }
-        
-        .order-info { 
-            display: flex; 
-            justify-content: space-between; 
-            margin-bottom: 30px; 
+
+        .order-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
             flex-wrap: wrap;
             gap: 20px;
         }
-        
-        .order-details, .customer-details { 
+
+        .order-details,
+        .customer-details {
             flex: 1;
             min-width: 300px;
             padding: 20px;
@@ -60,49 +65,51 @@
             border-radius: 8px;
             border: 1px solid #eee;
         }
-        
-        .order-details h3, .customer-details h3 {
+
+        .order-details h3,
+        .customer-details h3 {
             margin-top: 0;
             color: #2c3e50;
             border-bottom: 2px solid #3498db;
             padding-bottom: 10px;
         }
-        
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin: 20px 0; 
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
         }
-        
-        th, td { 
-            border: 1px solid #ddd; 
-            padding: 12px; 
-            text-align: left; 
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
         }
-        
-        th { 
-            background: #f5f5f5; 
+
+        th {
+            background: #f5f5f5;
             font-weight: 600;
             color: #2c3e50;
         }
-        
-        .total-row { 
-            font-weight: bold; 
-            background: #f9f9f9; 
+
+        .total-row {
+            font-weight: bold;
+            background: #f9f9f9;
         }
-        
-        .footer { 
-            text-align: center; 
-            margin-top: 50px; 
-            color: #666; 
-            font-size: 12px; 
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #666;
+            font-size: 12px;
             padding-top: 20px;
             border-top: 1px solid #eee;
         }
-        
-        .action-buttons { 
-            text-align: center; 
-            margin-top: 30px; 
+
+        .action-buttons {
+            text-align: center;
+            margin-top: 30px;
             padding: 20px;
             background: #f8f9fa;
             border-radius: 8px;
@@ -112,7 +119,7 @@
             gap: 15px;
             flex-wrap: wrap;
         }
-        
+
         .btn {
             padding: 12px 25px;
             border: none;
@@ -127,60 +134,64 @@
             text-decoration: none;
             color: white;
         }
-        
+
         .btn-print {
             background: #3498db;
         }
-        
+
         .btn-print:hover {
             background: #2980b9;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
         }
-        
+
         .btn-pdf {
             background: #e74c3c;
         }
-        
+
         .btn-pdf:hover {
             background: #c0392b;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
         }
-        
+
         .btn-image {
             background: #9b59b6;
         }
-        
+
         .btn-image:hover {
             background: #8e44ad;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(155, 89, 182, 0.3);
         }
-        
+
         .btn-close {
             background: #6c757d;
         }
-        
+
         .btn-close:hover {
             background: #545b62;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
         }
-        
+
         @media print {
-            .action-buttons { display: none; }
-            body { 
-                padding: 0; 
+            .action-buttons {
+                display: none;
+            }
+
+            body {
+                padding: 0;
                 margin: 0;
                 background: white;
             }
+
             .invoice-container {
                 box-shadow: none;
                 padding: 0;
             }
         }
-        
+
         .status-badge {
             padding: 6px 12px;
             border-radius: 20px;
@@ -188,19 +199,43 @@
             font-weight: 600;
             display: inline-block;
         }
-        
-        .status-pending { background: #fff8e1; color: #ff8f00; }
-        .status-confirmed { background: #e3f2fd; color: #1976d2; }
-        .status-processing { background: #bbdefb; color: #0d47a1; }
-        .status-shipped { background: #e8f5e9; color: #2e7d32; }
-        .status-delivered { background: #c8e6c9; color: #1b5e20; }
-        .status-cancelled { background: #ffebee; color: #c62828; }
-        
+
+        .status-pending {
+            background: #fff8e1;
+            color: #ff8f00;
+        }
+
+        .status-confirmed {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-processing {
+            background: #bbdefb;
+            color: #0d47a1;
+        }
+
+        .status-shipped {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-delivered {
+            background: #c8e6c9;
+            color: #1b5e20;
+        }
+
+        .status-cancelled {
+            background: #ffebee;
+            color: #c62828;
+        }
+
         .invoice-content {
             page-break-inside: avoid;
         }
     </style>
 </head>
+
 <body>
     <div class="invoice-container" id="invoiceContent">
         <div class="invoice-header">
@@ -214,32 +249,47 @@
         <div class="order-info">
             <div class="order-details">
                 <h3>Order Details</h3>
-                <p><strong>Invoice No:</strong> <%= order.orderId %></p>
-                <p><strong>Invoice Date:</strong> <%= new Date(order.createdAt).toLocaleDateString() %></p>
-                <p><strong>Order Status:</strong> 
+                <p><strong>Invoice No:</strong>
+                    <%= order.orderId %>
+                </p>
+                <p><strong>Invoice Date:</strong>
+                    <%= new Date(order.createdAt).toLocaleDateString() %>
+                </p>
+                <p><strong>Order Status:</strong>
                     <span class="status-badge status-<%= order.status.toLowerCase() %>">
                         <%= order.status %>
                     </span>
                 </p>
                 <% if (order.paymentMethod) { %>
-                <p><strong>Payment Method:</strong> <%= order.paymentMethod.toUpperCase() %></p>
-                <% } %>
-                <% if (order.expectedDelivery) { %>
-                <p><strong>Expected Delivery:</strong> <%= new Date(order.expectedDelivery).toLocaleDateString() %></p>
-                <% } %>
+                    <p><strong>Payment Method:</strong>
+                        <%= order.paymentMethod.toUpperCase() %>
+                    </p>
+                    <% } %>
+                        <% if (order.expectedDelivery) { %>
+                            <p><strong>Expected Delivery:</strong>
+                                <%= new Date(order.expectedDelivery).toLocaleDateString() %>
+                            </p>
+                            <% } %>
             </div>
             <div class="customer-details">
                 <h3>Customer Details</h3>
-                <p><strong>Name:</strong> <%= order.address.fullName %></p>
-                <p><strong>Phone:</strong> <%= order.address.phone %></p>
-                <p><strong>Email:</strong> <%= order.userId?.email || 'N/A' %></p>
+                <p><strong>Name:</strong>
+                    <%= order.address.fullName %>
+                </p>
+                <p><strong>Phone:</strong>
+                    <%= order.address.phone %>
+                </p>
+                <p><strong>Email:</strong>
+                    <%= order.userId?.email || 'N/A' %>
+                </p>
                 <p><strong>Address:</strong><br>
                     <%= order.address.address1 %><br>
-                    <% if (order.address.address2) { %>
-                    <%= order.address.address2 %><br>
-                    <% } %>
-                    <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %><br>
-                    <%= order.address.country %>
+                        <% if (order.address.address2) { %>
+                            <%= order.address.address2 %><br>
+                                <% } %>
+                                    <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %>
+                                                <br>
+                                                <%= order.address.country %>
                 </p>
             </div>
         </div>
@@ -256,49 +306,59 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% let subtotal = 0; %>
-                    <% order.products.forEach((item, index) => { 
-                        const itemTotal = item.price * item.quantity;
-                        subtotal += itemTotal;
-                    %>
-                    <tr>
-                        <td><%= index + 1 %></td>
-                        <td>
-                            <strong><%= item.productId?.name || 'Product' %></strong>
-                            <% if (item.variantId) { %>
-                            <br><small>Variant: <%= item.variantId %></small>
-                            <% } %>
-                        </td>
-                        <td><%= item.quantity %></td>
-                        <td>₹<%= item.price.toFixed(2) %></td>
-                        <td>₹<%= itemTotal.toFixed(2) %></td>
-                    </tr>
-                    <% }); %>
-                    
-                    <!-- Summary Rows -->
-                    <tr class="summary-row">
-                        <td colspan="4" style="text-align: right;"><strong>Subtotal:</strong></td>
-                        <td><strong>₹<%= subtotal.toFixed(2) %></strong></td>
-                    </tr>
-                    
-                    <% if (order.discount && order.discount > 0) { %>
-                    <tr class="summary-row">
-                        <td colspan="4" style="text-align: right;"><strong>Discount:</strong></td>
-                        <td><strong>-₹<%= order.discount.toFixed(2) %></strong></td>
-                    </tr>
-                    <% } %>
-                    
-                    <% if (order.deliveryCharge && order.deliveryCharge > 0) { %>
-                    <tr class="summary-row">
-                        <td colspan="4" style="text-align: right;"><strong>Delivery Charge:</strong></td>
-                        <td><strong>₹<%= order.deliveryCharge.toFixed(2) %></strong></td>
-                    </tr>
-                    <% } %>
-                    
-                    <tr class="total-row">
-                        <td colspan="4" style="text-align: right;"><strong>Grand Total:</strong></td>
-                        <td><strong>₹<%= order.totalAmount.toFixed(2) %></strong></td>
-                    </tr>
+                    <% let subtotal=0; %>
+                        <% order.products.forEach((item, index)=> {
+                            const itemTotal = item.price * item.quantity;
+                            subtotal += itemTotal;
+                            %>
+                            <tr>
+                                <td>
+                                    <%= index + 1 %>
+                                </td>
+                                <td>
+                                    <strong>
+                                        <%= item.productId?.name || 'Product' %>
+                                    </strong>
+                                    <% if (item.variantId) { %>
+                                        <br><small>Variant: <%= item.variantId %></small>
+                                        <% } %>
+                                </td>
+                                <td>
+                                    <%= item.quantity %>
+                                </td>
+                                <td>₹<%= item.price.toFixed(2) %>
+                                </td>
+                                <td>₹<%= itemTotal.toFixed(2) %>
+                                </td>
+                            </tr>
+                            <% }); %>
+
+                                <!-- Summary Rows -->
+                                <tr class="summary-row">
+                                    <td colspan="4" style="text-align: right;"><strong>Subtotal:</strong></td>
+                                    <td><strong>₹<%= subtotal.toFixed(2) %></strong></td>
+                                </tr>
+
+                                <% if (order.discount && order.discount> 0) { %>
+                                    <tr class="summary-row">
+                                        <td colspan="4" style="text-align: right;"><strong>Discount:</strong></td>
+                                        <td><strong>-₹<%= order.discount.toFixed(2) %></strong></td>
+                                    </tr>
+                                    <% } %>
+
+                                        <% if (order.deliveryCharge && order.deliveryCharge> 0) { %>
+                                            <tr class="summary-row">
+                                                <td colspan="4" style="text-align: right;"><strong>Delivery
+                                                        Charge:</strong></td>
+                                                <td><strong>₹<%= order.deliveryCharge.toFixed(2) %></strong></td>
+                                            </tr>
+                                            <% } %>
+
+                                                <tr class="total-row">
+                                                    <td colspan="4" style="text-align: right;"><strong>Grand
+                                                            Total:</strong></td>
+                                                    <td><strong>₹<%= order.totalAmount.toFixed(2) %></strong></td>
+                                                </tr>
                 </tbody>
             </table>
         </div>
@@ -306,10 +366,11 @@
         <div class="footer">
             <p><strong>Terms & Conditions:</strong></p>
             <p>1. Goods once sold will not be taken back.<br>
-               2. All disputes are subject to jurisdiction.<br>
-               3. This is a computer-generated invoice.</p>
+                2. All disputes are subject to jurisdiction.<br>
+                3. This is a computer-generated invoice.</p>
             <p>Thank you for your business!</p>
-            <p>Invoice generated on <%= new Date().toLocaleDateString() %> at <%= new Date().toLocaleTimeString() %></p>
+            <p>Invoice generated on <%= new Date().toLocaleDateString() %> at <%= new Date().toLocaleTimeString() %>
+            </p>
             <p>For queries, contact: support@yourcompany.com | +91 1234567890</p>
         </div>
     </div>
@@ -331,25 +392,25 @@
 
     <!-- Add Bootstrap Icons CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    
+
     <script>
         // Print Invoice Function
         function printInvoice() {
             window.print();
         }
-        
+
         // Save as PDF Function
         function saveAsPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
             const invoiceContent = document.getElementById('invoiceContent');
-            
+
             // Show loading message
             const loadingMsg = document.createElement('div');
             loadingMsg.innerHTML = '<p>Generating PDF... Please wait.</p>';
             loadingMsg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:20px;border-radius:10px;box-shadow:0 0 20px rgba(0,0,0,0.3);z-index:9999;';
             document.body.appendChild(loadingMsg);
-            
+
             html2canvas(invoiceContent, {
                 scale: 2,
                 useCORS: true,
@@ -357,33 +418,37 @@
                 backgroundColor: '#ffffff'
             }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
-                const imgWidth = 190; 
-                const pageHeight = 280; 
+                const imgWidth = 190;
+                const pageHeight = 280;
                 const imgHeight = canvas.height * imgWidth / canvas.width;
-                
+
                 doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-                
+
                 const orderId = '<%= order.orderId %>';
                 const filename = `Invoice_${orderId}_${new Date().toISOString().split('T')[0]}.pdf`;
-                
+
                 doc.save(filename);
-                
+
                 document.body.removeChild(loadingMsg);
             }).catch(error => {
                 console.error('Error generating PDF:', error);
-                alert('Error generating PDF. Please try again.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'PDF Generation Error',
+                    text: 'Error generating PDF. Please try again.'
+                });
                 document.body.removeChild(loadingMsg);
             });
         }
-        
+
         function saveAsImage() {
             const invoiceContent = document.getElementById('invoiceContent');
-            
+
             const loadingMsg = document.createElement('div');
             loadingMsg.innerHTML = '<p>Generating Image... Please wait.</p>';
             loadingMsg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:20px;border-radius:10px;box-shadow:0 0 20px rgba(0,0,0,0.3);z-index:9999;';
             document.body.appendChild(loadingMsg);
-            
+
             html2canvas(invoiceContent, {
                 scale: 2,
                 useCORS: true,
@@ -393,21 +458,25 @@
                 const link = document.createElement('a');
                 const orderId = '<%= order.orderId %>';
                 const filename = `Invoice_${orderId}_${new Date().toISOString().split('T')[0]}.png`;
-                
+
                 link.download = filename;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
-                
+
                 document.body.removeChild(loadingMsg);
             }).catch(error => {
                 console.error('Error generating image:', error);
-                alert('Error generating image. Please try again.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Image Generation Error',
+                    text: 'Error generating image. Please try again.'
+                });
                 document.body.removeChild(loadingMsg);
             });
         }
-        
+
         // Auto-print if opened in print mode
-        window.onload = function() {
+        window.onload = function () {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('print') === 'true') {
                 setTimeout(() => {
@@ -415,9 +484,9 @@
                 }, 500);
             }
         };
-        
+
         // Add keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
                 e.preventDefault();
                 printInvoice();
@@ -432,4 +501,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -21,7 +21,12 @@
 .back-navigation {
   margin-bottom: 20px;
 }
+.status-badge{
+  padding-top: 20px;
+  margin-top: 40px;
+    margin-left: 20px;
 
+}
 .btn-back {
   display: inline-flex;
   align-items: center;

@@ -10,7 +10,10 @@ function showToast(message, type = 'info') {
     };
 
     if (!window.Toastify) {
-        alert(message);
+        Swal.fire({
+            icon: type,
+            text: message
+        });
         return;
     }
 
@@ -28,46 +31,46 @@ function approveItemReturn(itemIndex) {
     axios.post(`/admin/orders/${window.ORDER_ID}/return/approve`, {
         itemIndex
     })
-    .then(res => {
-        Toastify({
-            text: res.data.message || "Return approved",
-            backgroundColor: "#28a745",
-            duration: 3000
-        }).showToast();
+        .then(res => {
+            Toastify({
+                text: res.data.message || "Return approved",
+                backgroundColor: "#28a745",
+                duration: 3000
+            }).showToast();
 
-        location.reload();
-    })
-    .catch(err => {
-        console.error(err.response?.data || err.message);
-        Toastify({
-            text: "Server error",
-            backgroundColor: "#dc3545",
-            duration: 3000
-        }).showToast();
-    });
+            location.reload();
+        })
+        .catch(err => {
+            console.error(err.response?.data || err.message);
+            Toastify({
+                text: "Server error",
+                backgroundColor: "#dc3545",
+                duration: 3000
+            }).showToast();
+        });
 }
 
 function rejectItemReturn(itemIndex) {
     axios.post(`/admin/orders/${window.ORDER_ID}/return/reject`, {
         itemIndex
     })
-    .then(res => {
-        Toastify({
-            text: res.data.message || "Return rejected",
-            backgroundColor: "#ffc107",
-            duration: 3000
-        }).showToast();
+        .then(res => {
+            Toastify({
+                text: res.data.message || "Return rejected",
+                backgroundColor: "#ffc107",
+                duration: 3000
+            }).showToast();
 
-        location.reload();
-    })
-    .catch(err => {
-        console.error(err.response?.data || err.message);
-        Toastify({
-            text: "Server error",
-            backgroundColor: "#dc3545",
-            duration: 3000
-        }).showToast();
-    });
+            location.reload();
+        })
+        .catch(err => {
+            console.error(err.response?.data || err.message);
+            Toastify({
+                text: "Server error",
+                backgroundColor: "#dc3545",
+                duration: 3000
+            }).showToast();
+        });
 }
 
 function updateItemStatusUI(index, status) {
