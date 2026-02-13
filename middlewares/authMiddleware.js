@@ -13,17 +13,18 @@ export const checkLogin = (req, res, next) => {
   next();
 };
 
-
 export const isLoggedIn = async (req, res, next) => {
   try {
     if (!req.session?.userId) {
-      return res.redirect("/login");
+      return handleUnauthorized(req, res);
     }
 
-    const user = await User.findById(req.session.userId).select("_id isBlocked");
+    const user = await User.findById(req.session.userId)
+      .select("_id isBlocked");
+
     if (!user || user.isBlocked) {
-      req.session.destroy();
-      return res.redirect("/login");
+      req.session.destroy(() => {});
+      return handleUnauthorized(req, res);
     }
 
     req.user = user;
@@ -31,9 +32,21 @@ export const isLoggedIn = async (req, res, next) => {
     next();
   } catch (error) {
     console.error("isLoggedIn error:", error);
-    res.redirect("/login");
+    handleUnauthorized(req, res);
   }
 };
+
+const handleUnauthorized = (req, res) => {
+  if (req.xhr || req.headers.accept?.includes("json")) {
+    return res.status(401).json({
+      success: false,
+      message: "Please login first"
+    });
+  }
+
+  return res.redirect("/login");
+};
+
 
 export const isAdmin = async (req, res, next) => {
   try {
