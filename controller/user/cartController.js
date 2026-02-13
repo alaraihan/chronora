@@ -82,10 +82,17 @@ export const loadCart = async (req, res) => {
 
 export const addToCart = async (req, res) => {
   try {
+       if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Please login or signup to add items to cart"
+      });
+    }
     const { productId, variantId, quantity: q } = req.body;
     const userId = req.user._id;
     const quantity = Math.max(1, parseInt(q || "1", 10));
 
+   
     if (!productId || !variantId) {
       logger.warn(`addToCart failed: Missing IDs, user: ${userId}`);
       return res.json({ success: false, message: "Missing IDs" });

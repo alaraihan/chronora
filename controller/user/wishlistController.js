@@ -39,6 +39,12 @@ logger.error("Error loading wishlist", error);
 };
 export const addToWishlist = async (req, res) => {
   try {
+      if (!req.user) {
+          return res.status(401).json({
+            success: false,
+            message: "Please login or signup to add items to cart"
+          });
+        }
     const userId = req.user._id;
     const { productId, variantId } = req.body;
 

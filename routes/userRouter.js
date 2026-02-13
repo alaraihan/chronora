@@ -132,7 +132,7 @@ router.post("/profile/change-password", isLoggedIn, changePassword);
 
 
 router.get("/cart", isLoggedIn, loadCart);
-router.post("/cart/add", isLoggedIn, addToCart);
+router.post("/cart/add", checkLogin, addToCart);
 router.post("/cart/update/:id", isLoggedIn, updateQuantity);
 router.post("/cart/remove/:id", isLoggedIn, removeFromCart);
 
@@ -163,7 +163,7 @@ router.get("/profile/orders/:orderId/invoice", isLoggedIn, downloadInvoice);
 router.post("/profile/orders/:orderId/review-item", isLoggedIn, reviewOrderItem);
 
 router.get("/wishlist", isLoggedIn, loadWishlist);
-router.post("/add-wishlist", isLoggedIn, addToWishlist);
+router.post("/add-wishlist", checkLogin, addToWishlist);
 router.post("/remove-wishlist", isLoggedIn, removeFromWishlist);
 router.post("/move-to-cart", isLoggedIn, moveToCart);
 

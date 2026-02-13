@@ -130,3 +130,5 @@ C:\Users\DELL\Desktop\CHRONORA\views\partials\admin\sidebar.ejs:11
     14|     </a>
 
 page is not defined
+2026-02-13 08:51:45 [ERROR]: Add to wishlist error Cannot read properties of undefined (reading '_id')
+2026-02-13 08:51:47 [ERROR]: Add to wishlist error Cannot read properties of undefined (reading '_id')
