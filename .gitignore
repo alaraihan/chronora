@@ -1,4 +1,4 @@
 .env
 node_modules/
 
-helpers/logs/*.log
+helpers/logs/
