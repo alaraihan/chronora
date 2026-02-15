@@ -61,8 +61,22 @@ async function openEditModal(id) {
         document.getElementById('categoryDescription').value = c.description || '';
         document.getElementById('categoryStatus').value = c.isListed;
 
-        document.getElementById('currentLogoImg').src = c.image || '' || c.image.url;
-        document.getElementById('currentLogo').style.display = c.image || c.image.url ? 'block' : 'none';
+        const logoUrl =
+  typeof c.image === 'string'
+    ? c.image
+    : c.image?.url || '';
+
+const logoContainer = document.getElementById('currentLogo');
+const logoImg = document.getElementById('currentLogoImg');
+
+if (logoUrl) {
+  logoImg.src = logoUrl;
+  logoContainer.style.display = 'block';
+} else {
+  logoImg.src = '';
+  logoContainer.style.display = 'none';
+}
+
 
         new bootstrap.Modal(document.getElementById('categoryModal')).show();
     } catch (err) {
