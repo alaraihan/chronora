@@ -19,63 +19,83 @@
         <p class="subtext">Your saved items for later.</p>
       </header>
 
-      <% if (wishlist && wishlist.length > 0) { %>
+      <% if (wishlist?.length) { %>
         <div class="wishlist-grid">
-          <% wishlist.forEach(item => { %>
+          <% wishlist.forEach(item => { 
+               if (!item?.productId) return;  // Skip invalid items
+          %>
+
             <div 
               class="wishlist-card" 
-              data-product-id="<%= item.productId._id %>"
+              data-product-id="<%= item.productId?._id || '' %>"
               style="cursor: pointer;"
             >
               <div class="image-wrapper">
                 <img 
                   src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" 
-                  alt="<%= item.productId?.name %>"
+                  alt="<%= item.productId?.name || 'Product' %>"
                   class="product-img"
                   loading="lazy"
                 >
               </div>
 
               <div class="card-content">
-                <h3 class="product-name"><%= item.productId?.name || 'Unknown Product' %></h3>
-                <p class="variant-info"><%= item.variantId?.colorName || 'Standard' %></p>
+                <h3 class="product-name">
+                  <%= item.productId?.name || 'Unknown Product' %>
+                </h3>
+
+                <p class="variant-info">
+                  <%= item.variantId?.colorName || 'Standard' %>
+                </p>
 
                 <div class="price-container">
                   <% if (item.productId?.offerData) { %>
-                    <p class="original-price">₹ <%= item.productId.price.toLocaleString('en-IN') %></p>
-                    <p class="offer-price">₹ <%= item.productId.offerData.offerPrice.toLocaleString('en-IN') %></p>
+                    <p class="original-price">
+                      ₹ <%= item.productId.price?.toLocaleString?.('en-IN') || 'N/A' %>
+                    </p>
+
+                    <p class="offer-price">
+                      ₹ <%= item.productId.offerData.offerPrice?.toLocaleString?.('en-IN') || 'N/A' %>
+                    </p>
+
                     <span class="save-badge">
-                      <% if (item.productId.offerData.offer.discountType === 'percentage') { %>
+                      <% if (item.productId.offerData.offer?.discountType === 'percentage') { %>
                         <%= item.productId.offerData.offer.discountValue %>% OFF
                       <% } else { %>
-                        ₹<%= item.productId.offerData.offer.discountValue %> OFF
+                        ₹<%= item.productId.offerData.offer?.discountValue || 0 %> OFF
                       <% } %>
                     </span>
+
                   <% } else { %>
-                    <p class="price">₹ <%= item.productId?.price?.toLocaleString('en-IN') || 'N/A' %></p>
+                    <p class="price">
+                      ₹ <%= item.productId?.price?.toLocaleString?.('en-IN') || 'N/A' %>
+                    </p>
                   <% } %>
                 </div>
 
                 <div class="actions">
                   <button 
                     class="btn-move-cart"
-                    data-product-id="<%= item.productId._id %>"
-                    data-variant-id="<%= item.variantId._id %>"
+                    data-product-id="<%= item.productId?._id || '' %>"
+                    data-variant-id="<%= item.variantId?._id || '' %>"
                   >
                     Move to Cart
                   </button>
+
                   <button 
                     class="btn-remove"
-                    data-product-id="<%= item.productId._id %>"
-                    data-variant-id="<%= item.variantId._id %>"
+                    data-product-id="<%= item.productId?._id || '' %>"
+                    data-variant-id="<%= item.variantId?._id || '' %>"
                   >
                     Remove
                   </button>
                 </div>
               </div>
             </div>
+
           <% }) %>
         </div>
+
       <% } else { %>
         <div class="empty-wishlist">
           <p>Your wishlist is empty.</p>
@@ -96,8 +116,8 @@
 
     wishlistCards.forEach(card => {
       card.addEventListener('click', (e) => {
-        // Prevent navigation if user clicked the action buttons
-        if (e.target.closest('.btn-move-cart') || e.target.closest('.btn-remove')) {
+        if (e.target.closest('.btn-move-cart') || 
+            e.target.closest('.btn-remove')) {
           return;
         }
 

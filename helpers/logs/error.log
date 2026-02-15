@@ -132,3 +132,12 @@ C:\Users\DELL\Desktop\CHRONORA\views\partials\admin\sidebar.ejs:11
 page is not defined
 2026-02-13 08:51:45 [ERROR]: Add to wishlist error Cannot read properties of undefined (reading '_id')
 2026-02-13 08:51:47 [ERROR]: Add to wishlist error Cannot read properties of undefined (reading '_id')
+2026-02-15 15:42:38 [ERROR]: GET /admin/products - C:\Users\DELL\Desktop\CHRONORA\views\layouts\adminLayouts\main.ejs:8
+    6|   <meta name="viewport" content="width=device-width,initial-scale=1" />
+    7|   <title>
+ >> 8|     <%= title || 'Chronora Admin' %>
+    9|   </title>
+    10| 
+    11|   <!-- ===== CSS ===== -->
+
+title is not defined

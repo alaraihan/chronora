@@ -200,3 +200,16 @@ small.text-muted {
 .table tbody tr {
   animation: fadeIn 0.4s ease-out;
 }
+.action-text span {
+  cursor: pointer;
+  font-weight: 500;
+  margin: 0 4px;
+}
+
+.action-text span:hover {
+  text-decoration: underline;
+}
+
+.action-text .text-danger:hover {
+  color: #dc3545;
+}

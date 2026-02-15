@@ -134,10 +134,10 @@ const totalOrders = await Order.countDocuments(dateFilter);
       .select("orderId userId totalAmount status createdAt paymentMethod");
 
     const statusDistribution = await Order.aggregate([
-     
-     { $group: { _id: "$status", count: { $sum: 1 } } }
+  { $match: dateFilter },
+  { $group: { _id: "$status", count: { $sum: 1 } } }
+]);
 
-    ]);
     const last7Days = [];
     for (let i = 6; i >= 0; i--) {
       const date = new Date();
@@ -151,23 +151,26 @@ const totalOrders = await Order.countDocuments(dateFilter);
         const nextDay = new Date(date);
         nextDay.setDate(nextDay.getDate() + 1);
 
-        const dailyRevenue = await Order.aggregate([
-          {
-            $match:{
-              dateFilter,
-              createdAt: { $gte: date, $lt: nextDay }
-            }
-          },
-          { $unwind: "$products" },
-          { $match: { "products.itemStatus": "Delivered" } },
-          {
-            $group: {
-              _id: null,
-              revenue: { $sum: { $multiply: ["$products.quantity", "$products.price"] } },
-              orders: { $sum: 1 }
-            }
-          }
-        ]);
+       const dailyRevenue = await Order.aggregate([
+  {
+    $match: {
+      ...dateFilter,
+      createdAt: { $gte: date, $lt: nextDay }
+    }
+  },
+  { $unwind: "$products" },
+  { $match: { "products.itemStatus": "Delivered" } },
+  {
+    $group: {
+      _id: null,
+      revenue: {
+        $sum: { $multiply: ["$products.quantity", "$products.price"] }
+      },
+      orders: { $sum: 1 }
+    }
+  }
+]);
+
 
         return {
           date: date.toLocaleDateString("en-IN", { day: "2-digit", month: "short" }),

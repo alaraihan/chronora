@@ -3,6 +3,7 @@ import Product from "../../models/productSchema.js";
 import Variant from "../../models/variantSchema.js";
 import { sendOtp, generateOtp } from "../../utils/mail.js";
 import bcrypt from "bcrypt";
+import Wishlist from "../../models/wishlistSchema.js";
 import { setFlash, getFlash } from "../../utils/flash.js";
 import Category from "../../models/categorySchema.js";
 import logger from "../../helpers/logger.js";
@@ -180,6 +181,13 @@ export const loadWatchPage = async (req, res) => {
       .select("name")
       .sort({ name: 1 })
       .lean();
+let wishlist = [];
+
+if (req.session.user?._id) {
+  wishlist = await Wishlist.find({ userId: req.session.user._id })
+    .select("productId variantId")
+    .lean();
+}
 
     res.render("user/watch", {
       user: req.session.user || null,
@@ -190,7 +198,8 @@ export const loadWatchPage = async (req, res) => {
       sortQuery,
       categoryFilter,
       currentPage: page,
-      totalPages
+      totalPages,
+       wishlist,
     });
 
   } catch (error) {

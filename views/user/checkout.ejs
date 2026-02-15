@@ -218,12 +218,10 @@
           <label>ZIP Code *</label>
           <input type="text" name="zip" required maxlength="6" pattern="[0-9]{6}" />
         </div>
-        <div class="form-group full-width">
-          <label>
-            <input type="checkbox" name="isDefaultShipping" />
-            Set as default shipping address
-          </label>
-        </div>
+     <div class="checkbox-group">
+  <input type="checkbox" id="defaultShipping" name="isDefaultShipping">
+  <label for="defaultShipping">Set as default shipping address</label>
+</div>
       </div>
 
       <div class="modal-actions">

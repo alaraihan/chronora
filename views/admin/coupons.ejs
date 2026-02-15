@@ -56,6 +56,20 @@
     max-height: 200px !important;
     overflow-y: auto !important;
   }
+  .action-text span {
+  cursor: pointer;
+  font-weight: 500;
+  margin: 0 4px;
+}
+
+.action-text span:hover {
+  text-decoration: underline;
+}
+
+.action-text .text-danger:hover {
+  color: #dc3545;
+}
+
 </style>
 <div class="container-fluid py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
@@ -115,17 +129,14 @@
                   </span>
                 </td>
                 <td><%= coupon.specificUsers.length > 0 ? coupon.specificUsers.length + ' users' : 'All Users' %></td>
-                <td>
-                  <button class="btn btn-sm btn-info text-white me-1" onclick='viewCoupon(<%- JSON.stringify(coupon) %>)' title="View">
-                    <i class="bi bi-eye"></i>
-                  </button>
-                  <button class="btn btn-sm btn-warning me-1" onclick='editCoupon(<%- JSON.stringify(coupon) %>)' title="Edit">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button class="btn btn-sm btn-danger" onclick="deleteCoupon('<%= coupon._id %>')" title="Delete">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </td>
+               <td class="action-text">
+  <span onclick='viewCoupon(<%- JSON.stringify(coupon) %>)'>View</span>
+  |
+  <span onclick='editCoupon(<%- JSON.stringify(coupon) %>)'>Edit</span>
+  |
+  <span onclick="deleteCoupon('<%= coupon._id %>')" class="text-danger">Delete</span>
+</td>
+
               </tr>
             <% }) %>
           </tbody>

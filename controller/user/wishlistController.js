@@ -16,27 +16,32 @@ export const loadWishlist = async (req, res) => {
       .sort({ addedAt: -1 })
       .lean();
 
+    wishlist = wishlist.filter(item => item.productId);
+
     wishlist = await Promise.all(
       wishlist.map(async (item) => {
-        if (item.productId) {
-          const offerData = await getBestOfferForProduct(item.productId);
-          item.productId.offerData = offerData;
-        }
+        const offerData = await getBestOfferForProduct(item.productId);
+        item.productId.offerData = offerData;
         return item;
       })
     );
-    logger.info(`Wishlist loaded for user ${userId}`, { count: wishlist.length });
+
+    logger.info(`Wishlist loaded for user ${userId}`, {
+      count: wishlist.length
+    });
 
     res.render("user/wishlist", {
       title: "My Wishlist",
       wishlist,
-      active:"Wishlist"
+      active: "Wishlist"
     });
+
   } catch (error) {
-logger.error("Error loading wishlist", error);
+    logger.error("Error loading wishlist", error);
     res.redirect("/");
   }
 };
+
 export const addToWishlist = async (req, res) => {
   try {
       if (!req.user) {
