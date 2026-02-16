@@ -15,39 +15,67 @@
 
         <% cartItems.forEach(item => { %>
           <% 
+            // Add null checks for productId and variantId
+            const hasProduct = item.productId && typeof item.productId === 'object';
+            const hasVariant = item.variantId && typeof item.variantId === 'object';
+            
             const currentPrice = Number(item.price || 0);  
             const originalPrice = Number(item.originalPrice || 0);  
             const qty = Number(item.quantity || 1);
-            const stock = Number(item.variantId?.stock || 0);
+            const stock = hasVariant ? Number(item.variantId?.stock || 0) : 0;
             const lineTotal = currentPrice * qty;
 
-            const isAvailable = item.productId && !item.productId.isBlocked && 
-                                item.variantId && !item.variantId.isBlocked && 
+            const isAvailable = hasProduct && !item.productId.isBlocked && 
+                                hasVariant && !item.variantId.isBlocked && 
                                 stock >= qty;
 
             // Check if there's an offer
-            const hasOffer = item.productId?.offerData && currentPrice < originalPrice;
+            const hasOffer = hasProduct && item.productId?.offerData && currentPrice < originalPrice;
           %>
 
           <div class="cart-item <%= !isAvailable ? 'unavailable' : '' %>" 
                data-item-id="<%= item._id %>" 
                data-stock="<%= stock %>">
 
-            <a href="/product/<%= item.productId._id %>" class="item-link">
-              <img src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" 
-                   alt="<%= item.productId.name %>">
-            </a>
+            <% if (hasProduct && hasVariant) { %>
+              <!-- Product and Variant exist - show link -->
+              <a href="/product/<%= item.productId._id %>" class="item-link">
+                <img src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" 
+                     alt="<%= item.productId.name || 'Product' %>">
+              </a>
+            <% } else { %>
+              <!-- Product or Variant missing - show placeholder without link -->
+              <div class="item-link">
+                <img src="/images/default-watch.jpg" alt="Product Unavailable">
+              </div>
+            <% } %>
 
             <div class="item-info">
               <div class="product-title">
-                <%= item.productId.name %>
+                <%= hasProduct ? item.productId.name : 'Product Unavailable' %>
+                <% if (!hasProduct) { %>
+                  <span class="status-badge deleted">(Deleted)</span>
+                <% } %>
               </div>
               <div class="variant-name">
-                <%= item.variantId?.colorName || item.variantId?.color || 'Standard' %>
+                <%= hasVariant ? (item.variantId?.colorName || item.variantId?.color || 'Standard') : 'Variant Unavailable' %>
+                <% if (!hasVariant) { %>
+                  <span class="status-badge deleted">(Deleted)</span>
+                <% } %>
               </div>
 
               <% if (!isAvailable) { %>
-                <div class="status-badge unavailable">Unavailable</div>
+                <div class="status-badge unavailable">
+                  <% if (!hasProduct || !hasVariant) { %>
+                    Product No Longer Available
+                  <% } else if (item.productId.isBlocked) { %>
+                    Product is Blocked
+                  <% } else if (item.variantId.isBlocked) { %>
+                    Variant is Blocked
+                  <% } else if (stock < qty) { %>
+                    Out of Stock
+                  <% } %>
+                </div>
               <% } else { %>
                 <div class="cart-item-price">
                   <% if (hasOffer) { %>
@@ -72,9 +100,11 @@
             </div>
 
             <div class="quantity-control">
-              <button class="qty-btn decrement" data-id="<%= item._id %>" <%= qty <= 1 ? 'disabled' : '' %>>−</button>
+              <button class="qty-btn decrement" data-id="<%= item._id %>" 
+                <%= (qty <= 1 || !isAvailable) ? 'disabled' : '' %>>−</button>
               <span class="qty-display"><%= qty %></span>
-              <button class="qty-btn increment" data-id="<%= item._id %>" <%= qty >= stock ? 'disabled' : '' %>>+</button>
+              <button class="qty-btn increment" data-id="<%= item._id %>" 
+                <%= (!isAvailable || qty >= stock) ? 'disabled' : '' %>>+</button>
             </div>
 
             <div class="item-total">
@@ -90,7 +120,21 @@
       <div class="order-summary">
         <h3>Order Summary</h3>
 
-        <% const subtotal = cartItems.reduce((sum, i) => sum + (Number(i.price || 0) * i.quantity), 0); %>
+        <% 
+          // Only include available items in subtotal calculation
+          const subtotal = cartItems.reduce((sum, i) => {
+            const hasProduct = i.productId && typeof i.productId === 'object';
+            const hasVariant = i.variantId && typeof i.variantId === 'object';
+            const isAvailable = hasProduct && !i.productId.isBlocked && 
+                                hasVariant && !i.variantId.isBlocked && 
+                                Number(i.variantId?.stock || 0) >= Number(i.quantity || 1);
+            
+            if (isAvailable) {
+              return sum + (Number(i.price || 0) * Number(i.quantity || 1));
+            }
+            return sum;
+          }, 0);
+        %>
 
         <div class="summary-row">
           <span>Cart Subtotal</span>
@@ -102,8 +146,10 @@
           <span id="shippingAmount">
             <% if (subtotal >= 15000) { %>
               <span style="color:#4ade80;font-weight:600;">FREE</span>
-            <% } else { %>
+            <% } else if (subtotal > 0) { %>
               ₹100
+            <% } else { %>
+              ₹0
             <% } %>
           </span>
         </div>
@@ -121,7 +167,7 @@
           </strong>
         </div>
 
-        <% if (canCheckout) { %>
+        <% if (canCheckout && subtotal > 0) { %>
           <a href="/checkout" id="checkoutBtn" class="checkout-btn active">
             Proceed to Checkout
           </a>
@@ -130,7 +176,7 @@
             Checkout Unavailable
           </button>
           <div class="checkout-warning">
-            Some items in your cart are out of stock or unavailable.
+            <%= subtotal === 0 ? 'No available items in cart.' : 'Some items are out of stock or unavailable.' %>
             Please update your cart to continue.
           </div>
         <% } %>
@@ -149,6 +195,6 @@
     </div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/user/cart.js"></script>
