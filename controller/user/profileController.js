@@ -296,14 +296,21 @@ export const getChangePassword = async (req, res) => {
     const user = await User.findById(req.session.userId);
     if (!user) {
       logger.warn("Unauthorized change password page load attempt");
-      return res.redirect("/login");}
+      return res.redirect("/login");
+    }
+
+    if (user.googleId) {
+      logger.info(`Google user ${user._id} attempted to access change password page`);
+      req.flash('error', 'Google users cannot change password through this platform');
+      return res.redirect('/profile');
+    }
 
     res.render("user/change-password", {
       user,
-      active:"profeil-change password"
+      active: "profile-change-password"
     });
   } catch (error) {
-logger.error("Error loading change password page", error);
+    logger.error("Error loading change password page", error);
     res.status(500).render("user/pageNotfound");
   }
 };
@@ -312,19 +319,28 @@ export const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
-    if (!currentPassword || !newPassword) {
-      logger.warn("Password change attempt with missing fields");
-      return res.status(400).json({ success: false, message: "All fields required" });
-    }
-    if (newPassword.length < 8) {
-      logger.warn("New password too short");
-      return res.status(400).json({ success: false, message: "Password too short" });
-    }
-
     const user = await User.findById(req.session.userId).select("+password");
     if (!user) {
       logger.warn(`User not found during password change: ${req.session.userId}`);
       return res.status(401).json({ success: false, message: "User not found" });
+    }
+
+    if (user.googleId) {
+      logger.warn(`Google user ${user._id} attempted to change password`);
+      return res.status(403).json({ 
+        success: false, 
+        message: "Google users cannot change password through this platform" 
+      });
+    }
+
+    if (!currentPassword || !newPassword) {
+      logger.warn("Password change attempt with missing fields");
+      return res.status(400).json({ success: false, message: "All fields required" });
+    }
+    
+    if (newPassword.length < 8) {
+      logger.warn("New password too short");
+      return res.status(400).json({ success: false, message: "Password must be at least 8 characters" });
     }
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
@@ -340,9 +356,11 @@ export const changePassword = async (req, res) => {
 
     user.password = await bcrypt.hash(newPassword, 12);
     await user.save();
-logger.info(`Password changed successfully for user ${user._id}`);
+    
+    logger.info(`Password changed successfully for user ${user._id}`);
     return res.json({ success: true, message: "Password changed successfully!" });
   } catch (error) {
-logger.error("Error changing password", error);    return res.status(500).json({ success: false, message: "Server error" });
+    logger.error("Error changing password", error);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };

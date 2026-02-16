@@ -1,5 +1,3 @@
-import axios from "axios";
-
 function showToast(message, type = 'success') {
   const bgColor = {
     success: '#28a745',
@@ -18,61 +16,59 @@ function showToast(message, type = 'success') {
     stopOnFocus: true,
   }).showToast();
 }
+
 document.addEventListener("DOMContentLoaded", function () {
-    const passwordInput = document.getElementById("password");
-    const toggleButton = document.querySelector(".toggle-pass");
-    const eyeIcon = toggleButton.querySelector("i");
+  const form = document.getElementById("loginForm");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
 
-    toggleButton.addEventListener("click", function () {
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            eyeIcon.classList.remove("fa-eye");
-            eyeIcon.classList.add("fa-eye-slash");
-            toggleButton.setAttribute("aria-label", "Hide password");
-        } else {
-            passwordInput.type = "password";
-            eyeIcon.classList.remove("fa-eye-slash");
-            eyeIcon.classList.add("fa-eye");
-            toggleButton.setAttribute("aria-label", "Show password");
-        }
-    });
-});
-form.addEventListener("submit",async function(e){
-  e.preventDefault();
+  if (!form || !emailInput || !passwordInput) {
+    console.error("Form elements not found");
+    return;
+  }
 
-  const email=emailInput.value.trim();
-const password=passwordInput.value;
-  
-if(!email||!password){
-  showToast("please fill in all the fields",'error');
-  return;
-}
-if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showToast("Please enter a valid email", "error");
+  form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    
+    if (!email || !password) {
+      showToast("Please fill in all the fields", 'error');
       return;
     }
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      showToast("Please enter a valid email address", 'error');
+      return;
+    }
+  
 
     const submitBtn = form.querySelector(".btn-login");
     const originalText = submitBtn.textContent;
     submitBtn.disabled = true;
     submitBtn.textContent = "Logging in...";
 
-    try{
- const res=await axios.post("/login",{
-  email,
-  password,
-  remember: form.querySelector("#remember")?.checked || false
- });
- if(res.data.success){
-   showToast("Login successful!",'success');
-   setTimeout(()=>location.href='/home',1500);}
-}catch(error){
-const msg=error.response?.data?.message||'something went wrong';
-showToast(msg,'error');
-}finally{
-  submitBtn.disabled = false;
+    try {
+      const res = await axios.post("/login", {
+        email,
+        password,
+        remember: form.querySelector("#remember")?.checked || false
+      });
+
+      if (res.data.success) {
+        showToast(res.data.message || "Login successful!", 'success');
+        setTimeout(() => {
+          window.location.href = res.data.redirect || '/home';
+        }, 1500);
+      }
+    } catch (error) {
+      const msg = error.response?.data?.message || 'Something went wrong';
+      showToast(msg, 'error');
+    } finally {
+      submitBtn.disabled = false;
       submitBtn.textContent = originalText;
-}
-
+    }
+  });
 });
-

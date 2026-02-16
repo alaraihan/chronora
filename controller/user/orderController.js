@@ -57,6 +57,39 @@ export const getOrderDetails = async (req, res) => {
     res.status(500).render("user/error", { message: "Server error" });
   }
 };
+// Add this to your order controller
+export const checkCancellableStatus = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { itemIndex } = req.query;
+
+    const order = await Order.findById(orderId);
+    
+    if (!order || order.userId.toString() !== req.user._id.toString()) {
+      return res.json({ success: false });
+    }
+
+    const item = order.products[parseInt(itemIndex)];
+    
+    if (!item) {
+      return res.json({ success: false });
+    }
+
+    const isCancellable = ["Pending", "Confirmed", "Processing"].includes(item.itemStatus);
+    const isAlreadyCancelled = item.itemStatus === "Cancelled";
+
+    res.json({
+      success: true,
+      isCancellable,
+      isAlreadyCancelled,
+      currentStatus: item.itemStatus
+    });
+
+  } catch (error) {
+    logger.error("checkCancellableStatus ERROR:", error);
+    res.status(500).json({ success: false });
+  }
+};
 export const cancelOrderItem = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -85,6 +118,14 @@ export const cancelOrderItem = async (req, res) => {
     const item = order.products[index];
     if (!item) {
       return res.status(404).json({ success: false, message: "Item not found in order" });
+    }
+
+    // **FIX: Check if item is already cancelled**
+    if (item.itemStatus === "Cancelled") {
+      return res.status(400).json({
+        success: false,
+        message: "This item has already been cancelled"
+      });
     }
 
     const allowedStatuses = ["Pending", "Confirmed", "Processing"];
@@ -195,7 +236,6 @@ export const cancelOrderItem = async (req, res) => {
     });
   }
 };
-
 export const returnOrderItem = async (req, res) => {
   try {
     const { orderId } = req.params;

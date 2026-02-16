@@ -79,7 +79,26 @@ export const loadCart = async (req, res) => {
     res.redirect("/");
   }
 };
-
+// Check quantity of specific item in cart
+export const checkCartItem = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.json({ quantity: 0 });
+    }
+    
+    const { productId, variantId } = req.query;
+    const cartItem = await Cart.findOne({ 
+      userId: req.user._id, 
+      productId, 
+      variantId 
+    });
+    
+    res.json({ quantity: cartItem?.quantity || 0 });
+  } catch (err) {
+    logger.error("checkCartItem error:", err);
+    res.json({ quantity: 0 });
+  }
+};
 export const addToCart = async (req, res) => {
   try {
        if (!req.user) {

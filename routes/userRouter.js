@@ -27,7 +27,8 @@ import {
   loadCart,
   addToCart,
   updateQuantity,
-  removeFromCart
+  removeFromCart,
+  checkCartItem
 } from "../controller/user/cartController.js";
 
 import {
@@ -44,6 +45,7 @@ import {
 import {
   getOrdersPage,
   getOrderDetails,
+  checkCancellableStatus,
   cancelOrderItem,
   returnOrderItem,
   downloadInvoice,
@@ -77,6 +79,7 @@ router.get("/watch", userController.loadWatchPage);
 router.get("/login", checkLogin, authController.loadLogin);
 router.get("/signup", checkLogin, authController.loadSignUp);
 router.post("/login", authController.login);
+router.get("/check-email", checkLogin,authController.checkEmailExists);
 
 router.post("/signup", authController.signUp);
 
@@ -132,6 +135,7 @@ router.post("/profile/change-password", isLoggedIn, changePassword);
 
 
 router.get("/cart", isLoggedIn, loadCart);
+router.get('/cart/check-item', isLoggedIn, checkCartItem);
 router.post("/cart/add", isLoggedIn, addToCart);
 router.post("/cart/update/:id", isLoggedIn, updateQuantity);
 router.post("/cart/remove/:id", isLoggedIn, removeFromCart);
@@ -153,7 +157,7 @@ router.get("/profile/orders/:orderId", isLoggedIn, getOrderDetails);
 
 router.get("/profile/orders/:orderId/invoice", isLoggedIn, downloadInvoice);
 
-
+router.get("/order/:orderId/check-cancel", isLoggedIn, checkCancellableStatus);
 router.post("/order/:orderId/cancel-item", isLoggedIn, cancelOrderItem);
 router.post("/order/:orderId/return-item", isLoggedIn, returnOrderItem);
 router.post("/order/:orderId/review-item", isLoggedIn, reviewOrderItem);

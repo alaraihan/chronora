@@ -18,30 +18,66 @@
         <h1>My Profile</h1>
         <p class="subtitle">Manage your personal information</p>
       </header>
+<div class="profile-card card">
+  <div class="profile-field image-field">
+    <div class="image-wrapper">
+      <img 
+        src="<%= user.profileImage ? user.profileImage : '/images/default.png' %>" 
+        alt="Profile Image" 
+        class="profile-img">
+    </div>
+    <a href="/profile/edit/image" class="btn btn-outline edit-btn">Change Photo</a>
+  </div>
 
-      <div class="profile-card card">
-        <div class="profile-field image-field">
-          <div class="image-wrapper">
-            <img 
-              src="<%= user.profileImage ? user.profileImage : '/images/default.png' %>" 
-              alt="Profile Image" 
-              class="profile-img">
-          </div>
-          <a href="/profile/edit/image" class="btn btn-outline edit-btn">Change Photo</a>
-        </div>
+  <div class="profile-field">
+    <span class="field-label">Full Name</span>
+    <p class="field-value"><%= user.fullName %></p>
+    <a href="/profile/edit/name" class="btn btn-outline edit-btn">Edit</a>
+  </div>
 
-        <div class="profile-field">
-          <span class="field-label">Full Name</span>
-          <p class="field-value"><%= user.fullName %></p>
-          <a href="/profile/edit/name" class="btn btn-outline edit-btn">Edit</a>
-        </div>
+  <div class="profile-field">
+    <span class="field-label">Email Address</span>
+    <p class="field-value">
+      <%= user.email %>
+      <% if (user.googleId) { %>
+        <span class="google-badge" style="
+          background: #4285f4;
+          color: white;
+          padding: 3px 8px;
+          border-radius: 4px;
+          font-size: 12px;
+          margin-left: 10px;
+          display: inline-block;
+        ">
+          <i class="bi bi-google"></i> Google Account
+        </span>
+      <% } %>
+    </p>
+    <!-- Only show edit email button for non-Google users -->
+    <% if (!user.googleId) { %>
+      <a href="/profile/edit/email" class="btn btn-outline edit-btn">Edit</a>
+    <% } %>
+  </div>
 
-        <div class="profile-field">
-          <span class="field-label">Email Address</span>
-          <p class="field-value"><%= user.email %></p>
-          <a href="/profile/edit/email" class="btn btn-outline edit-btn">Edit</a>
-        </div>
+  <!-- Add a message for Google users about password -->
+  <% if (user.googleId) { %>
+    <div class="profile-field" style="border-top: 1px dashed #eee; padding-top: 15px;">
+      <div class="google-info-message" style="
+        background: #f8f9fa;
+        padding: 12px 15px;
+        border-radius: 8px;
+        color: #666;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      ">
+        <i class="bi bi-google" style="color: #4285f4; font-size: 20px;"></i>
+        <span>You're signed in with Google. Password management is handled by Google.</span>
       </div>
+    </div>
+  <% } %>
+</div>
     </main>
   </div>
 

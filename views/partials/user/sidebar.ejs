@@ -48,10 +48,12 @@
       <span>My Wallet</span>
     </a>
 
-    <a href="/profile/change-password" class="cs-navitem <%= (active==='password')? 'active' : '' %>">
-      <i class="bi bi-lock"></i>
-      <span>Change Password</span>
-    </a>
+       <% if (!user.googleId) { %>
+      <a href="/profile/change-password" class="cs-navitem <%= (active==='password')? 'active' : '' %>">
+        <i class="bi bi-lock"></i>
+        <span>Change Password</span>
+      </a>
+    <% } %>
 
     <a href="/logout" class="cs-navitem">
       <i class="bi bi-box-arrow-right"></i>

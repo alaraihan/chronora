@@ -378,49 +378,167 @@
     if (modal) modal.classList.add('active');
   }
 
+  function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.remove('active');
+  }
+
+  // Close modal when clicking backdrop or close button
   document.querySelectorAll('.modal-backdrop, [data-close]').forEach(el => {
     el.addEventListener('click', () => {
-      el.closest('.modal')?.classList.remove('active');
+      const modalId = el.dataset.close;
+      if (modalId) {
+        closeModal(modalId);
+      } else {
+        el.closest('.modal')?.classList.remove('active');
+      }
     });
   });
 
   document.addEventListener('DOMContentLoaded', () => {
+    // Track and Invoice buttons
     document.getElementById('btnTrack')?.addEventListener('click', () => openModal('modalTrack'));
     document.getElementById('btnInvoice')?.addEventListener('click', () => openModal('modalInvoice'));
 
-    document.querySelector('.btn-cancel')?.addEventListener('click', () => openModal('modalCancel'));
-    document.querySelector('.btn-return')?.addEventListener('click', () => openModal('modalReturn'));
-    document.querySelector('.btn-review')?.addEventListener('click', () => openModal('modalReview'));
+    // Cancel button - Check status before opening modal
+    document.querySelectorAll('.btn-cancel').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        try {
+          const response = await fetch(`/profile/orders/${ORDER_ID}/check-cancel?itemIndex=${ITEM_INDEX}`);
+          const data = await response.json();
+          
+          if (data.isAlreadyCancelled) {
+            toast('This item has already been cancelled', 'error');
+            setTimeout(() => window.location.reload(), 2000);
+            return;
+          }
+          
+          if (!data.isCancellable) {
+            toast(`Cannot cancel - Status: ${data.currentStatus}`, 'error');
+            return;
+          }
+          
+          // If still cancellable, open the modal
+          openModal('modalCancel');
+          
+        } catch (error) {
+          console.error('Error checking cancellable status:', error);
+          // If API fails, just open the modal and let the actual request handle it
+          openModal('modalCancel');
+        }
+      });
+    });
 
+    // Return button
+    document.querySelectorAll('.btn-return').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal('modalReturn');
+      });
+    });
+
+    // Review button
+    document.querySelectorAll('.btn-review').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal('modalReview');
+      });
+    });
+
+    // Submit Cancel
     document.getElementById('submitCancel')?.addEventListener('click', async () => {
-      const reason = document.querySelector('input[name="cancelReason"]:checked')?.value || 'No reason';
+      const submitBtn = document.getElementById('submitCancel');
+      const reason = document.querySelector('input[name="cancelReason"]:checked')?.value;
+      
+      if (!reason) {
+        return toast('Please select a cancellation reason', 'error');
+      }
+
+      // Disable button to prevent double submission
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Processing...';
+
       try {
-        const res = await axios.post(`/order/${ORDER_ID}/cancel-item`, { itemIndex: ITEM_INDEX, reason });
-        toast(res.data.success ? 'Item cancelled!' : res.data.message, res.data.success ? 'success' : 'error');
-        if (res.data.success) setTimeout(() => location.reload(), 2000);
+        const res = await axios.post(`/order/${ORDER_ID}/cancel-item`, { 
+          itemIndex: ITEM_INDEX, 
+          reason 
+        });
+        
+        if (res.data.success) {
+          toast('Item cancelled successfully!', 'success');
+          closeModal('modalCancel');
+          setTimeout(() => location.reload(), 1500);
+        } else {
+          // Check if message indicates already cancelled
+          if (res.data.message?.toLowerCase().includes('already cancelled')) {
+            toast('This item has already been cancelled', 'error');
+            setTimeout(() => location.reload(), 2000);
+          } else {
+            toast(res.data.message || 'Failed to cancel item', 'error');
+          }
+        }
       } catch (err) {
-        toast('Server error', 'error');
+        console.error('Cancel error:', err);
+        
+        // Handle specific error messages from backend
+        const errorMsg = err.response?.data?.message || 'Something went wrong';
+        
+        if (errorMsg.toLowerCase().includes('already cancelled')) {
+          toast('This item has already been cancelled', 'error');
+          setTimeout(() => location.reload(), 2000);
+        } else {
+          toast(errorMsg, 'error');
+        }
+      } finally {
+        // Re-enable button
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Confirm Cancellation';
       }
     });
 
+    // Submit Return
     document.getElementById('submitReturn')?.addEventListener('click', async () => {
+      const submitBtn = document.getElementById('submitReturn');
       const reason = document.querySelector('input[name="returnReason"]:checked')?.value;
-      if (!reason) return toast('Please select a reason', 'error');
+      
+      if (!reason) {
+        return toast('Please select a return reason', 'error');
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Processing...';
 
       try {
-        const res = await axios.post(`/order/${ORDER_ID}/return-item`, { itemIndex: ITEM_INDEX, reason });
-        toast(res.data.success ? 'Return requested!' : res.data.message, res.data.success ? 'success' : 'error');
-        if (res.data.success) setTimeout(() => location.reload(), 2000);
+        const res = await axios.post(`/order/${ORDER_ID}/return-item`, { 
+          itemIndex: ITEM_INDEX, 
+          reason 
+        });
+        
+        if (res.data.success) {
+          toast('Return request submitted successfully!', 'success');
+          closeModal('modalReturn');
+          setTimeout(() => location.reload(), 1500);
+        } else {
+          toast(res.data.message || 'Failed to submit return', 'error');
+        }
       } catch (err) {
-        toast('Failed to submit return', 'error');
+        console.error('Return error:', err);
+        toast(err.response?.data?.message || 'Failed to submit return', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Return Request';
       }
     });
 
+    // Review functionality
     const ratingInput = document.getElementById('ratingInput');
     const submitReviewBtn = document.getElementById('submitReviewBtn');
     const reviewText = document.getElementById('reviewText');
     const ratingTextEl = document.getElementById('ratingText');
 
+    // Star rating
     document.querySelectorAll('.star').forEach(star => {
       star.addEventListener('click', () => {
         const value = parseInt(star.dataset.value);
@@ -434,40 +552,95 @@
         const texts = ["", "Very Bad", "Poor", "Average", "Good", "Excellent!"];
         if (ratingTextEl) ratingTextEl.textContent = texts[value];
 
-        if (submitReviewBtn) submitReviewBtn.disabled = false;
+        // Enable submit button if both rating and text are present
+        if (submitReviewBtn) {
+          const hasText = reviewText?.value.trim().length > 0;
+          submitReviewBtn.disabled = !(value > 0 && hasText);
+        }
       });
     });
 
+    // Review text input
+    if (reviewText && submitReviewBtn) {
+      reviewText.addEventListener('input', () => {
+        const hasText = reviewText.value.trim().length > 0;
+        const hasRating = parseInt(ratingInput?.value || '0') > 0;
+        submitReviewBtn.disabled = !(hasText && hasRating);
+      });
+    }
+
+    // Submit Review
     if (submitReviewBtn) {
       submitReviewBtn.addEventListener('click', async () => {
-        const rating = ratingInput?.value || 0;
+        const rating = parseInt(ratingInput?.value || '0');
         const text = reviewText?.value.trim() || '';
 
-        if (rating == 0) return toast('Please rate with stars', 'error');
-        if (!text) return toast('Please write your review', 'error');
+        if (rating === 0) {
+          return toast('Please rate with stars', 'error');
+        }
+        
+        if (!text) {
+          return toast('Please write your review', 'error');
+        }
+
+        submitReviewBtn.disabled = true;
+        submitReviewBtn.textContent = 'Submitting...';
 
         try {
           const res = await axios.post(`/order/${ORDER_ID}/review-item`, {
             itemIndex: ITEM_INDEX,
-            rating: Number(rating),
-            text
+            rating: rating,
+            text: text
           });
 
-          toast(res.data.success ? 'Review submitted successfully! 🎉' : res.data.message || 'Failed', res.data.success ? 'success' : 'error');
-          if (res.data.success) setTimeout(() => location.reload(), 2000);
+          if (res.data.success) {
+            toast('Review submitted successfully! 🎉', 'success');
+            closeModal('modalReview');
+            setTimeout(() => location.reload(), 1500);
+          } else {
+            toast(res.data.message || 'Failed to submit review', 'error');
+          }
         } catch (err) {
-          toast('Server error', 'error');
+          console.error('Review error:', err);
+          toast(err.response?.data?.message || 'Server error', 'error');
+        } finally {
+          submitReviewBtn.disabled = false;
+          submitReviewBtn.textContent = 'Submit Review';
         }
       });
     }
 
-    if (reviewText && submitReviewBtn) {
-      reviewText.addEventListener('input', () => {
-        const hasText = reviewText.value.trim().length > 0;
-        const hasRating = ratingInput?.value > 0;
-        submitReviewBtn.disabled = !(hasText || hasRating);
-      });
+    // Handle "Other" reason input for cancel - Add text input if needed
+    const cancelRadios = document.querySelectorAll('input[name="cancelReason"]');
+    const otherReasonContainer = document.createElement('div');
+    otherReasonContainer.style.marginTop = '10px';
+    otherReasonContainer.style.display = 'none';
+    
+    const otherReasonInput = document.createElement('input');
+    otherReasonInput.type = 'text';
+    otherReasonInput.placeholder = 'Please specify your reason';
+    otherReasonInput.style.width = '100%';
+    otherReasonInput.style.padding = '8px';
+    otherReasonInput.style.border = '1px solid #ddd';
+    otherReasonInput.style.borderRadius = '4px';
+    
+    otherReasonContainer.appendChild(otherReasonInput);
+    
+    // Find where to insert the other reason input
+    const radioGroup = document.querySelector('.radio-group');
+    if (radioGroup) {
+      radioGroup.appendChild(otherReasonContainer);
     }
+    
+    cancelRadios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        if (radio.value === 'Other' && radio.checked) {
+          otherReasonContainer.style.display = 'block';
+        } else {
+          otherReasonContainer.style.display = 'none';
+        }
+      });
+    });
   });
 </script>
 </body>

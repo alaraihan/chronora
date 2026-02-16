@@ -42,12 +42,45 @@ function validateName() {
   showError('name', !valid);
   return valid;
 }
-
-function validateEmail() {
-  const valid = elements.email.checkValidity() && elements.email.value.includes('@');
-  showError('email', !valid);
-  return valid;
+async function checkDuplicateEmail(email) {
+  try {
+    const res = await fetch(`/check-email?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    return data.exists;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
 }
+
+async function validateEmail() {
+  const email = elements.email.value.trim();
+
+  if (!elements.email.checkValidity()) {
+    errorDivs.email.textContent = "Please enter a valid email address.";
+    showError('email', true);
+    return false;
+  }
+
+  const exists = await checkDuplicateEmail(email);
+
+  if (exists) {
+    showError('email', false); // hide inline error
+
+    Swal.fire({
+      icon: "error",
+      title: "Email Exists",
+      text: "User already exists with this email!",
+      confirmButtonColor: "#e74c3c"
+    });
+
+    return false;
+  }
+
+  showError('email', false);
+  return true;
+}
+
 
 function validatePassword() {
   const valid = elements.password.value.length >= 8;
@@ -74,13 +107,22 @@ function isFormValid() {
 const form = document.getElementById('signupForm');
 const successMsg = document.getElementById('successMsg');
 
-form.addEventListener('submit', function (e) {
-  if (!isFormValid()) {
-    e.preventDefault(); 
-  } else {
-    successMsg.style.display = 'block';
- }
+form.addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const valid =
+    validateName() &&
+    await validateEmail() &&
+    validatePassword() &&
+    validateConfirm() &&
+    validateAgree();
+
+  if (!valid) return;
+
+  successMsg.style.display = 'block';
+  form.submit();
 });
+
 
 elements.name?.addEventListener('input', validateName);
 elements.email?.addEventListener('input', validateEmail);

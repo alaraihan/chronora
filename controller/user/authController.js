@@ -13,11 +13,17 @@ const render = (req, res, view, options = {}) => {
 const loadSignUp = (req, res) => {
   if (req.session?.userId) return res.redirect("/");
 
+  const flash = req.session.flash || {};
+  delete req.session.flash; // clear after reading
+
   return render(req, res, "user/signup", {
     title: "Chronora - Signup",
     layout: "layouts/userLayouts/auth",
+    error: flash.error,
+    success: flash.success,
   });
 };
+
 
 const signUp = async (req, res) => {
   try {
@@ -93,6 +99,12 @@ const signUp = async (req, res) => {
     setFlash(req, "error", "Server error. Please try again later.");
     return res.redirect("/signup");
   }
+};
+export const checkEmailExists = async (req, res) => {
+  const { email } = req.query;
+  const user = await User.findOne({ email });
+
+  res.json({ exists: !!user });
 };
 
 export const loadVerifyOtp = (req, res) => {
@@ -197,7 +209,6 @@ export const verifyOtp = async (req, res) => {
     return res.json({ success: false, message: "Server error. Please try again." });
   }
 };
-
 const loadLogin = (req, res) => {
   if (req.session?.userId) return res.redirect("/");
 
@@ -210,42 +221,67 @@ const loadLogin = (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    
+    // Validation checks with JSON responses
     if (!email || !password) {
-      setFlash(req, "error", "Please provide both email and password");
-      return res.redirect("/login");
+      return res.status(400).json({ 
+        success: false, 
+        message: "Please provide both email and password" 
+      });
     }
 
     const user = await User.findOne({ email: email.toLowerCase().trim() });
     if (!user) {
-      setFlash(req, "error", "Account not found");
-      return res.redirect("/login");
+      return res.status(404).json({ 
+        success: false, 
+        message: "Account not found" 
+      });
     }
 
     if (!user.isVerified) {
-      setFlash(req, "error", "Please verify your email first");
-      return res.redirect("/login");
+      return res.status(403).json({ 
+        success: false, 
+        message: "Please verify your email first" 
+      });
     }
+    
     if (user.isBlocked) {
-      setFlash(req, "error", "User is blocked");
-      return res.redirect("/login");
+      return res.status(403).json({ 
+        success: false, 
+        message: "User is blocked" 
+      });
     }
 
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
-      setFlash(req, "error", "Invalid email or password");
-      return res.redirect("/login");
+      return res.status(401).json({ 
+        success: false, 
+        message: "Invalid email or password" 
+      });
     }
 
+    // Successful login
     req.session.userId = user._id.toString();
-    req.session.user = { id: user._id.toString(), fullName: user.fullName, email: user.email };
+    req.session.user = { 
+      id: user._id.toString(), 
+      fullName: user.fullName, 
+      email: user.email 
+    };
 
     logger.info(`User logged in: ${user.email}`);
-    setFlash(req, "success", "Logged in successfully!");
-    return res.redirect("/");
+    
+    return res.status(200).json({ 
+      success: true, 
+      message: "Logged in successfully!",
+      redirect: "/" 
+    });
+    
   } catch (error) {
     logger.error("login error:", error);
-    setFlash(req, "error", "Something went wrong");
-    return res.redirect("/login");
+    return res.status(500).json({ 
+      success: false, 
+      message: "Something went wrong" 
+    });
   }
 };
 
@@ -489,4 +525,5 @@ export default {
   googleCallback,
   performLogout,
   loadLogout,
+  checkEmailExists
 };

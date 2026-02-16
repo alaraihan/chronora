@@ -141,3 +141,7 @@ page is not defined
     11|   <!-- ===== CSS ===== -->
 
 title is not defined
+2026-02-16 13:03:11 [ERROR]: GET /signup - req.flash is not a function
+2026-02-16 13:04:25 [ERROR]: GET /signup - req.flash is not a function
+2026-02-16 13:04:26 [ERROR]: GET /signup - req.flash is not a function
+2026-02-16 14:07:22 [ERROR]: signup error: Cannot destructure property 'fullName' of 'req.body' as it is undefined.
