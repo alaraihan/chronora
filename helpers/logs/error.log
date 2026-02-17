@@ -154,3 +154,4 @@ title is not defined
 2026-02-17 11:17:34 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
 2026-02-17 11:17:35 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
 2026-02-17 11:18:51 [ERROR]: createCoupon error: E11000 duplicate key error collection: chronora.coupons index: code_1 dup key: { code: "A8EYRZZ" }
+2026-02-17 11:50:50 [ERROR]: updateProduct error

@@ -6,11 +6,10 @@ import fs from "fs";
 import mongoose from "mongoose";
 import logger from "../../helpers/logger.js";
 
-
 const escapeRegex = str =>
   str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-const safeParseVariants = (variantsRaw) => {
+const safeParseVariants = variantsRaw => {
   try {
     return typeof variantsRaw === "string"
       ? JSON.parse(variantsRaw)
@@ -109,7 +108,7 @@ export async function listProducts(req, res) {
           totalCount: [{ $count: "count" }]
         }
       }
-    ]).collation({ locale: "en", strength: 2 });
+    ]);
 
     const results = agg?.[0]?.results || [];
     const totalCount = agg?.[0]?.totalCount?.[0]?.count || 0;
@@ -118,8 +117,6 @@ export async function listProducts(req, res) {
     const categories = await Category.find({ isListed: true })
       .sort({ name: 1 })
       .lean();
-
-    logger.info("Products listed", { searchQuery, currentPage, totalCount });
 
     return res.render("admin/product", {
       page: "products",
@@ -133,7 +130,7 @@ export async function listProducts(req, res) {
     });
   } catch (err) {
     logger.error("listProducts error", err);
-    return res.status(500).send("Server error");
+    res.status(500).send("Server error");
   }
 }
 
@@ -142,24 +139,18 @@ export async function getProduct(req, res) {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      logger.warn("Invalid product id", { id });
-      return res.status(400).json({ success: false, message: "Invalid id" });
-    }
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return res.status(400).json({ success: false, message: "Invalid ID" });
 
     const product = await Product.findById(id)
       .populate("category", "name")
       .populate("variants")
       .lean();
 
-    if (!product) {
-      logger.warn("Product not found", { id });
+    if (!product)
       return res.status(404).json({ success: false });
-    }
 
-    logger.info("Product fetched", { id });
-
-    return res.json({
+    res.json({
       success: true,
       data: {
         id: product._id,
@@ -177,54 +168,52 @@ export async function getProduct(req, res) {
     });
   } catch (err) {
     logger.error("getProduct error", err);
-    return res.status(500).json({ success: false });
+    res.status(500).json({ success: false });
   }
 }
 
 
 export async function addProduct(req, res) {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { name, category, description, price } = req.body;
 
-    if (!name?.trim() || !category || price == null || isNaN(price)) {
-      return res.status(400).json({
-        success: false,
-        message: "Name, category and valid price required"
-      });
-    }
+    if (!name?.trim())
+      return res.status(400).json({ success: false, message: "Name required" });
+
+    if (!category)
+      return res.status(400).json({ success: false, message: "Category required" });
+
+    if (!price || isNaN(price))
+      return res.status(400).json({ success: false, message: "Valid price required" });
 
     const variants = safeParseVariants(req.body.variants);
-    if (!variants) {
+    if (!variants)
       return res.status(400).json({ success: false, message: "Invalid variants" });
-    }
 
-    const files = Array.isArray(req.files) ? req.files : [];
-    if (files.length < 2) {
-      return res.status(400).json({ success: false, message: "Min 2 images" });
-    }
+    const files = req.files || [];
+    if (files.length < 2)
+      return res.status(400).json({ success: false, message: "At least 2 images required" });
 
     const existing = await Product.findOne({
       name: new RegExp(`^${escapeRegex(name.trim())}$`, "i")
     });
 
-    if (existing) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "A product with this name already exists" 
+    if (existing)
+      return res.status(400).json({
+        success: false,
+        message: "Product already exists"
       });
-    }
 
     const cat = await Category.findById(category);
     if (!cat)
       return res.status(400).json({ success: false, message: "Invalid category" });
 
-    const product = await Product.create(
-      [{ name: name.trim(), description, price: Number(price), category }],
-      { session }
-    );
+    const product = await Product.create({
+      name: name.trim(),
+      description,
+      price: Number(price),
+      category
+    });
 
     let fileIndex = 0;
     const variantIds = [];
@@ -245,78 +234,62 @@ export async function addProduct(req, res) {
         deleteLocalFile(f.path);
       }
 
-      const stock = Number(v.stock);
-      if (isNaN(stock) || stock < 0)
-        throw new Error("Invalid stock");
+      if (!images.length)
+        return res.status(400).json({ success: false, message: "Variant image required" });
 
-      const variant = await Variant.create(
-        [{
-          product: product[0]._id,
-          colorName: v.name || "",
-          stock,
-          images,
-          strapColor: v.strapColor || ""
-        }],
-        { session }
-      );
+      if (isNaN(v.stock) || v.stock < 0)
+        return res.status(400).json({ success: false, message: "Invalid stock" });
 
-      variantIds.push(variant[0]._id);
+      const variant = await Variant.create({
+        product: product._id,
+        colorName: v.name || "",
+        stock: Number(v.stock),
+        images,
+        strapColor: v.strapColor || ""
+      });
+
+      variantIds.push(variant._id);
     }
 
-    product[0].variants = variantIds;
-    await product[0].save({ session });
+    product.variants = variantIds;
+    await product.save();
 
-    await session.commitTransaction();
-
-    logger.info("Product created", { id: product[0]._id });
-
-    return res.status(201).json({ success: true });
-
+    res.status(201).json({ success: true });
   } catch (err) {
-    await session.abortTransaction();
     logger.error("addProduct error", err);
-    return res.status(500).json({ success: false, message: "Add failed" });
-  } finally {
-    session.endSession();
+    res.status(500).json({ success: false });
   }
 }
 
 
 export async function updateProduct(req, res) {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id))
-      return res.status(400).json({ success: false, message: "Invalid id" });
+      return res.status(400).json({ success: false, message: "Invalid ID" });
 
-    const { name, category, description, price } = req.body;
-    const variants = safeParseVariants(req.body.variants);
-    if (!variants)
-      return res.status(400).json({ success: false, message: "Invalid variants" });
-
-    const product = await Product.findById(id).session(session);
+    const product = await Product.findById(id);
     if (!product)
       return res.status(404).json({ success: false });
 
-  if (name) {
-  const existing = await Product.findOne({
-    _id: { $ne: id }, 
-    name: new RegExp(`^${escapeRegex(name.trim())}$`, "i"),
-    isBlocked: false
-  }).session(session);
+    const { name, category, description, price } = req.body;
+    const variants = safeParseVariants(req.body.variants);
 
-  if (existing)
-    return res.status(400).json({
-      success: false,
-      message: "Product already exists"
-    });
+    if (!variants)
+      return res.status(400).json({ success: false, message: "Invalid variants" });
 
-  product.name = name.trim(); 
-}
+    if (name) {
+      const existing = await Product.findOne({
+        _id: { $ne: id },
+        name: new RegExp(`^${escapeRegex(name.trim())}$`, "i")
+      });
 
+      if (existing)
+        return res.status(400).json({ success: false, message: "Duplicate product" });
+
+      product.name = name.trim();
+    }
 
     if (description !== undefined)
       product.description = description.trim();
@@ -324,6 +297,7 @@ export async function updateProduct(req, res) {
     if (price !== undefined) {
       if (isNaN(price))
         return res.status(400).json({ success: false, message: "Invalid price" });
+
       product.price = Number(price);
     }
 
@@ -331,79 +305,16 @@ export async function updateProduct(req, res) {
       const cat = await Category.findById(category);
       if (!cat)
         return res.status(400).json({ success: false, message: "Invalid category" });
+
       product.category = category;
     }
 
-    let fileIndex = 0;
-    const files = req.files || [];
-    const newVariantIds = [];
+    await product.save();
 
-    for (const v of variants) {
-      const existingImages = Array.isArray(v.existingImages)
-        ? [...v.existingImages]
-        : [];
-
-      for (let i = 0; i < Number(v.newImageCount || 0); i++) {
-        const f = files[fileIndex++];
-        if (!f) break;
-
-        const upload = await cloudinary.uploader.upload(f.path, {
-          folder: "chronora/products",
-          transformation: { width: 1200, crop: "limit" }
-        });
-
-        existingImages.push(upload.secure_url);
-        deleteLocalFile(f.path);
-      }
-
-      if (!existingImages.length)
-        throw new Error("Variant needs image");
-
-      const stock = Number(v.stock);
-      if (isNaN(stock) || stock < 0)
-        throw new Error("Invalid stock");
-
-      if (v.id) {
-        await Variant.findByIdAndUpdate(
-          v.id,
-          { colorName: v.name, stock, images: existingImages, strapColor: v.strapColor },
-          { session }
-        );
-        newVariantIds.push(v.id);
-      } else {
-        const created = await Variant.create(
-          [{
-            product: product._id,
-            colorName: v.name,
-            stock,
-            images: existingImages,
-            strapColor: v.strapColor
-          }],
-          { session }
-        );
-        newVariantIds.push(created[0]._id);
-      }
-    }
-
-    await Variant.deleteMany({
-      _id: { $in: product.variants.filter(x => !newVariantIds.includes(x.toString())) }
-    }).session(session);
-
-    product.variants = newVariantIds;
-    await product.save({ session });
-
-    await session.commitTransaction();
-
-    logger.info("Product updated", { id });
-
-    return res.json({ success: true });
-
+    res.json({ success: true });
   } catch (err) {
-    await session.abortTransaction();
     logger.error("updateProduct error", err);
-    return res.status(500).json({ success: false });
-  } finally {
-    session.endSession();
+    res.status(500).json({ success: false });
   }
 }
 
@@ -426,13 +337,10 @@ export async function toggleBlock(req, res) {
     if (!product)
       return res.status(404).json({ success: false });
 
-    logger.info(`Product ${block ? "blocked" : "unblocked"}`, { id });
-
-    return res.json({ success: true });
-
+    res.json({ success: true });
   } catch (err) {
     logger.error("toggleBlock error", err);
-    return res.status(500).json({ success: false });
+    res.status(500).json({ success: false });
   }
 }
 
