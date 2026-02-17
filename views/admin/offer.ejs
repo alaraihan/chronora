@@ -181,6 +181,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 let editingOffer = null;
@@ -353,7 +354,18 @@ async function toggleActive(id) {
 }
 
 async function deleteOffer(id) {
-    if (!confirm("Delete this offer permanently?")) return;
+    const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Delete this offer permanently?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, delete it!"
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
         await axios.delete(`/admin/offers/${id}`);
         toast("Offer deleted", "success");
@@ -362,6 +374,7 @@ async function deleteOffer(id) {
         toast("Error deleting offer");
     }
 }
+
 
 function renderOffers(offers) {
     const tbody = document.getElementById("offersTableBody");

@@ -148,6 +148,16 @@ export const createCoupon = async (req, res) => {
           });
       }
     }
+
+const existingCoupon = await Coupon.findOne({ code: trimmedCode });
+
+if (existingCoupon) {
+  return res.status(409).json({
+    success: false,
+    message: "Coupon code already exists."
+  });
+}
+
     await Coupon.create({
       code: code.toUpperCase().trim(),
       name: name.trim(),
@@ -194,16 +204,19 @@ export const updateCoupon = async (req, res) => {
       return res.json({ success: false, message: "Coupon not found" });
     }
 
-    const cleanCode = code.trim().toUpperCase();
-    if (cleanCode !== coupon.code) {
-      const existing = await Coupon.findOne({ code: cleanCode });
-      if (existing) {
-        return res.json({
-          success: false,
-          message: "This coupon code already exists"
-        });
-      }
-    }
+  const cleanCode = code.trim().toUpperCase();
+
+const existingCoupon = await Coupon.findOne({
+  code: cleanCode,
+  _id: { $ne: couponId } 
+});
+
+if (existingCoupon) {
+  return res.status(409).json({
+    success: false,
+    message: "Coupon code already exists."
+  });
+}
 
     coupon.code = cleanCode;
     coupon.name = name.trim();

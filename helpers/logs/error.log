@@ -145,3 +145,12 @@ title is not defined
 2026-02-16 13:04:25 [ERROR]: GET /signup - req.flash is not a function
 2026-02-16 13:04:26 [ERROR]: GET /signup - req.flash is not a function
 2026-02-16 14:07:22 [ERROR]: signup error: Cannot destructure property 'fullName' of 'req.body' as it is undefined.
+2026-02-17 11:10:52 [ERROR]: editCategory error trimedName is not defined
+2026-02-17 11:13:08 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
+2026-02-17 11:13:13 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
+2026-02-17 11:17:23 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
+2026-02-17 11:17:25 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
+2026-02-17 11:17:26 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
+2026-02-17 11:17:34 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
+2026-02-17 11:17:35 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
+2026-02-17 11:18:51 [ERROR]: createCoupon error: E11000 duplicate key error collection: chronora.coupons index: code_1 dup key: { code: "A8EYRZZ" }

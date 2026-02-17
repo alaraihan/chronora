@@ -146,9 +146,11 @@ export const editCategory = async (req, res) => {
       isListed: isListed === "true"
     };
 
-      const exists = await Category.findOne({
-      name: { $regex: `^${trimmedName}$`, $options: "i" }
-    });
+   const exists = await Category.findOne({
+  _id: { $ne: id }, 
+  name: { $regex: `^${name}$`, $options: "i" }
+});
+
 
     if (exists) {
       return res.status(409).json({

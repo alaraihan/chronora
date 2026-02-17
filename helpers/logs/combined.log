@@ -7822,3 +7822,318 @@ title is not defined
 2026-02-17 10:02:51 [INFO]: GET /js/admin/dashboard.js 304
 2026-02-17 10:02:51 [INFO]: GET /js/main.js 404
 2026-02-17 10:02:53 [INFO]: GET /admin/dashboard/data?filter=all&fromDate=&toDate= 200
+2026-02-17 10:13:14 [INFO]: GET /admin/categories 200
+2026-02-17 10:13:15 [INFO]: GET /css/admin/header.css 304
+2026-02-17 10:13:15 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 10:13:15 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 10:13:15 [INFO]: GET /css/admin/categories.css 304
+2026-02-17 10:13:15 [INFO]: GET /js/admin/categories.js 304
+2026-02-17 10:13:15 [INFO]: GET /js/main.js 404
+2026-02-17 10:13:15 [INFO]: GET /admin/categories 200
+2026-02-17 10:13:15 [INFO]: GET /css/admin/header.css 304
+2026-02-17 10:13:15 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 10:13:15 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 10:13:15 [INFO]: GET /css/admin/categories.css 304
+2026-02-17 10:13:15 [INFO]: GET /js/admin/categories.js 304
+2026-02-17 10:13:15 [INFO]: GET /js/main.js 404
+2026-02-17 10:13:17 [INFO]: Products listed
+2026-02-17 10:13:17 [INFO]: GET /admin/products 200
+2026-02-17 10:13:17 [INFO]: GET /css/admin/header.css 304
+2026-02-17 10:13:17 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 10:13:17 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 10:13:17 [INFO]: GET /css/admin/products.css 304
+2026-02-17 10:13:17 [INFO]: GET /js/main.js 404
+2026-02-17 10:13:17 [INFO]: GET /js/admin/products.js 304
+2026-02-17 10:13:40 [INFO]: POST /admin/products/add 400
+2026-02-17 10:13:48 [INFO]: POST /admin/products/add 400
+2026-02-17 10:15:15 [INFO]: POST /admin/products/add 400
+2026-02-17 10:16:28 [INFO]: Products listed
+2026-02-17 10:16:28 [INFO]: GET /admin/products 200
+2026-02-17 10:16:28 [INFO]: GET /css/admin/header.css 304
+2026-02-17 10:16:28 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 10:16:28 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 10:16:28 [INFO]: GET /css/admin/products.css 304
+2026-02-17 10:16:28 [INFO]: GET /js/admin/products.js 304
+2026-02-17 10:16:28 [INFO]: GET /js/main.js 404
+2026-02-17 10:46:24 [INFO]: GET / 200
+2026-02-17 10:46:24 [INFO]: GET /css/global.css 304
+2026-02-17 10:46:24 [INFO]: GET /css/user/header.css 304
+2026-02-17 10:46:24 [INFO]: GET /css/user/footer.css 304
+2026-02-17 10:46:24 [INFO]: GET /css/user/landing.css 304
+2026-02-17 10:46:24 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-17 10:46:24 [INFO]: GET /css/user/productDetail.css 304
+2026-02-17 10:46:24 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-17 10:46:24 [INFO]: GET /js/main.js 404
+2026-02-17 10:46:24 [INFO]: GET /js/user/productDetail.js 200
+2026-02-17 10:46:24 [INFO]: GET /favicon.ico 404
+2026-02-17 10:46:30 [INFO]: Products listed
+2026-02-17 10:46:30 [INFO]: GET /admin/products 200
+2026-02-17 10:46:30 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 10:46:30 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 10:46:30 [INFO]: GET /css/admin/header.css 304
+2026-02-17 10:46:30 [INFO]: GET /css/admin/products.css 304
+2026-02-17 10:46:30 [INFO]: GET /js/admin/products.js 304
+2026-02-17 10:46:30 [INFO]: GET /js/main.js 404
+2026-02-17 10:47:10 [INFO]: Product created
+2026-02-17 10:47:10 [INFO]: POST /admin/products/add 201
+2026-02-17 10:47:12 [INFO]: Products listed
+2026-02-17 10:47:13 [INFO]: GET /admin/products 200
+2026-02-17 10:47:13 [INFO]: GET /css/admin/header.css 304
+2026-02-17 10:47:13 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 10:47:13 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 10:47:13 [INFO]: GET /css/admin/products.css 304
+2026-02-17 10:47:14 [INFO]: GET /js/admin/products.js 304
+2026-02-17 10:47:14 [INFO]: GET /js/main.js 404
+2026-02-17 10:58:23 [INFO]: GET / 200
+2026-02-17 10:58:23 [INFO]: GET /css/global.css 304
+2026-02-17 10:58:23 [INFO]: GET /css/user/header.css 304
+2026-02-17 10:58:23 [INFO]: GET /css/user/footer.css 304
+2026-02-17 10:58:23 [INFO]: GET /css/user/productDetail.css 304
+2026-02-17 10:58:23 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-17 10:58:23 [INFO]: GET /css/user/landing.css 304
+2026-02-17 10:58:23 [INFO]: GET /js/user/productDetail.js 304
+2026-02-17 10:58:23 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-17 10:58:23 [INFO]: GET /js/main.js 404
+2026-02-17 10:58:26 [INFO]: Admin already logged in: admin@chronora.com
+2026-02-17 10:58:26 [INFO]: GET /admin/login 302
+2026-02-17 10:58:28 [INFO]: GET /admin/dashboard 200
+2026-02-17 10:58:28 [INFO]: GET /css/admin/header.css 304
+2026-02-17 10:58:28 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 10:58:28 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 10:58:28 [INFO]: GET /js/admin/dashboard.js 304
+2026-02-17 10:58:28 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-17 10:58:28 [INFO]: GET /js/main.js 404
+2026-02-17 10:58:29 [INFO]: GET /admin/dashboard/data?filter=all&fromDate=&toDate= 200
+2026-02-17 10:58:32 [INFO]: Offer page loaded successfully
+2026-02-17 10:58:32 [INFO]: GET /admin/offer 200
+2026-02-17 10:58:32 [INFO]: GET /css/admin/header.css 304
+2026-02-17 10:58:32 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 10:58:32 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 10:58:32 [INFO]: GET /js/main.js 404
+2026-02-17 10:58:32 [INFO]: GET /css/admin/offer.css 200
+2026-02-17 10:58:32 [INFO]: Fetched 18 targets for type: product
+2026-02-17 10:58:32 [INFO]: GET /admin/offers/targets?type=product 200
+2026-02-17 10:58:32 [INFO]: Fetched 13 offers
+2026-02-17 10:58:32 [INFO]: GET /admin/offers/data 200
+2026-02-17 10:58:40 [INFO]: Offer deleted successfully
+2026-02-17 10:58:40 [INFO]: DELETE /admin/offers/698c04ec0cdf47753d6b74de 200
+2026-02-17 10:58:40 [INFO]: Fetched 12 offers
+2026-02-17 10:58:40 [INFO]: GET /admin/offers/data 200
+2026-02-17 11:00:53 [INFO]: GET / 200
+2026-02-17 11:00:53 [INFO]: GET /css/global.css 304
+2026-02-17 11:00:53 [INFO]: GET /css/user/header.css 304
+2026-02-17 11:00:53 [INFO]: GET /css/user/footer.css 304
+2026-02-17 11:00:53 [INFO]: GET /css/user/productDetail.css 304
+2026-02-17 11:00:53 [INFO]: GET /images/screen-removebg-preview.png 304
+2026-02-17 11:00:53 [INFO]: GET /css/user/landing.css 304
+2026-02-17 11:00:53 [INFO]: GET /js/user/productDetail.js 304
+2026-02-17 11:00:53 [INFO]: GET /js/main.js 404
+2026-02-17 11:00:53 [INFO]: GET /images/8e0b86715ff08b729a66d9983df759c6.jpg 304
+2026-02-17 11:05:19 [INFO]: Admin already logged in: admin@chronora.com
+2026-02-17 11:05:19 [INFO]: GET /admin/login 302
+2026-02-17 11:05:19 [INFO]: GET /admin/dashboard 200
+2026-02-17 11:05:19 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:05:19 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:05:19 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:05:19 [INFO]: GET /css/admin/Dashboard.css 304
+2026-02-17 11:05:19 [INFO]: GET /js/admin/dashboard.js 304
+2026-02-17 11:05:19 [INFO]: GET /js/main.js 404
+2026-02-17 11:05:21 [INFO]: GET /admin/dashboard/data?filter=all&fromDate=&toDate= 200
+2026-02-17 11:05:22 [INFO]: Offer page loaded successfully
+2026-02-17 11:05:22 [INFO]: GET /admin/offer 200
+2026-02-17 11:05:22 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:05:22 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:05:22 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:05:22 [INFO]: GET /css/admin/offer.css 304
+2026-02-17 11:05:22 [INFO]: GET /js/main.js 404
+2026-02-17 11:05:22 [INFO]: Fetched 18 targets for type: product
+2026-02-17 11:05:22 [INFO]: GET /admin/offers/targets?type=product 200
+2026-02-17 11:05:23 [INFO]: Fetched 3 offers
+2026-02-17 11:05:23 [INFO]: GET /admin/offers/data 200
+2026-02-17 11:05:31 [INFO]: Offer deleted successfully
+2026-02-17 11:05:31 [INFO]: DELETE /admin/offers/6970523aefe8c3437d6cf9e2 200
+2026-02-17 11:05:31 [INFO]: Fetched 2 offers
+2026-02-17 11:05:31 [INFO]: GET /admin/offers/data 200
+2026-02-17 11:10:39 [INFO]: Offer page loaded successfully
+2026-02-17 11:10:39 [INFO]: GET /admin/offer 200
+2026-02-17 11:10:39 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:10:39 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:10:39 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:10:39 [INFO]: GET /css/admin/offer.css 304
+2026-02-17 11:10:39 [INFO]: GET /js/main.js 404
+2026-02-17 11:10:39 [INFO]: Fetched 18 targets for type: product
+2026-02-17 11:10:39 [INFO]: GET /admin/offers/targets?type=product 200
+2026-02-17 11:10:39 [INFO]: Fetched 2 offers
+2026-02-17 11:10:39 [INFO]: GET /admin/offers/data 200
+2026-02-17 11:10:44 [INFO]: GET /admin/categories 200
+2026-02-17 11:10:44 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:10:44 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:10:44 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:10:44 [INFO]: GET /css/admin/categories.css 304
+2026-02-17 11:10:44 [INFO]: GET /js/admin/categories.js 304
+2026-02-17 11:10:45 [INFO]: GET /js/main.js 404
+2026-02-17 11:10:45 [INFO]: GET /admin/categories/698c05310cdf47753d6b7537 200
+2026-02-17 11:10:52 [ERROR]: editCategory error trimedName is not defined
+2026-02-17 11:10:52 [INFO]: PUT /admin/categories/698c05310cdf47753d6b7537 500
+2026-02-17 11:11:09 [INFO]: GET /admin/categories 200
+2026-02-17 11:11:09 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:11:09 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:11:09 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:11:09 [INFO]: GET /css/admin/categories.css 304
+2026-02-17 11:11:10 [INFO]: GET /js/admin/categories.js 304
+2026-02-17 11:11:10 [INFO]: GET /js/main.js 404
+2026-02-17 11:11:11 [INFO]: GET /admin/categories/698c05310cdf47753d6b7537 200
+2026-02-17 11:11:21 [INFO]: Category updated: parr
+2026-02-17 11:11:21 [INFO]: PUT /admin/categories/698c05310cdf47753d6b7537 200
+2026-02-17 11:11:22 [INFO]: GET /admin/categories 200
+2026-02-17 11:11:22 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:11:22 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:11:22 [INFO]: GET /css/admin/categories.css 304
+2026-02-17 11:11:22 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:11:22 [INFO]: GET /js/admin/categories.js 304
+2026-02-17 11:11:22 [INFO]: GET /js/main.js 404
+2026-02-17 11:11:23 [INFO]: Category updated: parr
+2026-02-17 11:12:06 [INFO]: GET /admin/categories 200
+2026-02-17 11:12:06 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:12:06 [INFO]: GET /css/admin/categories.css 304
+2026-02-17 11:12:06 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:12:06 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:12:06 [INFO]: GET /js/admin/categories.js 304
+2026-02-17 11:12:06 [INFO]: GET /js/main.js 404
+2026-02-17 11:12:22 [INFO]: GET /admin/categories/698c05310cdf47753d6b7537 200
+2026-02-17 11:12:31 [INFO]: PUT /admin/categories/698c05310cdf47753d6b7537 409
+2026-02-17 11:12:38 [INFO]: PUT /admin/categories/698c05310cdf47753d6b7537 409
+2026-02-17 11:12:42 [INFO]: PUT /admin/categories/698c05310cdf47753d6b7537 409
+2026-02-17 11:12:45 [INFO]: Offer page loaded successfully
+2026-02-17 11:12:45 [INFO]: GET /admin/offer 200
+2026-02-17 11:12:45 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:12:45 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:12:45 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:12:45 [INFO]: GET /css/admin/offer.css 304
+2026-02-17 11:12:45 [INFO]: GET /js/main.js 404
+2026-02-17 11:12:45 [INFO]: Fetched 18 targets for type: product
+2026-02-17 11:12:45 [INFO]: GET /admin/offers/targets?type=product 200
+2026-02-17 11:12:45 [INFO]: Fetched 2 offers
+2026-02-17 11:12:45 [INFO]: GET /admin/offers/data 200
+2026-02-17 11:12:49 [INFO]: GET /admin/coupons 200
+2026-02-17 11:12:50 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:12:50 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:12:50 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:12:50 [INFO]: GET /css/admin/coupons.css 304
+2026-02-17 11:12:50 [INFO]: GET /js/main.js 404
+2026-02-17 11:12:58 [INFO]: Coupon LOVE deleted successfully.
+2026-02-17 11:12:58 [INFO]: DELETE /admin/coupons/delete/6958eee666f68110efcbd530 200
+2026-02-17 11:13:00 [INFO]: GET /admin/coupons 200
+2026-02-17 11:13:00 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:13:00 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:13:00 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:13:00 [INFO]: GET /js/main.js 404
+2026-02-17 11:13:00 [INFO]: GET /css/admin/coupons.css 304
+2026-02-17 11:13:08 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
+2026-02-17 11:13:08 [INFO]: PUT /admin/coupons/update/698aac6bf83f2cb27580233f 200
+2026-02-17 11:13:13 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
+2026-02-17 11:13:13 [INFO]: PUT /admin/coupons/update/698aac6bf83f2cb27580233f 200
+2026-02-17 11:17:13 [INFO]: GET /admin/coupons 200
+2026-02-17 11:17:13 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:17:13 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:17:13 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:17:13 [INFO]: GET /css/admin/coupons.css 304
+2026-02-17 11:17:13 [INFO]: GET /js/main.js 404
+2026-02-17 11:17:23 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
+2026-02-17 11:17:23 [INFO]: PUT /admin/coupons/update/698aac6bf83f2cb27580233f 200
+2026-02-17 11:17:25 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
+2026-02-17 11:17:25 [INFO]: PUT /admin/coupons/update/698aac6bf83f2cb27580233f 200
+2026-02-17 11:17:26 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
+2026-02-17 11:17:26 [INFO]: PUT /admin/coupons/update/698aac6bf83f2cb27580233f 200
+2026-02-17 11:17:34 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
+2026-02-17 11:17:34 [INFO]: PUT /admin/coupons/update/698aac6bf83f2cb27580233f 200
+2026-02-17 11:17:35 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
+2026-02-17 11:17:35 [INFO]: PUT /admin/coupons/update/698aac6bf83f2cb27580233f 200
+2026-02-17 11:17:36 [INFO]: GET /admin/coupons 200
+2026-02-17 11:17:36 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:17:36 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:17:36 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:17:36 [INFO]: GET /css/admin/coupons.css 304
+2026-02-17 11:17:36 [INFO]: GET /js/main.js 404
+2026-02-17 11:17:59 [INFO]: Coupon A8EYRZZ updated successfully.
+2026-02-17 11:17:59 [INFO]: PUT /admin/coupons/update/698aac6bf83f2cb27580233f 200
+2026-02-17 11:18:01 [INFO]: GET /admin/coupons 200
+2026-02-17 11:18:01 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:18:01 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:18:01 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:18:01 [INFO]: GET /css/admin/coupons.css 304
+2026-02-17 11:18:01 [INFO]: GET /js/main.js 404
+2026-02-17 11:18:10 [INFO]: Coupon A8EYRZZ updated successfully.
+2026-02-17 11:18:10 [INFO]: PUT /admin/coupons/update/698aac6bf83f2cb27580233f 200
+2026-02-17 11:18:11 [INFO]: GET /admin/coupons 200
+2026-02-17 11:18:11 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:18:11 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:18:11 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:18:11 [INFO]: GET /css/admin/coupons.css 304
+2026-02-17 11:18:12 [INFO]: GET /js/main.js 404
+2026-02-17 11:18:18 [INFO]: Offer page loaded successfully
+2026-02-17 11:18:18 [INFO]: GET /admin/offer 200
+2026-02-17 11:18:18 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:18:18 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:18:18 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:18:18 [INFO]: GET /css/admin/offer.css 304
+2026-02-17 11:18:18 [INFO]: GET /js/main.js 404
+2026-02-17 11:18:18 [INFO]: Fetched 18 targets for type: product
+2026-02-17 11:18:18 [INFO]: GET /admin/offers/targets?type=product 200
+2026-02-17 11:18:18 [INFO]: Fetched 2 offers
+2026-02-17 11:18:18 [INFO]: GET /admin/offers/data 200
+2026-02-17 11:18:24 [INFO]: GET /admin/coupons 200
+2026-02-17 11:18:24 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:18:24 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:18:24 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:18:24 [INFO]: GET /css/admin/coupons.css 304
+2026-02-17 11:18:24 [INFO]: GET /js/main.js 404
+2026-02-17 11:18:51 [ERROR]: createCoupon error: E11000 duplicate key error collection: chronora.coupons index: code_1 dup key: { code: "A8EYRZZ" }
+2026-02-17 11:18:51 [INFO]: POST /admin/coupons/create 400
+2026-02-17 11:20:23 [INFO]: POST /admin/coupons/create 409
+2026-02-17 11:20:32 [INFO]: Coupon A8EYRZZY created successfully.
+2026-02-17 11:20:32 [INFO]: POST /admin/coupons/create 200
+2026-02-17 11:20:34 [INFO]: GET /admin/coupons 200
+2026-02-17 11:20:34 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:20:34 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:20:34 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:20:34 [INFO]: GET /css/admin/coupons.css 304
+2026-02-17 11:20:34 [INFO]: GET /js/main.js 404
+2026-02-17 11:20:43 [INFO]: PUT /admin/coupons/update/6962257789d2e09a104e3bf6 200
+2026-02-17 11:20:46 [INFO]: PUT /admin/coupons/update/6962257789d2e09a104e3bf6 200
+2026-02-17 11:20:53 [INFO]: PUT /admin/coupons/update/6962257789d2e09a104e3bf6 200
+2026-02-17 11:21:17 [INFO]: GET /admin/coupons 200
+2026-02-17 11:21:17 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:21:17 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:21:17 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:21:17 [INFO]: GET /css/admin/coupons.css 304
+2026-02-17 11:21:17 [INFO]: GET /js/main.js 404
+2026-02-17 11:21:49 [INFO]: GET /admin/coupons 200
+2026-02-17 11:21:49 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:21:49 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:21:49 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:21:49 [INFO]: GET /css/admin/coupons.css 304
+2026-02-17 11:21:49 [INFO]: GET /js/main.js 404
+2026-02-17 11:21:59 [INFO]: PUT /admin/coupons/update/6962257789d2e09a104e3bf6 409
+2026-02-17 11:22:15 [INFO]: Accessed sales report page
+2026-02-17 11:22:15 [INFO]: GET /admin/sales-report 200
+2026-02-17 11:22:15 [INFO]: GET /css/admin/header.css 304
+2026-02-17 11:22:15 [INFO]: GET /css/admin/sidebar.css 304
+2026-02-17 11:22:15 [INFO]: GET /css/admin/footer.css 304
+2026-02-17 11:22:15 [INFO]: GET /css/admin/sales-report.css 200
+2026-02-17 11:22:15 [INFO]: GET /js/admin/salesReport.js 200
+2026-02-17 11:22:15 [INFO]: GET /js/main.js 404
+2026-02-17 11:22:15 [INFO]: Sales report data requested
+2026-02-17 11:22:15 [INFO]: Sales report data generated
+2026-02-17 11:22:15 [INFO]: GET /admin/sales-report/data? 200
+2026-02-17 11:22:20 [INFO]: Sales report data requested
+2026-02-17 11:22:20 [INFO]: Sales report data generated
+2026-02-17 11:22:20 [INFO]: GET /admin/sales-report/data?page=1&dateFrom=2026-02-16&dateTo=2026-02-17 200
+2026-02-17 11:22:38 [INFO]: Sales report data requested
+2026-02-17 11:22:38 [INFO]: Sales report data generated
+2026-02-17 11:22:38 [INFO]: GET /admin/sales-report/data?page=1&dateFrom=2025-12-31&dateTo=2026-02-17&search=ala 200
+2026-02-17 11:22:42 [INFO]: Sales report data requested
+2026-02-17 11:22:43 [INFO]: Sales report data generated
+2026-02-17 11:22:43 [INFO]: GET /admin/sales-report/data?page=1 200
+2026-02-17 11:22:51 [INFO]: Sales report download requested
+2026-02-17 11:22:51 [INFO]: GET /admin/sales-report/download?page=1&format=csv 200
