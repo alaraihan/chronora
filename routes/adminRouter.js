@@ -55,8 +55,8 @@ import {
 
 import { getDashboardPage, getDashboardData } from "../controller/admin/adminController.js";
 
-router.get("/dashboard", getDashboardPage);
-router.get("/dashboard/data", getDashboardData);
+router.get("/dashboard", isAdmin ,getDashboardPage);
+router.get("/dashboard/data", isAdmin, getDashboardData);
 router.post("/orders/:orderId/refund-item", isAdmin, processRefund);
 
 router.get("/login", adminController.loadLogin);
