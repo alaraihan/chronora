@@ -4,7 +4,6 @@ import Category from "../../models/categorySchema.js";
 import cloudinary from "../../config/cloudinary.js";
 import fs from "fs";
 import mongoose from "mongoose";
-import logger from "../../helpers/logger.js";
 
 const escapeRegex = str =>
   str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -23,7 +22,7 @@ const deleteLocalFile = path => {
   try {
     if (path && fs.existsSync(path)) fs.unlinkSync(path);
   } catch (e) {
-    logger.warn("File cleanup failed", { error: e.message });
+    console.log("File cleanup failed", { error: e.message });
   }
 };
 
@@ -129,7 +128,7 @@ export async function listProducts(req, res) {
       title: "Products"
     });
   } catch (err) {
-    logger.error("listProducts error", err);
+    console.error("listProducts error", err);
     res.status(500).send("Server error");
   }
 }
@@ -167,7 +166,7 @@ export async function getProduct(req, res) {
       }
     });
   } catch (err) {
-    logger.error("getProduct error", err);
+    console.error("getProduct error", err);
     res.status(500).json({ success: false });
   }
 }
@@ -256,7 +255,7 @@ export async function addProduct(req, res) {
 
     res.status(201).json({ success: true });
   } catch (err) {
-    logger.error("addProduct error", err);
+    console.error("addProduct error", err);
     res.status(500).json({ success: false });
   }
 }
@@ -313,7 +312,7 @@ export async function updateProduct(req, res) {
 
     res.json({ success: true });
   } catch (err) {
-    logger.error("updateProduct error", err);
+    console.error("updateProduct error", err);
     res.status(500).json({ success: false });
   }
 }
@@ -339,7 +338,7 @@ export async function toggleBlock(req, res) {
 
     res.json({ success: true });
   } catch (err) {
-    logger.error("toggleBlock error", err);
+    console.error("toggleBlock error", err);
     res.status(500).json({ success: false });
   }
 }
