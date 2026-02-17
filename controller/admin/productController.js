@@ -207,12 +207,15 @@ export async function addProduct(req, res) {
     }
 
     const existing = await Product.findOne({
-      name: new RegExp(`^${escapeRegex(name.trim())}$`, "i"),
-      isBlocked: false
+      name: new RegExp(`^${escapeRegex(name.trim())}$`, "i")
     });
 
-    if (existing)
-      return res.status(400).json({ success: false, message: "Product exists" });
+    if (existing) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "A product with this name already exists" 
+      });
+    }
 
     const cat = await Category.findById(category);
     if (!cat)
