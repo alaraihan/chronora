@@ -132,6 +132,8 @@ export async function listProducts(req, res) {
     res.status(500).send("Server error");
   }
 }
+const normalizeName = name =>
+  name?.trim().toLowerCase();
 
 
 export async function getProduct(req, res) {
@@ -193,27 +195,30 @@ export async function addProduct(req, res) {
     if (files.length < 2)
       return res.status(400).json({ success: false, message: "At least 2 images required" });
 
-    const existing = await Product.findOne({
-      name: new RegExp(`^${escapeRegex(name.trim())}$`, "i")
-    });
+   const normalizedName = normalizeName(name);
 
-    if (existing)
-      return res.status(400).json({
-        success: false,
-        message: "Product already exists"
-      });
+const existing = await Product.findOne({
+  name: normalizedName
+});
+
+if (existing) {
+  return res.status(400).json({
+    success: false,
+    message: "Product already exists"
+  });
+}
+
 
     const cat = await Category.findById(category);
     if (!cat)
       return res.status(400).json({ success: false, message: "Invalid category" });
 
-    const product = await Product.create({
-      name: name.trim(),
-      description,
-      price: Number(price),
-      category
-    });
-
+   const product = await Product.create({
+  name: normalizedName,
+  description,
+  price: Number(price),
+  category
+});
     let fileIndex = 0;
     const variantIds = [];
 
@@ -278,17 +283,23 @@ export async function updateProduct(req, res) {
     if (!variants)
       return res.status(400).json({ success: false, message: "Invalid variants" });
 
-    if (name) {
-      const existing = await Product.findOne({
-        _id: { $ne: id },
-        name: new RegExp(`^${escapeRegex(name.trim())}$`, "i")
-      });
+   if (name) {
+  const normalizedName = normalizeName(name);
 
-      if (existing)
-        return res.status(400).json({ success: false, message: "Duplicate product" });
+  const existing = await Product.findOne({
+    _id: { $ne: id },
+    name: normalizedName
+  });
 
-      product.name = name.trim();
-    }
+  if (existing) {
+    return res.status(400).json({
+      success: false,
+      message: "Duplicate product name"
+    });
+  }
+
+  product.name = normalizedName;
+}
 
     if (description !== undefined)
       product.description = description.trim();
