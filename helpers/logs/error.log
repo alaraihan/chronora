@@ -155,3 +155,18 @@ title is not defined
 2026-02-17 11:17:35 [ERROR]: updateCoupon error: Coupon validation failed: expiryDate: Expiry date must be after start date
 2026-02-17 11:18:51 [ERROR]: createCoupon error: E11000 duplicate key error collection: chronora.coupons index: code_1 dup key: { code: "A8EYRZZ" }
 2026-02-17 11:50:50 [ERROR]: updateProduct error
+2026-02-17 14:05:57 [ERROR]: loadCart error for user 698ab07963140088b4f33573: userId is not defined
+2026-02-17 14:06:00 [ERROR]: loadCart error for user 698ab07963140088b4f33573: userId is not defined
+2026-02-17 14:06:04 [ERROR]: loadCart error for user 698ab07963140088b4f33573: userId is not defined
+2026-02-17 14:06:22 [ERROR]: loadCart error for user 698ab07963140088b4f33573: userId is not defined
+2026-02-17 14:06:56 [ERROR]: addToCart error for user 698ab07963140088b4f33573: Cannot access 'userId' before initialization
+2026-02-17 15:37:22 [ERROR]: toggleListCategory error Cast to ObjectId failed for value "{
+  category: { _id: new ObjectId('6928a44583f06ee8bd283480'), isListed: true }
+}" (type Object) at path "_id" for model "Product"
+2026-02-17 15:38:20 [ERROR]: toggleListCategory error Cast to ObjectId failed for value "{ category: new ObjectId('6928a42383f06ee8bd283479') }" (type Object) at path "_id" for model "Product"
+2026-02-20 13:25:33 [ERROR]: toggleListCategory error Cannot read properties of undefined (reading 'toString')
+2026-02-20 13:50:00 [ERROR]: toggleListCategory error Cannot read properties of undefined (reading 'toString')
+2026-02-20 16:35:34 [ERROR]: toggleListCategory error Arguments must be aggregate pipeline operators
+2026-02-20 16:43:35 [ERROR]: toggleListCategory error Arguments must be aggregate pipeline operators
+2026-02-20 16:43:35 [ERROR]: toggleListCategory error Arguments must be aggregate pipeline operators
+2026-02-20 16:43:35 [ERROR]: toggleListCategory error Arguments must be aggregate pipeline operators

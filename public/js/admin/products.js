@@ -178,7 +178,6 @@ async function openEditModal(id) {
             name: v.name || v.colorName || '',
             stock: v.stock || 0,
             images: Array.isArray(v.images) ? v.images.slice() : [],
-            strapColor: v.strapColor,
             newFiles: []
         }));
 
@@ -238,12 +237,7 @@ function renderVariants() {
                            onchange="variants[${i}].stock=+this.value;updateCalculatedStock();"
                            style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
                 </div>
-                  <div>
-                    <label style="display:block;margin-bottom:6px;font-weight:500;">StrapColor</label>
-                    <input type="text" value="${v.strapColor}"
-                           onchange="variants[${i}].strapColor=this.value;renderVariants()"
-                           style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;">
-                </div>
+                 
             </div>
             <div style="margin-top:12px;">
                 <label style="display:block;margin-bottom:8px;font-weight:500;">Images (${v.images?.length || 0}/5)</label>
@@ -325,7 +319,7 @@ function addVariant() {
         showToast('Max 8 variants', 'warning');
         return;
     }
-    variants.push({ id: null, name: '', stock: 0, strapColor: "", images: [], newFiles: [] });
+    variants.push({ id: null, name: '', stock: 0, images: [], newFiles: [] });
     renderVariants();
 }
 
@@ -386,7 +380,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     id: v.id || null,
                     name: v.name || '',
                     stock: v.stock || 0,
-                    strapColor: v.strapColor,
                     existingImages,
                     newImageCount: (v.newFiles || []).length
                 };

@@ -105,7 +105,6 @@ export const getDashboardData = async (req, res) => {
       case "all":
       default:
         startDate = null;
-        // For "all", get the earliest order date
         const earliestOrder = await Order.findOne().sort({ createdAt: 1 }).select('createdAt');
         startDate = earliestOrder ? earliestOrder.createdAt : new Date(0);
     }
@@ -114,7 +113,6 @@ export const getDashboardData = async (req, res) => {
       ? { createdAt: { $gte: startDate, $lte: endDate } }
       : {};
 
-    // Overview calculations
     const totalOrders = await Order.countDocuments(dateFilter);
     const totalUsers = await User.countDocuments();
     const totalProducts = await Product.countDocuments();
@@ -132,38 +130,32 @@ export const getDashboardData = async (req, res) => {
     ]);
     const totalRevenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
 
-    // Recent orders
     const recentOrders = await Order.find(dateFilter)
       .populate("userId", "email")
       .sort({ createdAt: -1 })
       .limit(10)
       .select("orderId userId totalAmount status createdAt paymentMethod");
 
-    // Status distribution
     const statusDistribution = await Order.aggregate([
       { $match: dateFilter },
       { $group: { _id: "$status", count: { $sum: 1 } } }
     ]);
 
-    // Generate date range for sales chart based on filter
     let dateRange = [];
     
     if (filter === "today") {
-      // For today, show hourly data
       for (let i = 0; i < 24; i++) {
         const hour = new Date(startDate);
         hour.setHours(i, 0, 0, 0);
         dateRange.push(hour);
       }
     } else if (filter === "7days") {
-      // For 7 days, show daily data
       for (let i = 0; i < 7; i++) {
         const date = new Date(startDate);
         date.setDate(date.getDate() + i);
         dateRange.push(date);
       }
     } else if (filter === "month") {
-      // For month, show daily data
       const daysInMonth = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0).getDate();
       for (let i = 0; i < daysInMonth; i++) {
         const date = new Date(startDate);
@@ -171,18 +163,15 @@ export const getDashboardData = async (req, res) => {
         dateRange.push(date);
       }
     } else if (filter === "year") {
-      // For year, show monthly data
       for (let i = 0; i < 12; i++) {
         const month = new Date(startDate.getFullYear(), i, 1);
         dateRange.push(month);
       }
     } else if (filter === "custom") {
-      // For custom range, determine appropriate interval based on date difference
       const diffTime = Math.abs(endDate - startDate);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
       if (diffDays <= 1) {
-        // Less than or equal to 1 day: show hourly
         const hours = Math.ceil(diffTime / (1000 * 60 * 60));
         for (let i = 0; i <= hours; i++) {
           const hour = new Date(startDate);
@@ -192,7 +181,6 @@ export const getDashboardData = async (req, res) => {
           }
         }
       } else if (diffDays <= 31) {
-        // 2-31 days: show daily
         for (let i = 0; i <= diffDays; i++) {
           const date = new Date(startDate);
           date.setDate(date.getDate() + i);
@@ -201,7 +189,6 @@ export const getDashboardData = async (req, res) => {
           }
         }
       } else if (diffDays <= 365) {
-        // 32-365 days: show weekly
         const weeks = Math.ceil(diffDays / 7);
         for (let i = 0; i <= weeks; i++) {
           const week = new Date(startDate);
@@ -211,7 +198,6 @@ export const getDashboardData = async (req, res) => {
           }
         }
       } else {
-        // More than a year: show monthly
         const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
                       (endDate.getMonth() - startDate.getMonth());
         for (let i = 0; i <= months; i++) {
@@ -222,7 +208,6 @@ export const getDashboardData = async (req, res) => {
         }
       }
     } else {
-      // "all" - show monthly data
       const earliestOrder = await Order.findOne().sort({ createdAt: 1 }).select('createdAt');
       const earliestDate = earliestOrder ? earliestOrder.createdAt : new Date();
       const totalMonths = (new Date().getFullYear() - earliestDate.getFullYear()) * 12 + 
@@ -234,25 +219,20 @@ export const getDashboardData = async (req, res) => {
       }
     }
 
-    // Generate sales chart data based on the date range
     const salesChartData = await Promise.all(
       dateRange.map(async (date, index) => {
         let nextDate;
         
         if (filter === "today" || (filter === "custom" && dateRange.length > 24)) {
-          // Hourly data
           nextDate = new Date(date);
           nextDate.setHours(date.getHours() + 1);
         } else if (filter === "year" || (filter === "custom" && dateRange.length <= 12)) {
-          // Monthly data
           nextDate = new Date(date);
           nextDate.setMonth(date.getMonth() + 1);
         } else if (filter === "custom" && dateRange.length <= 52) {
-          // Weekly data
           nextDate = new Date(date);
           nextDate.setDate(date.getDate() + 7);
         } else {
-          // Daily data
           nextDate = new Date(date);
           nextDate.setDate(date.getDate() + 1);
         }
@@ -279,18 +259,14 @@ export const getDashboardData = async (req, res) => {
 
         let dateLabel;
         if (filter === "today" || (filter === "custom" && dateRange.length > 24)) {
-          // Hourly format
           dateLabel = date.toLocaleTimeString("en-IN", { hour: '2-digit', hour12: true });
         } else if (filter === "year" || (filter === "custom" && dateRange.length <= 12)) {
-          // Monthly format
           dateLabel = date.toLocaleDateString("en-IN", { month: "short", year: "2-digit" });
         } else if (filter === "custom" && dateRange.length <= 52) {
-          // Weekly format
           const weekEnd = new Date(date);
           weekEnd.setDate(date.getDate() + 6);
           dateLabel = `${date.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })} - ${weekEnd.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}`;
         } else {
-          // Daily format
           dateLabel = date.toLocaleDateString("en-IN", { day: "2-digit", month: "short" });
         }
 
@@ -302,7 +278,6 @@ export const getDashboardData = async (req, res) => {
       })
     );
 
-    // Top products
     const topProducts = await Order.aggregate([
       { $unwind: "$products" },
       { $match: { "products.itemStatus": "Delivered" } },
@@ -335,7 +310,6 @@ export const getDashboardData = async (req, res) => {
       }
     ]);
 
-    // Payment distribution
     const paymentDistribution = await Order.aggregate([
       { $match: dateFilter },
       {

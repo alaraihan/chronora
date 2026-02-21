@@ -1,7 +1,11 @@
 import Category from "../../models/categorySchema.js";
 import cloudinary from "../../config/cloudinary.js";
+import Product from "../../models/productSchema.js";
+import Variant from "../../models/variantSchema.js";
+import Offer from '../../models/offerSchema.js'
 import fs from "fs";
 import { setFlash, getFlash } from "../../utils/flash.js";
+import offerSchema from "../../models/offerSchema.js";
 import logger from "../../helpers/logger.js";
 const render = (req, res, view, options = {}) => {
   const flash = getFlash(req);
@@ -230,6 +234,7 @@ export const toggleListCategory=async (req,res)=>{
       logger.warn(`Category not found for toggle: ${id}`);
       return res.status(404).json({success:false,message:"Category not found!"});
     }
+ 
     const newStatus=!category.isListed;
     await Category.updateOne({_id:id},{isListed:newStatus});
     const action = newStatus ? "listed" : "unlisted ";

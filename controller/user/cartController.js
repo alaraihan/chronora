@@ -79,7 +79,6 @@ export const loadCart = async (req, res) => {
     res.redirect("/");
   }
 };
-// Check quantity of specific item in cart
 export const checkCartItem = async (req, res) => {
   try {
     if (!req.user) {
@@ -107,10 +106,11 @@ export const addToCart = async (req, res) => {
         message: "Please login or signup to add items to cart"
       });
     }
+    
     const { productId, variantId, quantity: q } = req.body;
     const userId = req.user._id;
     const quantity = Math.max(1, parseInt(q || "1", 10));
-
+   
    
     if (!productId || !variantId) {
       logger.warn(`addToCart failed: Missing IDs, user: ${userId}`);
@@ -133,6 +133,7 @@ export const addToCart = async (req, res) => {
       logger.warn(`addToCart failed: Not enough stock for variant ${variantId}`);
       return res.json({ success: false, message: "Not enough stock" });
     }
+    
 
     const offerData = await getBestOfferForProduct(product);
     const finalPrice = offerData ? offerData.offerPrice : product.price;
@@ -150,6 +151,7 @@ export const addToCart = async (req, res) => {
       .lean();
 
     const totals = calcTotals(items);
+    
     res.json({
       success: true,
       message: "Added to cart",

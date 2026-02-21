@@ -376,7 +376,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Download PDF button
   document.getElementById('downloadPDF')?.addEventListener('click', async () => {
     try {
       window.open(`/profile/orders/${orderId}/invoice`, '_blank');
@@ -387,17 +386,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Email invoice button
   document.getElementById('emailInvoice')?.addEventListener('click', () => {
     toast('Email invoice feature coming soon', 'info');
   });
 
-  // Handle page visibility change (for multi-tab support)
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
-      // Page became visible again, check if order status changed
-      console.log('Page became visible, checking for updates...');
-      // You could optionally refresh data here
+    console.log('Page became visible, checking for updates...');
     }
   });
 });

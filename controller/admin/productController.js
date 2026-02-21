@@ -252,7 +252,6 @@ export async function addProduct(req, res) {
           colorName: v.name || "",
           stock,
           images,
-          strapColor: v.strapColor || ""
         }],
         { session }
       );
@@ -363,7 +362,7 @@ export async function updateProduct(req, res) {
       if (v.id) {
         await Variant.findByIdAndUpdate(
           v.id,
-          { colorName: v.name, stock, images: existingImages, strapColor: v.strapColor },
+          { colorName: v.name, stock, images: existingImages, },
           { session }
         );
         newVariantIds.push(v.id);
@@ -374,7 +373,6 @@ export async function updateProduct(req, res) {
             colorName: v.name,
             stock,
             images: existingImages,
-            strapColor: v.strapColor
           }],
           { session }
         );
