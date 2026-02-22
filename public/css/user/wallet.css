@@ -1,168 +1,137 @@
-/* ========================================
-   WALLET PAGE - COMPLETE STYLING
-   ======================================== */
-
-/* ========================================
-   BASE & LAYOUT
-   ======================================== */
-.wallet-container {
-  display: flex;
-  min-height: 100vh;
-  background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+:root {
+  --bg: #080808;
+  --bg-1: #0d0d0d;
+  --bg-2: #131313;
+  --bg-3: #1a1a1a;
+  --bg-4: #222222;
+  --border: rgba(255, 255, 255, 0.055);
+  --border-hi: rgba(255, 255, 255, 0.11);
+  --text: #ede9e1;
+  --text-muted: #838383;
+  --gold: #c9a96e;
+  --gold-dim: rgba(201, 169, 110, 0.13);
+  --font-display: 'Cormorant Garamond', serif;
+  --font-mono: 'Space Mono', monospace;
 }
 
-.wallet-main {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background: transparent;
-}
+/* ---------- Base & Layout ---------- */
+/* Shared layout handled by profile-shared.css */
 
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-/* ========================================
-   PAGE HEADER
-   ======================================== */
-.wallet-main .text-center.mb-5 {
-  margin-bottom: 3rem !important;
-  padding-top: 2rem;
-}
-
+/* ---------- Page Header ---------- */
 .wallet-main .display-5 {
-  font-size: 3.5rem;
-  font-weight: 900;
-  color: #ffffff;
-  letter-spacing: -1px;
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  margin-bottom: 1rem;
+  font-family: var(--font-display) !important;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 300;
+  color: var(--gold);
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
 }
 
 .wallet-main .lead {
-  font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 400;
-  letter-spacing: 0.3px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 60px;
 }
 
-/* ========================================
-   BALANCE CARD
-   ======================================== */
+/* ---------- Balance Card ---------- */
 .balance-card {
   position: relative;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 28px;
+  background: var(--bg-1);
+  
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 80px 40px;
+  text-align: center;
+  margin-bottom: 60px;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
-  box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(255, 255, 255, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.balance-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(201, 169, 110, 0.05) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .balance-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 
-    0 30px 80px rgba(0, 0, 0, 0.7),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
-}
-
-.gradient-bg {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #319795 100%);
-  opacity: 0.95;
-  z-index: 1;
-}
-
-.balance-card .card-body {
-  position: relative;
-  z-index: 2;
-  padding: 4rem 2rem;
-  text-align: center;
+  border-color: var(--gold);
+  background: var(--bg-2);
+  transform: translateY(-10px);
 }
 
 .balance-card .text-uppercase {
-  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 2.5px;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 1rem;
+  color: var(--text-muted);
   text-transform: uppercase;
+  letter-spacing: 0.3em;
+  margin-bottom: 24px;
 }
 
 .balance-card #balance {
-  font-size: 5rem;
-  font-weight: 900;
-  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 10vw, 7rem);
+  font-weight: 300;
+  color: var(--gold);
   line-height: 1;
-  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-  letter-spacing: -2px;
-  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 30px;
 }
 
 .balance-card #status {
+  font-family: var(--font-display);
   font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 400;
-  max-width: 500px;
+  color: var(--text-muted);
+  font-style: italic;
+  max-width: 600px;
   margin: 0 auto;
-  line-height: 1.6;
+  line-height: 1.8;
 }
 
-/* ========================================
-   CARD COMPONENTS
-   ======================================== */
+/* ---------- Card Components ---------- */
 .card {
-  background: rgba(20, 20, 20, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  box-shadow: 
-    0 15px 40px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: all 0.3s ease;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 
-    0 20px 50px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: var(--gold);
 }
 
 .card-body {
-  padding: 3rem 2.5rem;
+  padding: 40px;
 }
 
 .card h4 {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: #ffffff;
-  margin-bottom: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  letter-spacing: -0.5px;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: var(--gold);
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .card h4 i {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   margin-right: 0.75rem;
+  color: var(--gold);
 }
 
-/* ========================================
-   ADD MONEY SECTION
-   ======================================== */
+/* ---------- Add Money Section ---------- */
 #addForm {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
+  gap: 25px;
 }
 
 #addForm .row {
@@ -175,81 +144,58 @@
 
 #addForm .input-group {
   max-width: 400px;
-  width: 100%;
-  height: 75px;
-  border-radius: 20px;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.6);
-  border: 2px solid rgba(255, 255, 255, 0.15);
+  height: 60px;
+  border-radius: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 #addForm .input-group:focus-within {
-  border-color: #28a745;
-  box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.2), 0 8px 24px rgba(0, 0, 0, 0.5);
-  background: rgba(0, 0, 0, 0.7);
+  border-color: var(--gold);
 }
 
 #addForm .input-group-text {
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 2rem;
-  font-weight: 700;
-  padding: 0 1.25rem 0 1.5rem;
-  display: flex;
-  align-items: center;
-  height: 100%;
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  padding: 0 20px;
 }
 
 #addForm #amount {
   background: transparent;
   border: none;
-  color: #ffffff;
-  font-size: 2.25rem;
-  font-weight: 700;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
   text-align: center;
-  padding: 0 1rem;
   outline: none;
-  flex: 1;
-  height: 100%;
-  display: flex;
-  align-items: center;
 }
 
 #addForm #amount::placeholder {
-  color: rgba(255, 255, 255, 0.35);
-  font-weight: 500;
+  color: var(--text-dim);
+  font-weight: 300;
 }
 
 #addForm .btn-success {
-  height: 75px;
-  padding: 0 3rem;
-  font-size: 1.2rem;
+  height: 60px;
+  padding: 0 40px;
+  font-family: var(--font-mono);
+  font-size: 10px;
   font-weight: 700;
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-  border: none;
-  border-radius: 20px;
-  color: #ffffff;
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  color: #000;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+  letter-spacing: 0.2em;
   transition: all 0.3s ease;
-  cursor: pointer;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 200px;
 }
 
 #addForm .btn-success:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(40, 167, 69, 0.6);
-  background: linear-gradient(135deg, #2bc256 0%, #24d9a8 100%);
+  background: transparent;
+  color: var(--gold);
+  transform: translateY(-5px);
 }
 
 #addForm .btn-success:active {
@@ -257,135 +203,109 @@
 }
 
 #addForm .btn-success i {
-  margin-right: 0.6rem;
-  font-size: 1.1rem;
-}
-
-/* Quick Select Buttons */
-.quick-amounts-container {
-  text-align: center;
-  margin-top: 2rem;
-}
-
-.quick-amounts-container .text-white-60 {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-right: 1rem;
-  display: inline-block;
-}
-
-.quick {
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  border-radius: 14px;
-  color: #ffffff;
-  padding: 0.75rem 1.75rem;
+  margin-right: 0.5rem;
   font-size: 1rem;
-  font-weight: 700;
-  margin: 0.4rem;
-  cursor: pointer;
+}
+
+/* Quick Select */
+.quick {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  padding: 10px 20px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  margin: 5px;
   transition: all 0.3s ease;
-  display: inline-block;
 }
 
 .quick:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  border-color: var(--gold);
+  color: var(--gold);
+  background: var(--gold-dim);
 }
 
 .quick:active {
   transform: translateY(0);
 }
 
-/* ========================================
-   REFER & EARN SECTION
-   ======================================== */
+/* ---------- Refer & Earn ---------- */
 .card-body .text-white-70 {
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 1.15rem;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-muted) !important;
+  font-size: 14px;
   line-height: 1.8;
-  margin-bottom: 2rem;
 }
 
 .card-body .text-white-70 strong {
-  color: #28a745;
-  font-weight: 800;
-  font-size: 1.25rem;
+  color: var(--gold) !important;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.card-body .text-success {
+  color: var(--gold) !important;
 }
 
 .referral-box {
-  background: #000000;
-  border: 2px dashed rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 2rem !important;
-  max-width: 550px;
-  margin: 0 auto;
-  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.5);
+  background: var(--bg-2) !important;
+  border: 1px dashed var(--gold) !important;
+  border-radius: 8px !important;
+  padding: 30px !important;
 }
 
 .referral-box .input-group {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
+  background: var(--bg-3);
+  border-radius: var(--r-sm);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
 }
 
 .referral-box #code {
   background: transparent;
-  border: none;
-  color: #ffffff;
-  font-size: 2rem;
-  font-weight: 900;
-  letter-spacing: 4px;
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  letter-spacing: 0.3em;
   text-align: center;
-  padding: 1.5rem;
-  font-family: 'Courier New', monospace;
-  text-transform: uppercase;
 }
 
 .referral-box #copy {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-  border: none;
-  color: #ffffff;
-  padding: 1rem 2.5rem;
-  font-size: 1.1rem;
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  color: #000;
+  padding: 15px 30px;
+  font-family: var(--font-mono);
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  border-radius: 0;
-  cursor: pointer;
+  letter-spacing: 0.15em;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
 }
 
 .referral-box #copy:hover {
-  background: linear-gradient(135deg, #0090ff 0%, #0066cc 100%);
-  box-shadow: 0 6px 25px rgba(0, 123, 255, 0.6);
-  transform: scale(1.05);
+  background: transparent;
+  color: var(--gold);
 }
 
 .referral-box #copy i {
   margin-right: 0.5rem;
 }
 
-/* ========================================
-   TRANSACTION HISTORY
-   ======================================== */
+/* ---------- Transaction History ---------- */
 .card-header {
   background: transparent !important;
   border: none !important;
-  padding: 2.5rem 2rem 1.5rem !important;
+  padding: 2rem 2rem 1.5rem !important;
 }
 
 .card-header h4 {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--text);
   margin: 0;
   display: flex;
   align-items: center;
@@ -393,29 +313,30 @@
 }
 
 .card-header h4 i {
-  color: #17a2b8;
+  color: var(--gold);
   margin-right: 0.75rem;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 }
 
-/* Loading State */
+/* Loading */
 #loading {
-  padding: 5rem 2rem;
+  padding: 4rem 2rem;
   text-align: center;
 }
 
 #loading .spinner-border {
-  width: 4rem;
-  height: 4rem;
-  border-width: 0.4rem;
-  color: #007bff;
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.3rem;
+  color: var(--gold);
 }
 
 #loading p {
-  margin-top: 2rem;
-  font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 500;
+  margin-top: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
 }
 
 /* Transaction Items */
@@ -424,10 +345,11 @@
 }
 
 .transaction-item {
-  padding: 1.75rem 2.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 25px 40px;
+  border-top: 1px solid var(--border);
   transition: all 0.3s ease;
   cursor: pointer;
+  animation: fadeUp 0.4s var(--ease) both;
 }
 
 .transaction-item:first-child {
@@ -435,7 +357,7 @@
 }
 
 .transaction-item:hover {
-  background: rgba(255, 255, 255, 0.04) !important;
+  background: var(--bg-2) !important;
 }
 
 .transaction-item .d-flex {
@@ -446,104 +368,118 @@
 }
 
 .icon-circle {
-  width: 60px;
-  height: 60px;
-  min-width: 60px;
-  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  min-width: 48px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  font-size: 1.2rem;
 }
 
 .icon-circle.bg-success {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  background: var(--green-dim) !important;
+  color: var(--green) !important;
+  border: 1px solid rgba(74, 222, 128, 0.18);
 }
 
 .icon-circle.bg-danger {
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  background: var(--red-dim) !important;
+  color: var(--red) !important;
+  border: 1px solid rgba(248, 113, 113, 0.18);
 }
 
 .transaction-item h6 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin: 0 0 0.4rem 0;
-  letter-spacing: -0.2px;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: #fff;
+  margin-bottom: 5px;
 }
 
 .transaction-item small {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.55);
-  font-weight: 400;
-  display: block;
-  line-height: 1.4;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .transaction-item .fs-4 {
-  font-size: 1.75rem !important;
-  font-weight: 900;
+  font-family: var(--font-display) !important;
+  font-size: 1.8rem !important;
+  font-weight: 500;
   letter-spacing: -0.5px;
 }
 
 .transaction-item .text-success {
-  color: #28a745 !important;
+  color: var(--green) !important;
 }
 
 .transaction-item .text-danger {
-  color: #dc3545 !important;
+  color: var(--red) !important;
 }
 
 #empty {
-  padding: 5rem 2rem;
+  padding: 4rem 2rem;
   text-align: center;
 }
 
 #empty i {
-  color: rgba(255, 255, 255, 0.15);
-  margin-bottom: 2rem;
+  color: var(--text-dim);
+  margin-bottom: 1.5rem;
 }
 
 #empty p {
-  font-size: 1.4rem;
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--text-muted);
+  font-weight: 400;
   margin-bottom: 0.5rem;
 }
 
 #empty small {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-dim);
   font-weight: 400;
 }
 
 .bg-black-10 {
-  background: rgba(255, 255, 255, 0.02) !important;
+  background: rgba(255, 255, 255, 0.015) !important;
 }
 
 .border-333 {
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--border) !important;
 }
 
 .text-white-70 {
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: var(--text-muted) !important;
 }
 
 .text-white-80 {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: var(--text) !important;
 }
 
 .text-white-60 {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: var(--text-muted) !important;
 }
 
 .text-white-50 {
-  color: rgba(255, 255, 255, 0.5) !important;
+  color: var(--text-dim) !important;
 }
 
 .text-white-30 {
-  color: rgba(255, 255, 255, 0.3) !important;
+  color: var(--text-dim) !important;
+}
+
+.text-white {
+  color: var(--text) !important;
+}
+
+.fw-bold {
+  font-weight: 500 !important;
 }
 
 .tracking-wider {
@@ -555,15 +491,27 @@
 }
 
 .glow-btn:hover {
-  box-shadow: 0 0 30px rgba(13, 110, 253, 0.7);
+  box-shadow: 0 0 25px rgba(201, 169, 110, 0.3);
 }
 
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
 
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Responsive ---------- */
 @media (max-width: 1200px) {
   .balance-card #balance {
     font-size: 4rem;
   }
-  
+
   .wallet-main .display-5 {
     font-size: 3rem;
   }
@@ -573,89 +521,109 @@
   .wallet-main {
     margin-left: 0;
   }
-  
+
   .container {
     padding: 0 1.5rem;
   }
-  
+
   .card-body {
-    padding: 2.5rem 2rem;
+    padding: 2rem 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
+  .wallet-main {
+    padding: 40px 20px;
+  }
+
+  .balance-card {
+    padding: 60px 20px;
+  }
+
+  #addForm .input-group,
+  #addForm .btn-success {
+    width: 100%;
+    max-width: none;
+  }
+
+  .pagination-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+
   .wallet-main .display-5 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
   }
-  
+
   .wallet-main .lead {
-    font-size: 1.1rem;
+    font-size: 11px;
   }
-  
+
   .balance-card #balance {
     font-size: 3.5rem;
   }
-  
+
   .balance-card .card-body {
     padding: 3rem 1.5rem;
   }
-  
+
   .card-body {
-    padding: 2rem 1.5rem;
-  }
-  
-  #addForm .input-group {
-    height: 65px;
-  }
-  
-  #addForm #amount {
-    font-size: 2rem;
-  }
-  
-  #addForm .btn-success {
-    height: 65px;
-    padding: 0 2.5rem;
-    font-size: 1.1rem;
-  }
-  
-  .quick {
-    display: inline-block;
-    width: calc(50% - 1rem);
-    margin: 0.5rem 0.25rem;
-  }
-  
-  .referral-box #code {
-    font-size: 1.5rem;
-    letter-spacing: 3px;
-    padding: 1.25rem;
-  }
-  
-  .referral-box #copy {
-    padding: 1rem 2rem;
-    font-size: 1rem;
-  }
-  
-  .transaction-item {
     padding: 1.5rem 1.25rem;
   }
-  
-  .icon-circle {
-    width: 50px;
-    height: 50px;
-    min-width: 50px;
-    font-size: 1.2rem;
+
+  #addForm .input-group {
+    height: 60px;
   }
-  
-  .transaction-item h6 {
+
+  #addForm #amount {
+    font-size: 1.8rem;
+  }
+
+  #addForm .btn-success {
+    height: 60px;
+    padding: 0 2rem;
+    font-size: 11px;
+  }
+
+  .quick {
+    display: inline-block;
+    width: calc(50% - 0.5rem);
+    margin: 0.3rem 0.15rem;
+    text-align: center;
+  }
+
+  .referral-box #code {
+    font-size: 1.3rem;
+    letter-spacing: 3px;
+    padding: 1rem;
+  }
+
+  .referral-box #copy {
+    padding: 0.75rem 1.5rem;
+    font-size: 11px;
+  }
+
+  .transaction-item {
+    padding: 1.25rem 1rem;
+  }
+
+  .icon-circle {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
     font-size: 1rem;
   }
-  
-  .transaction-item small {
-    font-size: 0.8rem;
+
+  .transaction-item h6 {
+    font-size: 13px;
   }
-  
+
+  .transaction-item small {
+    font-size: 10px;
+  }
+
   .transaction-item .fs-4 {
-    font-size: 1.4rem !important;
+    font-size: 1.2rem !important;
   }
 }
 
@@ -663,68 +631,93 @@
   .balance-card #balance {
     font-size: 3rem;
   }
-  
+
   #addForm .row {
     flex-direction: column;
   }
-  
+
   #addForm .col-auto {
     width: 100%;
   }
-  
+
   #addForm .input-group,
   #addForm .btn-success {
     max-width: 100%;
     width: 100%;
   }
-  
+
   .quick {
-    width: calc(50% - 0.5rem);
+    width: calc(50% - 0.3rem);
   }
-  
+
   .transaction-item .d-flex {
     flex-wrap: wrap;
   }
-  
+
   .transaction-item .fs-4 {
     width: 100%;
     text-align: right;
-    margin-top: 0.75rem;
+    margin-top: 0.5rem;
   }
 }
 
-/* ========================================
-   ANIMATIONS
-   ======================================== */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.transaction-item {
-  animation: fadeIn 0.4s ease-out;
-}
-
-/* Smooth scrolling */
-.wallet-main {
-  scroll-behavior: smooth;
-}
-
-/* Focus styles for accessibility */
+/* Focus styles */
 button:focus-visible,
 input:focus-visible {
-  outline: 3px solid rgba(13, 110, 253, 0.5);
+  outline: 2px solid rgba(201, 169, 110, 0.4);
   outline-offset: 2px;
 }
 
 /* Selection color */
 ::selection {
-  background: rgba(13, 110, 253, 0.3);
-  color: #ffffff;
+  background: rgba(201, 169, 110, 0.25);
+  color: var(--text);
+}
+
+/* ---------- Pagination ---------- */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding: 40px;
+  background: var(--bg-1);
+  border-radius: 8px;
+  margin-top: 40px;
+}
+
+.pagination-btn {
+  padding: 12px 30px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.pagination-btn:hover:not(.disabled) {
+  background: var(--gold);
+  color: black;
+  transform: translateY(-5px);
+}
+
+.pagination-btn.disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+.balance-card {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
 }

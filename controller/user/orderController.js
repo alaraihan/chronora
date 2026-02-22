@@ -2,12 +2,19 @@ import Order from "../../models/orderSchema.js";
 import Variant from "../../models/variantSchema.js";
 import PDFDocument from "pdfkit";
 import User from "../../models/userSchema.js";
-import logger from "../../helpers/logger.js"; 
+import logger from "../../helpers/logger.js";
 
 export const getOrdersPage = async (req, res) => {
   try {
     const userId = req.user?._id;
-    if (!userId) {return res.redirect("/login");}
+    if (!userId) { return res.redirect("/login"); }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const skip = (page - 1) * limit;
+
+    const totalOrders = await Order.countDocuments({ userId });
+    const totalPages = Math.ceil(totalOrders / limit);
 
     const orders = await Order.find({ userId })
       .populate({
@@ -19,10 +26,20 @@ export const getOrdersPage = async (req, res) => {
         select: "images colorName size"
       })
       .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .lean();
 
-    res.render("user/orders", { orders, active: "Orders" });
-        logger.info(`Orders page loaded for user ${userId}`);
+    res.render("user/orders", {
+      orders,
+      active: "Orders",
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+      totalOrders
+    });
+    logger.info(`Orders page loaded for user ${userId}, page ${page}`);
   } catch (err) {
     logger.error("getOrdersPage ERROR:", err);
     res.status(500).send("Server error");
@@ -40,7 +57,7 @@ export const getOrderDetails = async (req, res) => {
       .lean();
 
     if (!order || order.userId.toString() !== req.user._id.toString()) {
-            logger.warn(`Unauthorized order details access attempt by user ${req.user._id}`);
+      logger.warn(`Unauthorized order details access attempt by user ${req.user._id}`);
       return res.status(404).render("user/error", { message: "Order not found or access denied" });
     }
 
@@ -51,7 +68,7 @@ export const getOrderDetails = async (req, res) => {
       title: `Order ${order.orderId}`,
       active: "Orders"
     });
-        logger.info(`Order details loaded for order ${orderId}, user ${req.user._id}`);
+    logger.info(`Order details loaded for order ${orderId}, user ${req.user._id}`);
   } catch (err) {
     logger.error("getOrderDetails ERROR:", err);
     res.status(500).render("user/error", { message: "Server error" });
@@ -64,13 +81,13 @@ export const checkCancellableStatus = async (req, res) => {
     const { itemIndex } = req.query;
 
     const order = await Order.findById(orderId);
-    
+
     if (!order || order.userId.toString() !== req.user._id.toString()) {
       return res.json({ success: false });
     }
 
     const item = order.products[parseInt(itemIndex)];
-    
+
     if (!item) {
       return res.json({ success: false });
     }
@@ -252,7 +269,7 @@ export const returnOrderItem = async (req, res) => {
     }
 
     const item = order.products[index];
-    if (!item) {return res.json({ success: false, message: "Item not found" });}
+    if (!item) { return res.json({ success: false, message: "Item not found" }); }
 
     if (item.itemStatus !== "Delivered") {
       return res.json({ success: false, message: "Only delivered items can be returned" });
@@ -361,7 +378,7 @@ export const downloadInvoice = async (req, res) => {
       .populate("products.variantId", "colorName images");
 
     if (!order || order.userId.toString() !== req.user._id.toString()) {
-            logger.warn(`Unauthorized invoice download attempt by user ${req.user._id} for order ${orderId}`);
+      logger.warn(`Unauthorized invoice download attempt by user ${req.user._id} for order ${orderId}`);
       return res.status(404).send("Invoice not found or access denied");
     }
 
@@ -369,7 +386,7 @@ export const downloadInvoice = async (req, res) => {
       order,
       title: `Invoice - ${order.orderId}`
     });
-        logger.info(`Invoice rendered for order ${orderId}, user ${req.user._id}`);
+    logger.info(`Invoice rendered for order ${orderId}, user ${req.user._id}`);
 
   } catch (err) {
     logger.error("downloadInvoice ERROR:", err);

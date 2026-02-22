@@ -3,195 +3,213 @@
 <div class="cart-page-wrapper">
   <h2>Your Shopping Cart</h2>
 
-  <% if (!cartItems || cartItems.length === 0) { %>
+  <% if (!cartItems || cartItems.length===0) { %>
     <div class="empty-cart">
       <p>Your cart is empty</p>
       <a href="/watch" class="btn-primary">Continue Shopping</a>
     </div>
-  <% } else { %>
+    <% } else { %>
 
-    <div class="cart-main">
-      <div class="cart-items">
+      <div class="cart-main">
+        <div class="cart-items">
 
-        <% cartItems.forEach(item => { %>
-          <% 
-            // Add null checks for productId and variantId
-            const hasProduct = item.productId && typeof item.productId === 'object';
-            const hasVariant = item.variantId && typeof item.variantId === 'object';
-            
-            const currentPrice = Number(item.price || 0);  
-            const originalPrice = Number(item.originalPrice || 0);  
-            const qty = Number(item.quantity || 1);
-            const stock = hasVariant ? Number(item.variantId?.stock || 0) : 0;
-            const lineTotal = currentPrice * qty;
+          <% cartItems.forEach(item=> { %>
+           <%
+  // Add null checks for productId and variantId
+  const hasProduct = item.productId && typeof item.productId === 'object';
+  const hasVariant = item.variantId && typeof item.variantId === 'object';
 
-            const isAvailable = hasProduct && !item.productId.isBlocked && 
-                                hasVariant && !item.variantId.isBlocked && 
-                                stock >= qty;
+  const currentPrice = Number(item.price || 0);
+  const originalPrice = Number(item.originalPrice || 0);
+  const qty = Number(item.quantity || 1);
+  const stock = hasVariant ? Number(item.variantId?.stock || 0) : 0;
 
-            // Check if there's an offer
-            const hasOffer = hasProduct && item.productId?.offerData && currentPrice < originalPrice;
-          %>
+  const lineTotal = currentPrice * qty;
 
-          <div class="cart-item <%= !isAvailable ? 'unavailable' : '' %>" 
-               data-item-id="<%= item._id %>" 
-               data-stock="<%= stock %>">
+  const isAvailable =
+    hasProduct &&
+    !item.productId.isBlocked &&
+    hasVariant &&
+    !item.variantId.isBlocked &&
+    stock >= qty;
 
-            <% if (hasProduct && hasVariant) { %>
-              <!-- Product and Variant exist - show link -->
-              <a href="/product/<%= item.productId._id %>" class="item-link">
-                <img src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" 
-                     alt="<%= item.productId.name || 'Product' %>">
-              </a>
-            <% } else { %>
-              <!-- Product or Variant missing - show placeholder without link -->
-              <div class="item-link">
-                <img src="/images/default-watch.jpg" alt="Product Unavailable">
-              </div>
-            <% } %>
+  // Check if there's an offer
+  const hasOffer =
+    hasProduct &&
+    item.productId?.offerData &&
+    currentPrice < originalPrice;
+%>
 
-            <div class="item-info">
-              <div class="product-title">
-                <%= hasProduct ? item.productId.name : 'Product Unavailable' %>
-                <% if (!hasProduct) { %>
-                  <span class="status-badge deleted">(Deleted)</span>
-                <% } %>
-              </div>
-              <div class="variant-name">
-                <%= hasVariant ? (item.variantId?.colorName || item.variantId?.color || 'Standard') : 'Variant Unavailable' %>
-                <% if (!hasVariant) { %>
-                  <span class="status-badge deleted">(Deleted)</span>
-                <% } %>
-              </div>
+                <div class="cart-item <%= !isAvailable ? 'unavailable' : '' %>" data-item-id="<%= item._id %>"
+                  data-stock="<%= stock %>">
 
-              <% if (!isAvailable) { %>
-                <div class="status-badge unavailable">
-                  <% if (!hasProduct || !hasVariant) { %>
-                    Product No Longer Available
-                  <% } else if (item.productId.isBlocked) { %>
-                    Product is Blocked
-                  <% } else if (item.variantId.isBlocked) { %>
-                    Variant is Blocked
-                  <% } else if (stock < qty) { %>
-                    Out of Stock
-                  <% } %>
+                  <% if (hasProduct && hasVariant) { %>
+                    <!-- Product and Variant exist - show link -->
+                    <a href="/product/<%= item.productId._id %>" class="item-link">
+                      <img src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>"
+                        alt="<%= item.productId.name || 'Product' %>">
+                    </a>
+                    <% } else { %>
+                      <!-- Product or Variant missing - show placeholder without link -->
+                      <div class="item-link">
+                        <img src="/images/default-watch.jpg" alt="Product Unavailable">
+                      </div>
+                      <% } %>
+
+                        <div class="item-info">
+                          <div class="product-title">
+                            <%= hasProduct ? item.productId.name : 'Product Unavailable' %>
+                              <% if (!hasProduct) { %>
+                                <span class="status-badge deleted">(Deleted)</span>
+                                <% } %>
+                          </div>
+                          <div class="variant-name">
+                            <%= hasVariant ? (item.variantId?.colorName || item.variantId?.color || 'Standard' )
+                              : 'Variant Unavailable' %>
+                              <% if (!hasVariant) { %>
+                                <span class="status-badge deleted">(Deleted)</span>
+                                <% } %>
+                          </div>
+
+                          <% if (!isAvailable) { %>
+                            <div class="status-badge unavailable">
+                              <% if (!hasProduct || !hasVariant) { %>
+                                Product No Longer Available
+                                <% } else if (item.productId.isBlocked) { %>
+                                  Product is Blocked
+                                  <% } else if (item.variantId.isBlocked) { %>
+                                    Variant is Blocked
+                                    <% } else if (stock < qty) { %>
+                                      Out of Stock
+                                      <% } %>
+                            </div>
+                            <% } else { %>
+                              <div class="cart-item-price">
+                                <% if (hasOffer) { %>
+                                  <div class="price-row">
+                                    <del>₹ <%= originalPrice.toLocaleString('en-IN') %></del>
+                                    <strong class="offer-price">₹ <%= currentPrice.toLocaleString('en-IN') %></strong>
+                                  </div>
+                                  <div class="savings-note">
+                                    Saved ₹ <%= ((originalPrice - currentPrice) * qty).toLocaleString('en-IN') %>!
+                                  </div>
+                                  <% } else { %>
+                                    <strong class="regular-price">
+                                      ₹ <%= currentPrice.toLocaleString('en-IN') %>
+                                    </strong>
+                                    <% } %>
+                              </div>
+                              <% } %>
+                        </div>
+
+                        <div class="quantity-control">
+                          <button class="qty-btn decrement" data-id="<%= item._id %>" <%=(qty <=1 || !isAvailable)
+                            ? 'disabled' : '' %>>−</button>
+                          <span class="qty-display">
+                            <%= qty %>
+                          </span>
+                          <button class="qty-btn increment" data-id="<%= item._id %>" <%=(!isAvailable || qty>= stock) ?
+                            'disabled' : '' %>>+</button>
+                        </div>
+
+                        <div class="item-total">
+                          ₹<span class="line-total">
+                            <%= lineTotal.toLocaleString('en-IN') %>
+                          </span>
+                        </div>
+
+                        <button class="remove-item" data-id="<%= item._id %>">Remove</button>
                 </div>
-              <% } else { %>
-                <div class="cart-item-price">
-                  <% if (hasOffer) { %>
-                    <!-- Offer Active -->
-                    <del style="color:#999; font-size:14px;">
-                      ₹ <%= originalPrice.toLocaleString('en-IN') %> each
-                    </del>
-                    <div style="font-size:20px; font-weight:bold; color:#2ecc71;">
-                      ₹ <%= currentPrice.toLocaleString('en-IN') %> each
-                    </div>
-                    <div style="color:#e74c3c; font-weight:600; font-size:15px; margin-top:6px;">
-                      You saved ₹ <%= ((originalPrice - currentPrice) * qty).toLocaleString('en-IN') %>!
-                    </div>
-                  <% } else { %>
-                    <!-- No Offer -->
-                    <div style="font-size:20px; font-weight:bold; color:#667eea;">
-                      ₹ <%= currentPrice.toLocaleString('en-IN') %> each
-                    </div>
-                  <% } %>
-                </div>
+                <% }) %>
+
+        </div>
+
+        <div class="order-summary">
+          <h3>Order Summary</h3>
+
+          <%
+  // Only include available items in subtotal calculation
+  const subtotal = cartItems.reduce((sum, i) => {
+    const hasProduct = i.productId && typeof i.productId === 'object';
+    const hasVariant = i.variantId && typeof i.variantId === 'object';
+
+    const isAvailable =
+      hasProduct &&
+      !i.productId.isBlocked &&
+      hasVariant &&
+      !i.variantId.isBlocked &&
+      Number(i.variantId?.stock || 0) >= Number(i.quantity || 1);
+
+    if (isAvailable) {
+      return sum + (Number(i.price || 0) * Number(i.quantity || 1));
+    }
+
+    return sum;
+  }, 0);
+%>
+
+            <div class="summary-row">
+              <span>Cart Subtotal</span>
+              <span id="cartSubtotal">₹<%= subtotal.toLocaleString('en-IN') %></span>
+            </div>
+
+            <div class="summary-row">
+              <span>Shipping</span>
+              <span id="shippingAmount">
+                <% if (subtotal>= 15000) { %>
+                  <span style="color:#4ade80;font-weight:600;">FREE</span>
+                  <% } else if (subtotal> 0) { %>
+                    ₹100
+                    <% } else { %>
+                      ₹0
+                      <% } %>
+              </span>
+            </div>
+
+            <% if (subtotal < 15000 && subtotal> 0) { %>
+              <div class="free-shipping-note">
+                Add ₹<%= (15000 - subtotal).toLocaleString('en-IN') %> more for <strong>FREE</strong> shipping!
+              </div>
               <% } %>
-            </div>
 
-            <div class="quantity-control">
-              <button class="qty-btn decrement" data-id="<%= item._id %>" 
-                <%= (qty <= 1 || !isAvailable) ? 'disabled' : '' %>>−</button>
-              <span class="qty-display"><%= qty %></span>
-              <button class="qty-btn increment" data-id="<%= item._id %>" 
-                <%= (!isAvailable || qty >= stock) ? 'disabled' : '' %>>+</button>
-            </div>
+                <div class="summary-total">
+                  <span>Payable Amount</span>
+                  <strong id="totalAmount">
+                    ₹<%= (subtotal + (subtotal < 15000 && subtotal> 0 ? 100 : 0)).toLocaleString('en-IN') %>
+                  </strong>
+                </div>
 
-            <div class="item-total">
-              ₹<span class="line-total"><%= lineTotal.toLocaleString('en-IN') %></span>
-            </div>
-
-            <button class="remove-item" data-id="<%= item._id %>">Remove</button>
-          </div>
-        <% }) %>
-
+                <% if (canCheckout && subtotal> 0) { %>
+                  <a href="/checkout" id="checkoutBtn" class="checkout-btn active">
+                    Proceed to Checkout
+                  </a>
+                  <% } else { %>
+                    <button class="checkout-btn disabled" disabled>
+                      Checkout Unavailable
+                    </button>
+                    <div class="checkout-warning">
+                      <%= subtotal===0 ? 'No available items in cart.' : 'Some items are out of stock or unavailable.'
+                        %>
+                        Please update your cart to continue.
+                    </div>
+                    <% } %>
+        </div>
       </div>
-
-      <div class="order-summary">
-        <h3>Order Summary</h3>
-
-        <% 
-          // Only include available items in subtotal calculation
-          const subtotal = cartItems.reduce((sum, i) => {
-            const hasProduct = i.productId && typeof i.productId === 'object';
-            const hasVariant = i.variantId && typeof i.variantId === 'object';
-            const isAvailable = hasProduct && !i.productId.isBlocked && 
-                                hasVariant && !i.variantId.isBlocked && 
-                                Number(i.variantId?.stock || 0) >= Number(i.quantity || 1);
-            
-            if (isAvailable) {
-              return sum + (Number(i.price || 0) * Number(i.quantity || 1));
-            }
-            return sum;
-          }, 0);
-        %>
-
-        <div class="summary-row">
-          <span>Cart Subtotal</span>
-          <span id="cartSubtotal">₹<%= subtotal.toLocaleString('en-IN') %></span>
-        </div>
-
-        <div class="summary-row">
-          <span>Shipping</span>
-          <span id="shippingAmount">
-            <% if (subtotal >= 15000) { %>
-              <span style="color:#4ade80;font-weight:600;">FREE</span>
-            <% } else if (subtotal > 0) { %>
-              ₹100
-            <% } else { %>
-              ₹0
-            <% } %>
-          </span>
-        </div>
-
-        <% if (subtotal < 15000 && subtotal > 0) { %>
-          <div class="free-shipping-note">
-            Add ₹<%= (15000 - subtotal).toLocaleString('en-IN') %> more for <strong>FREE</strong> shipping!
-          </div>
-        <% } %>
-
-        <div class="summary-total">
-          <span>Payable Amount</span>
-          <strong id="totalAmount">
-            ₹<%= (subtotal + (subtotal < 15000 && subtotal > 0 ? 100 : 0)).toLocaleString('en-IN') %>
-          </strong>
-        </div>
-
-        <% if (canCheckout && subtotal > 0) { %>
-          <a href="/checkout" id="checkoutBtn" class="checkout-btn active">
-            Proceed to Checkout
-          </a>
-        <% } else { %>
-          <button class="checkout-btn disabled" disabled>
-            Checkout Unavailable
-          </button>
-          <div class="checkout-warning">
-            <%= subtotal === 0 ? 'No available items in cart.' : 'Some items are out of stock or unavailable.' %>
-            Please update your cart to continue.
-          </div>
-        <% } %>
-      </div>
-    </div>
-  <% } %>
+      <% } %>
 </div>
 
-<div id="confirmModal" class="modal" style="display:none;">
+<div id="confirmModal" class="modal-overlay">
   <div class="modal-content">
-    <h3>Remove Item?</h3>
-    <p>Are you sure you want to remove this watch from your cart?</p>
-    <div class="modal-actions">
-      <button id="cancelRemove">Cancel</button>
-      <button id="confirmRemove" class="danger">Yes, Remove</button>
+    <div class="modal-header">
+      <h3>Remove Item?</h3>
+      <span class="close-modal" data-close="confirmModal">×</span>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to remove this watch from your cart?</p>
+      <div class="modal-actions">
+        <button type="button" id="cancelRemove" class="btn-cancel-modal" data-close="confirmModal">Cancel</button>
+        <button id="confirmRemove" class="btn-confirm-danger">Yes, Remove</button>
+      </div>
     </div>
   </div>
 </div>

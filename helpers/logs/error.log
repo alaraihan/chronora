@@ -170,3 +170,54 @@ title is not defined
 2026-02-20 16:43:35 [ERROR]: toggleListCategory error Arguments must be aggregate pipeline operators
 2026-02-20 16:43:35 [ERROR]: toggleListCategory error Arguments must be aggregate pipeline operators
 2026-02-20 16:43:35 [ERROR]: toggleListCategory error Arguments must be aggregate pipeline operators
+2026-02-22 15:57:42 [ERROR]: GET /cart - Unexpected token ',' in C:\Users\DELL\Desktop\CHRONORA\views\user\cart.ejs while compiling ejs
+
+If the above error is not helpful, you may want to try EJS-Lint:
+https://github.com/RyanZim/EJS-Lint
+Or, if you meant to create an async function, pass `async: true` as an option.
+2026-02-22 15:59:46 [ERROR]: GET /cart - Unexpected token ',' in C:\Users\DELL\Desktop\CHRONORA\views\user\cart.ejs while compiling ejs
+
+If the above error is not helpful, you may want to try EJS-Lint:
+https://github.com/RyanZim/EJS-Lint
+Or, if you meant to create an async function, pass `async: true` as an option.
+2026-02-22 16:00:14 [ERROR]: GET /cart - Unexpected token ',' in C:\Users\DELL\Desktop\CHRONORA\views\user\cart.ejs while compiling ejs
+
+If the above error is not helpful, you may want to try EJS-Lint:
+https://github.com/RyanZim/EJS-Lint
+Or, if you meant to create an async function, pass `async: true` as an option.
+2026-02-22 16:19:58 [ERROR]: GET /cart - Unexpected token ')' in C:\Users\DELL\Desktop\CHRONORA\views\user\cart.ejs while compiling ejs
+
+If the above error is not helpful, you may want to try EJS-Lint:
+https://github.com/RyanZim/EJS-Lint
+Or, if you meant to create an async function, pass `async: true` as an option.
+2026-02-22 16:20:58 [ERROR]: GET /cart - Unexpected token ',' in C:\Users\DELL\Desktop\CHRONORA\views\user\cart.ejs while compiling ejs
+
+If the above error is not helpful, you may want to try EJS-Lint:
+https://github.com/RyanZim/EJS-Lint
+Or, if you meant to create an async function, pass `async: true` as an option.
+2026-02-22 16:59:09 [ERROR]: GET /profile/orders/ORD-20260222-A6FDA8?productId=693915f2deee193883ea65f4&variantId=693915f6deee193883ea65f6 - Invalid or unexpected token in C:\Users\DELL\Desktop\CHRONORA\views\user\orderDetail.ejs while compiling ejs
+
+If the above error is not helpful, you may want to try EJS-Lint:
+https://github.com/RyanZim/EJS-Lint
+Or, if you meant to create an async function, pass `async: true` as an option.
+2026-02-22 17:08:11 [ERROR]: GET /profile/orders/ORD-20260222-A6FDA8?productId=693915f2deee193883ea65f4&variantId=693915f6deee193883ea65f6 - Invalid or unexpected token in C:\Users\DELL\Desktop\CHRONORA\views\user\orderDetail.ejs while compiling ejs
+
+If the above error is not helpful, you may want to try EJS-Lint:
+https://github.com/RyanZim/EJS-Lint
+Or, if you meant to create an async function, pass `async: true` as an option.
+2026-02-22 17:18:49 [ERROR]: GET /profile/addresses - Failed to lookup view "user/profile-edit-address" in views directory "C:\Users\DELL\Desktop\CHRONORA\views"
+2026-02-22 17:36:37 [ERROR]: GET /profile/orders/ORD-20260222-A6FDA8?productId=693915f2deee193883ea65f4&variantId=693915f6deee193883ea65f6 - Invalid or unexpected token in C:\Users\DELL\Desktop\CHRONORA\views\user\orderDetail.ejs while compiling ejs
+
+If the above error is not helpful, you may want to try EJS-Lint:
+https://github.com/RyanZim/EJS-Lint
+Or, if you meant to create an async function, pass `async: true` as an option.
+2026-02-22 17:38:35 [ERROR]: GET /profile/orders/ORD-20260222-A6FDA8?productId=693915f2deee193883ea65f4&variantId=693915f6deee193883ea65f6 - Invalid or unexpected token in C:\Users\DELL\Desktop\CHRONORA\views\user\orderDetail.ejs while compiling ejs
+
+If the above error is not helpful, you may want to try EJS-Lint:
+https://github.com/RyanZim/EJS-Lint
+Or, if you meant to create an async function, pass `async: true` as an option.
+2026-02-22 17:42:28 [ERROR]: GET /profile/orders/ORD-20260222-A6FDA8?productId=693915f2deee193883ea65f4&variantId=693915f6deee193883ea65f6 - Invalid or unexpected token in C:\Users\DELL\Desktop\CHRONORA\views\user\orderDetail.ejs while compiling ejs
+
+If the above error is not helpful, you may want to try EJS-Lint:
+https://github.com/RyanZim/EJS-Lint
+Or, if you meant to create an async function, pass `async: true` as an option.

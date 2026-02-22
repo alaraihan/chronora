@@ -1,413 +1,399 @@
-/* ==================== ADDRESS PAGE CSS - ENHANCED PREMIUM VERSION ==================== */
 
-/* ==================== FIXED PROFILE LAYOUT - SIDE BY SIDE ==================== */
+/* =============================================
+   address.css — Chronora Dark Theme
+   ============================================= */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0d0d0d;
+  color: #e8e8e8;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* ── Layout ─────────────────────────────────── */
 .profile-layout {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0a0a 0%, #121212 100%);
-  color: #e0e0e0;
-  font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
-/* Sidebar - Fixed */
-.profile-layout > *:first-child {
-  width: 280px;
-  flex-shrink: 0;
-  background: linear-gradient(to bottom, #111 0%, #0a0a0a 100%);
-  border-right: 1px solid #222;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
-}
-
-/* Main Content */
 .profile-content {
   flex: 1;
-  padding: 50px 70px;
-  background: transparent;
-  min-height: 100vh;
+  padding: 48px 56px;
+  background-color: #0d0d0d;
 }
 
-/* Responsive */
-@media (max-width: 992px) {
-  .profile-layout {
-    flex-direction: column;
-  }
-
-  .profile-layout > *:first-child {
-    width: 100%;
-    height: auto;
-    position: static;
-    box-shadow: none;
-  }
-
-  .profile-content {
-    padding: 40px 30px;
-  }
+/* ── Header ─────────────────────────────────── */
+.content-header {
+  margin-bottom: 36px;
 }
 
-@media (max-width: 576px) {
-  .profile-content {
-    padding: 30px 20px;
-  }
-}
-
-/* ==================== HEADER ==================== */
 .content-header h1 {
-  font-size: 2.8rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 12px;
-  background: linear-gradient(90deg, #bb86fc, #6200ea);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-family: 'Georgia', serif;
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: #c9a84c;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
 }
 
 .content-header p {
-  color: #b0b0cc;
-  font-size: 1.1rem;
-  max-width: 600px;
-  line-height: 1.6;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #888;
 }
 
-/* Section Header with Add Button */
+/* ── Section Header ─────────────────────────── */
 .section-header {
   display: flex;
   justify-content: flex-end;
-  margin: 40px 0 35px;
-}
-
-.add-new-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: linear-gradient(135deg, #6200ea, #9c27b0);
-  color: #ffffff;
-  border: none;
-  padding: 14px 32px;
-  border-radius: 50px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.4s ease;
-  box-shadow: 0 8px 25px rgba(98, 0, 234, 0.3);
-}
-
-.add-new-btn:hover {
-  background: linear-gradient(135deg, #7c4dff, #ab47bc);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 35px rgba(98, 0, 234, 0.5);
-}
-
-.add-new-btn::before {
-  content: "+";
-  font-size: 1.4rem;
-  font-weight: 300;
-}
-
-/* ==================== ADDRESSES GRID ==================== */
-.addresses-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 32px;
-  justify-items: center; /* Perfect centering of cards */
-}
-
-.address-box {
-  width: 100%;
-  max-width: 420px;
-  background: linear-gradient(145deg, #121212, #181818);
-  border: 1px solid #222;
-  border-radius: 24px;
-  padding: 32px;
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  position: relative;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.address-box:hover {
-  transform: translateY(-12px);
-  border-color: #6200ea;
-  box-shadow: 0 25px 60px rgba(98, 0, 234, 0.25);
-}
-
-/* Tags */
-.address-tags {
-  margin-bottom: 20px;
-}
-
-.tag {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding: 6px 14px;
-  border-radius: 50px;
-  margin-right: 10px;
-  display: inline-block;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.tag.shipping {
-  background: linear-gradient(135deg, #2196f3, #64b5f6);
-  color: white;
-}
-
-.tag.billing {
-  background: linear-gradient(135deg, #4caf50, #81c784);
-  color: white;
-}
-
-.tag.default {
-  background: linear-gradient(135deg, #ff9800, #ffb74d);
-  color: white;
-}
-
-/* Address Content */
-.address-box h3 {
-  color: #ffffff;
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin: 0 0 16px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.address-box h3::before {
-  content: "✓";
-  font-size: 1.2rem;
-  color: #6200ea;
-  opacity: 0.8;
-}
-
-.address-lines {
-  color: #cccccc;
-  line-height: 1.8;
-  font-size: 1rem;
   margin-bottom: 28px;
 }
 
-/* Actions */
+/* ── Add New Button ─────────────────────────── */
+.add-new-btn {
+  background-color: #c9a84c;
+  color: #0d0d0d;
+  border: none;
+  padding: 12px 28px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.15s ease;
+}
+
+.add-new-btn:hover {
+  background-color: #e0bc60;
+  transform: translateY(-1px);
+}
+
+/* ── Address Grid ───────────────────────────── */
+.addresses-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* ── Address Card ───────────────────────────── */
+.address-box {
+  background-color: #161616;
+  border: 1px solid #2a2a2a;
+  padding: 24px 24px 20px;
+  position: relative;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.address-box:hover {
+  border-color: #c9a84c;
+  box-shadow: 0 0 0 1px #c9a84c22, 0 4px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* ── Tags ───────────────────────────────────── */
+.address-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.tag {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+.tag.shipping {
+  background-color: rgba(201, 168, 76, 0.15);
+  color: #c9a84c;
+  border: 1px solid #c9a84c55;
+}
+
+.tag.billing {
+  background-color: rgba(100, 160, 220, 0.12);
+  color: #7eb8e8;
+  border: 1px solid #7eb8e855;
+}
+
+/* ── Address Info ───────────────────────────── */
+.address-box h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f0f0f0;
+  margin-bottom: 10px;
+  letter-spacing: 0.02em;
+}
+
+.address-lines {
+  font-size: 0.88rem;
+  color: #a0a0a0;
+  line-height: 1.7;
+}
+
+.address-lines strong {
+  color: #c8c8c8;
+  font-weight: 500;
+}
+
+/* ── Action Buttons ─────────────────────────── */
 .address-actions {
   display: flex;
-  gap: 16px;
-  margin-top: auto;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #2a2a2a;
 }
 
 .edit-btn,
 .delete-btn {
   flex: 1;
-  padding: 14px;
-  border-radius: 16px;
+  padding: 9px 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   font-weight: 600;
-  font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
 }
 
 .edit-btn {
-  background: linear-gradient(135deg, #333, #444);
-  color: #ffffff;
+  background: transparent;
+  border-color: #c9a84c;
+  color: #c9a84c;
 }
 
 .edit-btn:hover {
-  background: linear-gradient(135deg, #6200ea, #7c4dff);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(98, 0, 234, 0.3);
+  background: #c9a84c;
+  color: #0d0d0d;
 }
 
 .delete-btn {
-  background: linear-gradient(135deg, #300, #500);
-  color: #ff7777;
+  background: transparent;
+  border-color: #5a2020;
+  color: #c0504d;
 }
 
 .delete-btn:hover {
-  background: linear-gradient(135deg, #d32f2f, #f44336);
-  color: white;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(211, 47, 47, 0.4);
+  background: #c0504d;
+  color: #fff;
+  border-color: #c0504d;
 }
 
-/* Empty State */
+/* ── Empty State ────────────────────────────── */
 .empty-state {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 120px 40px;
-  color: #777;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 80px 20px;
+  color: #555;
 }
 
 .empty-state p {
-  font-size: 1.4rem;
-  margin: 20px 0 40px;
-  color: #aaa;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
 }
 
-.empty-state .btn-primary {
-  background: linear-gradient(135deg, #6200ea, #9c27b0);
-  color: white;
-  padding: 16px 40px;
-  border-radius: 50px;
-  font-weight: 600;
-  text-decoration: none;
-  box-shadow: 0 10px 30px rgba(98, 0, 234, 0.3);
-  transition: all 0.4s;
-}
-
-.empty-state .btn-primary:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(98, 0, 234, 0.5);
-}
-
-/* ==================== MODAL - MODERN & PREMIUM ==================== */
+/* ── Modal Overlay ──────────────────────────── */
 .modal {
   display: none;
   position: fixed;
   inset: 0;
+  background: rgba(0, 0, 0, 0.75);
   z-index: 1000;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.4s ease;
 }
 
-.modal.show {
-  opacity: 1;
-  visibility: visible;
+.modal.active,
+.modal[style*="display: flex"],
+.modal[style*="display:flex"] {
+  display: flex;
 }
 
+/* ── Modal Box ──────────────────────────────── */
 .modal-content {
-  background: linear-gradient(145deg, #121212, #1a1a1a);
-  padding: 40px 32px;
-  border-radius: 28px;
+  background: #161616;
+  border: 1px solid #2e2e2e;
+  padding: 36px 36px 32px;
   width: 100%;
-  max-width: 480px;
+  max-width: 500px;
+  position: relative;
   max-height: 90vh;
   overflow-y: auto;
-  border: 1px solid #333;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
-  animation: modalSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: #333 transparent;
 }
 
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(40px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.modal-content h2 {
+  font-family: 'Georgia', serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: #c9a84c;
+  letter-spacing: 0.04em;
+  margin-bottom: 24px;
 }
 
-/* Close Button */
+/* ── Close Button ───────────────────────────── */
 .close {
   position: absolute;
   top: 16px;
-  right: 24px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ccc;
-  font-size: 28px;
-  font-weight: 300;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  right: 20px;
+  font-size: 1.5rem;
+  color: #555;
   cursor: pointer;
-  transition: all 0.3s ease;
+  line-height: 1;
+  transition: color 0.2s;
 }
 
 .close:hover {
-  background: #d32f2f;
-  color: white;
-  transform: rotate(90deg);
+  color: #c9a84c;
 }
 
-/* Modal Title */
-.modal h2 {
-  color: #ffffff;
-  font-size: 1.8rem;
-  text-align: center;
-  margin: 0 0 32px 0;
-  font-weight: 600;
+/* ── Form Inputs ────────────────────────────── */
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-/* Form Inputs */
-.modal input[type="text"],
-.modal input[type="tel"] {
+.modal-content input[type="text"],
+.modal-content input[type="tel"] {
   width: 100%;
-  padding: 16px 18px;
-  margin: 12px 0;
-  background: #0f0f0f;
-  border: 1px solid #333;
-  border-radius: 16px;
-  color: #ffffff;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-.modal input:focus {
+  background: #111;
+  border: 1px solid #2e2e2e;
+  color: #e8e8e8;
+  padding: 12px 14px;
+  font-size: 0.88rem;
   outline: none;
-  border-color: #6200ea;
-  box-shadow: 0 0 0 4px rgba(98, 0, 234, 0.2);
-  background: #1a1a1a;
+  transition: border-color 0.2s ease;
 }
 
-/* Checkboxes */
-.modal label {
+.modal-content input[type="text"]:focus,
+.modal-content input[type="tel"]:focus {
+  border-color: #c9a84c;
+}
+
+.modal-content input[readonly] {
+  color: #666;
+  cursor: not-allowed;
+}
+
+.modal-content input::placeholder {
+  color: #444;
+  font-size: 0.85rem;
+}
+
+/* ── Checkbox Labels ────────────────────────── */
+.modal-content label {
   display: flex;
   align-items: center;
-  gap: 12px;
-  color: #e0e0e0;
-  font-size: 1rem;
-  margin: 20px 0 8px;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: #888;
+  letter-spacing: 0.04em;
   cursor: pointer;
 }
 
-.modal label input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  accent-color: #6200ea;
-  border-radius: 6px;
+.modal-content input[type="checkbox"] {
+  accent-color: #c9a84c;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
 }
 
-/* Submit Button */
-.modal button[type="submit"],
-.modal button[type="button"] {
-  width: 100%;
-  background: linear-gradient(135deg, #6200ea, #9c27b0);
-  color: white;
-  padding: 18px;
+/* ── Submit Button ──────────────────────────── */
+.modal-content button[type="button"]:not(.edit-btn):not(.delete-btn) {
+  background: #c9a84c;
+  color: #0d0d0d;
   border: none;
-  border-radius: 50px;
-  font-size: 1.1rem;
-  font-weight: 600;
+  padding: 13px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   cursor: pointer;
-  margin-top: 28px;
-  transition: all 0.4s ease;
-  box-shadow: 0 10px 30px rgba(98, 0, 234, 0.3);
+  margin-top: 6px;
+  transition: background 0.2s ease;
 }
 
-.modal button[type="submit"]:hover,
-.modal button[type="button"]:hover {
-  background: linear-gradient(135deg, #7c4dff, #ab47bc);
-  transform: translateY(-4px);
-  box-shadow: 0 15px 40px rgba(98, 0, 234, 0.5);
+.modal-content button[type="button"]:hover {
+  background: #e0bc60;
+}
+
+/* ── Delete Modal Buttons ───────────────────── */
+#deleteModal .modal-content button {
+  border: none;
+  color: #e8e8e8;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+#deleteModal .modal-content button:hover {
+  opacity: 0.85;
+}
+
+/* ── Scrollbar ──────────────────────────────── */
+.modal-content::-webkit-scrollbar {
+  width: 4px;
+}
+.modal-content::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 2px;
+}
+/* Fix purple → gold overrides */
+.content-header h1,
+.address-box h3 a,
+h1, h2 {
+  color: #c9a96e !important;
+}
+
+.add-new-btn {
+  background: #c9a96e !important;
+  color: #080808 !important;
+  border-radius: 4px !important; /* remove pill shape */
+  border: none !important;
+}
+
+.add-new-btn:hover {
+  background: #e0bc60 !important;
+}
+
+.edit-btn {
+  border-color: #c9a96e !important;
+  color: #c9a96e !important;
+  background: transparent !important;
+  border-radius: 4px !important;
+}
+
+.edit-btn:hover {
+  background: #c9a96e !important;
+  color: #080808 !important;
+}
+
+.delete-btn {
+  border-color: #c0504d !important;
+  color: #c0504d !important;
+  background: transparent !important;
+  border-radius: 4px !important;
+}
+
+.address-box {
+  border-radius: 4px !important; /* square corners like Chronora style */
+  background: #0d0d0d !important;
+  border-color: rgba(255,255,255,0.055) !important;
 }

@@ -1,14 +1,16 @@
 /* =============================================
-   User Sidebar – Chronora
+   User Sidebar – Chronora  |  Black & Gold
    ============================================= */
 
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap');
+
 :root {
-  --bg: #0f0d12;
-  --panel: #211826;
-  --panel-2: #2a2030;
-  --muted: #bdb3c2;
-  --accent: #6d2f7a;
-  --accent-2: #4a1f4a;
+  --bg: #080808;
+  --panel: #0d0d0d;
+  --panel-2: #131313;
+  --muted: #6e6a63;
+  --accent: #c9a96e;
+  --accent-2: rgba(201, 169, 110, 0.13);
 }
 
 /* SIDEBAR */
@@ -24,8 +26,9 @@
 }
 
 .cs-brand {
-  color: white;
-  font-weight: 700;
+  color: #ede9e1;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
   margin-left: 6px;
   font-size: 1.1rem;
   letter-spacing: 0.3px;
@@ -43,6 +46,7 @@
   border-radius: 10px;
   object-fit: cover;
   transition: transform 0.3s ease;
+  border: 2px solid rgba(201, 169, 110, 0.25);
 }
 
 .cs-avatar img:hover {
@@ -53,11 +57,12 @@
   width: 48px;
   height: 48px;
   border-radius: 10px;
-  background: linear-gradient(180deg, #4b2b4f, #2b1a2b);
+  background: linear-gradient(180deg, #1a1a1a, #0d0d0d);
+  border: 1px solid rgba(201, 169, 110, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: #c9a96e;
   font-weight: 700;
   font-size: 1.2rem;
 }
@@ -69,7 +74,8 @@
 }
 
 .cs-name {
-  color: #fff;
+  color: #ede9e1;
+  font-family: 'Outfit', sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
   white-space: nowrap;
@@ -79,7 +85,8 @@
 
 .cs-email {
   color: var(--muted);
-  font-size: 13px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -109,8 +116,10 @@
   border-radius: 10px;
   color: var(--muted);
   text-decoration: none;
-  transition: all 0.25s ease;
-  font-size: 0.95rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.88rem;
+  letter-spacing: 0.03em;
   min-height: 44px;
 }
 
@@ -126,29 +135,30 @@
 }
 
 .cs-navitem:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
+  background: rgba(201, 169, 110, 0.06);
+  color: #ede9e1;
   transform: translateX(2px);
 }
 
 .cs-navitem.active {
   background: linear-gradient(90deg,
-      rgba(109, 47, 122, 0.2),
-      rgba(74, 31, 74, 0.08));
-  color: #fff;
+      rgba(201, 169, 110, 0.12),
+      rgba(201, 169, 110, 0.04));
+  color: #c9a96e;
   font-weight: 600;
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid #c9a96e;
 }
 
 .cs-footer {
   margin-top: auto;
-  color: rgba(255, 255, 255, 0.22);
-  font-size: 13px;
+  color: rgba(255, 255, 255, 0.15);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
   padding: 8px;
 }
 
 /* RESPONSIVE */
-@media (max-width: 960px) {
+@media (max-width: 768px) {
   .cs-sidebar {
     position: fixed;
     left: 0;
@@ -173,7 +183,7 @@
   }
 }
 
-@media (min-width: 961px) {
+@media (min-width: 769px) {
   .cs-toggle {
     display: none;
   }

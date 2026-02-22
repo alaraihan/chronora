@@ -16,7 +16,7 @@ export const loadWallet = async (req, res) => {
       logger.warn(`User not found during wallet load: ${userId}`);
       return res.redirect("/login");
     }
-logger.info(`User wallet page loaded`, { id: user._id, email: user.email, referralCode: user.referralCode });
+    logger.info(`User wallet page loaded`, { id: user._id, email: user.email, referralCode: user.referralCode });
     logger.info("Full user object:", {
       id: user._id,
       email: user.email,
@@ -34,7 +34,7 @@ logger.info(`User wallet page loaded`, { id: user._id, email: user.email, referr
       active: "wallet"
     });
   } catch (error) {
-logger.error("loadWallet error", error);
+    logger.error("loadWallet error", error);
     return res.status(500).render("user/pageNotfound", {
       title: "Error - Chronora",
       message: "Unable to load wallet"
@@ -51,6 +51,10 @@ export const getWalletData = async (req, res) => {
       return res.json({ success: false, message: "Not authenticated" });
     }
 
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
+
     const user = await User.findById(userId).select("wallet walletTransactions");
 
     if (!user) {
@@ -58,16 +62,27 @@ export const getWalletData = async (req, res) => {
       return res.json({ success: false, message: "User not found" });
     }
 
-    const sortedTransactions = (user.walletTransactions || [])
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
+    const allTransactions = user.walletTransactions || [];
+    const sortedTransactions = [...allTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const paginatedTransactions = sortedTransactions.slice(skip, skip + limit);
+    const totalTransactions = sortedTransactions.length;
+    const totalPages = Math.ceil(totalTransactions / limit);
 
     return res.json({
       success: true,
       balance: user.wallet || 0,
-      transactions: sortedTransactions
+      transactions: paginatedTransactions,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalTransactions,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1
+      }
     });
   } catch (error) {
-logger.error("getWalletData error", error);
+    logger.error("getWalletData error", error);
     return res.json({ success: false, message: "Server error" });
   }
 };
@@ -102,7 +117,7 @@ export const createWalletOrder = async (req, res) => {
     };
 
     const order = await razorpay.orders.create(orderOptions);
-logger.info(`Razorpay order created`, { userId, orderId: order.id, amount: order.amount });
+    logger.info(`Razorpay order created`, { userId, orderId: order.id, amount: order.amount });
     return res.json({
       success: true,
       order_id: order.id,
@@ -110,7 +125,7 @@ logger.info(`Razorpay order created`, { userId, orderId: order.id, amount: order
       key_id: process.env.RAZORPAY_KEY_ID
     });
   } catch (error) {
-logger.error("createWalletOrder error", error);
+    logger.error("createWalletOrder error", error);
     return res.json({ success: false, message: "Failed to create order" });
   }
 };
@@ -155,14 +170,14 @@ export const verifyAndAddMoney = async (req, res) => {
 
     await user.save();
 
-logger.info(`Added ₹${parsedAmount} to user's wallet`, { userId, email: user.email });
+    logger.info(`Added ₹${parsedAmount} to user's wallet`, { userId, email: user.email });
     return res.json({
       success: true,
       message: `₹${parsedAmount} added successfully!`,
       newBalance: user.wallet
     });
   } catch (error) {
-logger.error("verifyAndAddMoney error", error);
+    logger.error("verifyAndAddMoney error", error);
     return res.json({ success: false, message: "Failed to add money" });
   }
 };

@@ -1,173 +1,207 @@
+:root {
+  --bg: #080808;
+  --bg-1: #0d0d0d;
+  --bg-2: #131313;
+  --gold: #c9a96e;
+  --gold-hv: #e5c78f;
+  --text: #ede9e1;
+  --text-muted: #838383;
+  --border: rgba(255, 255, 255, 0.055);
+  --font-display: 'Cormorant Garamond', serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
 .failure-wrapper {
-  min-height: 80vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
-  padding: 20px;
-}
-/* Add to your order-failure.css */
-#retryPaymentBtn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+  background: var(--bg);
+  padding: 80px 40px;
 }
 
-#retryPaymentBtn.loading {
-  position: relative;
-  color: transparent;
-}
-
-#retryPaymentBtn.loading::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 20px;
-  height: 20px;
-  margin: -10px 0 0 -10px;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  border-top-color: transparent;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 .failure-container {
-  background: #16213e;
-  border-radius: 16px;
-  padding: 40px;
+  background: var(--bg-1);
+  border-radius: 8px;
+  padding: 80px 60px;
   text-align: center;
-  max-width: 600px;
+  max-width: 700px;
   width: 100%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  border: 1px solid #3399cc44;
+  box-shadow: 0 50px 100px rgba(0, 0, 0, 0.8);
+  border: 1px solid var(--border);
+  animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .failure-icon {
-  font-size: 80px;
-  color: #e74c3c;
-  margin-bottom: 20px;
+  font-size: 100px;
+  color: #ff4d4d;
+  margin-bottom: 40px;
+  filter: drop-shadow(0 0 30px rgba(255, 77, 77, 0.3));
 }
 
 .failure-title {
-  font-size: 36px;
-  color: #e74c3c;
-  margin-bottom: 16px;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  color: #fff;
+  margin-bottom: 20px;
+  font-weight: 300;
+  letter-spacing: -0.01em;
 }
 
 .failure-message {
-  font-size: 18px;
-  color: #bdc3c7;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--text-muted);
   line-height: 1.6;
-  margin-bottom: 24px;
+  margin-bottom: 50px;
+  max-width: 550px;
+  margin-left: auto;
+  margin-right: auto;
+  font-style: italic;
 }
 
 .error-detail {
-  background: #2c3e50;
-  color: #e74c3c;
-  padding: 12px 20px;
-  border-radius: 8px;
-  margin: 20px 0;
-  font-size: 15px;
-  border-left: 4px solid #e74c3c;
+  background: rgba(255, 77, 77, 0.05);
+  color: #ff4d4d;
+  padding: 25px;
+  border-radius: 4px;
+  margin: 40px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  border: 1px solid rgba(255, 77, 77, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .order-summary-card {
-  background: #1e2a47;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 30px 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 40px;
+  margin: 50px 0;
   text-align: left;
 }
 
 .order-summary-card h3 {
+  font-family: var(--font-display);
   text-align: center;
-  color: #3399cc;
-  margin-bottom: 20px;
-  font-size: 22px;
+  color: var(--gold);
+  margin-bottom: 30px;
+  font-size: 1.8rem;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .summary-row {
   display: flex;
   justify-content: space-between;
-  padding: 10px 0;
-  font-size: 16px;
-  color: #ecf0f1;
-}
-
-.summary-row.discount {
-  color: #2ecc71;
+  padding: 15px 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
 }
 
 .summary-total {
-  border-top: 1px solid #3399cc44;
-  padding-top: 15px;
-  margin-top: 10px;
-  font-size: 20px;
-  font-weight: bold;
+  border-top: 1px solid var(--border);
+  padding-top: 25px;
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summary-total span:first-child {
+  font-family: var(--font-mono);
+  font-size: 12px;
   color: #fff;
+}
+
+.summary-total span:last-child {
+  font-family: var(--font-display);
+  color: var(--gold);
+  font-size: 2.5rem;
+  font-weight: 500;
 }
 
 .action-buttons {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 30px;
+  gap: 20px;
+  margin-top: 50px;
 }
 
-.btn-primary, .btn-secondary, .btn-outline {
-  padding: 14px 24px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+.btn-primary,
+.btn-secondary,
+.btn-outline {
+  padding: 20px 40px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-}
-
-.btn-primary {
-  background: #3399cc;
-  color: white;
-  border: none;
-}
-
-.btn-primary:hover {
-  background: #287aa9;
-  transform: translateY(-2px);
-}
-
-.btn-secondary {
-  background: #2c3e50;
-  color: white;
+  gap: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
   text-decoration: none;
 }
 
+.btn-primary {
+  background: var(--gold);
+  color: #000;
+  border: 1px solid var(--gold);
+}
+
+.btn-primary:hover {
+  background: transparent;
+  color: var(--gold);
+  transform: translateY(-5px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #fff;
+  border: 1px solid var(--border);
+}
+
 .btn-secondary:hover {
-  background: #34495e;
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-5px);
 }
 
 .btn-outline {
   background: transparent;
-  color: #3399cc;
-  border: 2px solid #3399cc;
-  text-decoration: none;
+  color: var(--gold);
+  border: 1px solid var(--gold);
 }
 
 .btn-outline:hover {
-  background: #3399cc22;
+  background: var(--gold);
+  color: #000;
+  transform: translateY(-5px);
 }
 
 @media (max-width: 600px) {
   .failure-container {
-    padding: 30px 20px;
-  }
-  .action-buttons {
-    gap: 12px;
+    padding: 40px 24px;
   }
 }

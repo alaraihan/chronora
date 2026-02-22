@@ -92,17 +92,17 @@ cartContainer.addEventListener("click", async (e) => {
     try {
       const res = await axios.post(`/cart/update/${id}`, { action });
 
-     if (!res.data.success) {
-  showToast(res.data.message || "Stock finished", "warning");
+      if (!res.data.success) {
+        showToast(res.data.message || "Stock finished", "warning");
 
-  const row = document.querySelector(`[data-item-id="${id}"]`);
-  if (row) {
-    const incBtn = row.querySelector(".increment");
-    if (incBtn) incBtn.disabled = true;
-  }
+        const row = document.querySelector(`[data-item-id="${id}"]`);
+        if (row) {
+          const incBtn = row.querySelector(".increment");
+          if (incBtn) incBtn.disabled = true;
+        }
 
-  return;
-}
+        return;
+      }
 
 
       const row = document.querySelector(`[data-item-id="${id}"]`);
@@ -157,7 +157,8 @@ cartContainer.addEventListener("click", async (e) => {
     const modal = document.getElementById("confirmModal");
     if (!modal) return;
     modal.dataset.removeItemId = itemId;
-    modal.style.display = "flex";
+    modal.classList.add("active");
+    document.body.style.overflow = "hidden";
     return;
   }
 
@@ -206,7 +207,7 @@ if (confirmRemoveBtn) {
       if (res.data.success) {
         document.querySelector(`[data-item-id="${itemToRemove}"]`)?.remove();
         showToast("Removed from cart");
-        setCheckoutState(res.data.canCheckout);
+        if (res.data.canCheckout !== undefined) setCheckoutState(res.data.canCheckout);
         updateOrderSummary();
 
         if (document.querySelectorAll(".cart-item").length === 0) {
@@ -216,26 +217,41 @@ if (confirmRemoveBtn) {
     } catch (err) {
       showToast("Failed to remove item", "error");
     } finally {
-      confirmModal.style.display = "none";
+      confirmModal.classList.remove("active");
+      document.body.style.overflow = "";
       delete confirmModal.dataset.removeItemId;
     }
   });
 }
 
-if (cancelRemoveBtn) {
-  cancelRemoveBtn.addEventListener("click", () => {
-    confirmModal.style.display = "none";
+/* ── Close triggers ── */
+document.querySelectorAll('.close-modal, .btn-cancel-modal, [data-close]').forEach(el => {
+  el.addEventListener('click', () => {
+    const id = el.dataset.close;
+    if (id === 'confirmModal' || el.closest('#confirmModal')) {
+      confirmModal.classList.remove('active');
+      document.body.style.overflow = '';
+      delete confirmModal.dataset.removeItemId;
+    }
+  });
+});
+
+/* Esc key */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && confirmModal.classList.contains('active')) {
+    confirmModal.classList.remove('active');
+    document.body.style.overflow = '';
     delete confirmModal.dataset.removeItemId;
-  });
-}
+  }
+});
 
-if (confirmModal) {
-  confirmModal.addEventListener("click", (e) => {
-    if (e.target === confirmModal) {
-      confirmModal.style.display = "none";
-      delete confirmModal.dataset.removeItemId;
-    }
-  });
-}
+/* Backdrop click */
+confirmModal?.addEventListener('click', (e) => {
+  if (e.target === confirmModal) {
+    confirmModal.classList.remove('active');
+    document.body.style.overflow = '';
+    delete confirmModal.dataset.removeItemId;
+  }
+});
 
 updateOrderSummary();

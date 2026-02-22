@@ -1,398 +1,455 @@
-/* =============================================
-   Watch Collection Page – Chronora
-   ============================================= */
+/* ============================================================
+   watch.css — Chronora Gold & Black Luxury Theme
+   ============================================================ */
 
-* {
+:root {
+  --bg:          #080808;
+  --bg-1:        #0d0d0d;
+  --bg-2:        #131313;
+  --bg-3:        #1a1a1a;
+  --gold:        #c9a96e;
+  --gold-hv:     #e5c78f;
+  --gold-dim:    rgba(201, 169, 110, 0.1);
+  --gold-border: rgba(201, 169, 110, 0.28);
+  --text:        #ede9e1;
+  --text-muted:  #666;
+  --border:      rgba(255, 255, 255, 0.06);
+  --red:         #e05252;
+  --green:       #4ade80;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-mono:    'Space Mono', monospace;
+  --font-body:    'Outfit', sans-serif;
+}
+
+/* ── Base ───────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background-color: #0a0a0a;
-  color: #ffffff;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
 }
 
-/* Favorite Button */
-.favorite-btn {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  width: 40px;
-  height: 40px;
-  background-color: rgba(255, 255, 255, 0.95);
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  z-index: 10;
-  color: #666;
-  min-height: 44px;
-  min-width: 44px;
-}
-
-.favorite-btn:hover {
-  background-color: #fff;
-  color: #ff4d4d;
-  transform: scale(1.1);
-}
-
-.favorite-btn.active {
-  color: #ff4d4d;
-}
-
-.favorite-btn.active i {
-  font-weight: 900;
-}
-
-.favorite-btn i {
-  transition: all 0.3s ease;
-}
-
-/* Main Layout */
+/* ── Main wrapper ───────────────────────────── */
 main {
-  max-width: 1400px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: clamp(30px, 5vw, 60px) clamp(16px, 3vw, 40px);
+  padding: 56px 40px 100px;
 }
 
-h1 {
-  font-size: clamp(28px, 5vw, 48px);
-  font-weight: 600;
-  margin-bottom: 40px;
-  text-align: center;
+/* ── Page Title ─────────────────────────────── */
+main > h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 300;
+  color: var(--gold);
+  letter-spacing: -0.01em;
+  margin-bottom: 48px;
 }
 
-/* Filters Container */
+/* ── Filters Container ──────────────────────── */
 .filters-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 50px;
+  justify-content: space-between;
+  gap: 20px;
   flex-wrap: wrap;
-  gap: 16px;
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
 }
 
-/* Search Form */
+/* ── Search Form ────────────────────────────── */
 .search-form {
   flex: 1;
-  max-width: 520px;
-  min-width: 0;
+  min-width: 260px;
+  max-width: 420px;
 }
 
 .search-input-group {
-  position: relative;
-  height: 52px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.25s ease;
 }
 
-.search-input-group input[type="text"] {
+.search-input-group:focus-within {
+  border-color: var(--gold-border);
+}
+
+.search-input-group input {
   flex: 1;
-  height: 100%;
-  padding: 0 20px;
-  background-color: #1a1a2e;
-  border: 1px solid #2a2a3e;
-  border-radius: 14px;
-  color: #fff;
-  font-size: 15px;
-  outline: none;
-  transition: all 0.3s ease;
-  min-width: 0;
-}
-
-.search-input-group input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-}
-
-.search-input-group button[type="submit"] {
-  height: 44px;
-  padding: 0 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: transparent;
   border: none;
-  border-radius: 12px;
-  font-weight: 600;
+  outline: none;
+  padding: 12px 16px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+}
+
+.search-input-group input::placeholder {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.search-input-group button {
+  padding: 12px 20px;
+  background: var(--gold);
+  color: #080808;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.25s ease;
   white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .search-input-group button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  background: var(--gold-hv);
 }
 
 .clear-btn {
-  padding: 10px 20px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
+  padding: 12px 16px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  transition: color 0.2s ease;
+  border-left: 1px solid var(--border);
   white-space: nowrap;
 }
 
 .clear-btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
+  color: var(--gold);
 }
 
-/* Right Controls */
+/* ── Controls Right ─────────────────────────── */
 .controls-right {
   display: flex;
-  align-items: center;
   gap: 12px;
-  flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .control-form select {
-  height: 52px;
-  min-width: 160px;
-  padding: 0 36px 0 16px;
-  background-color: #1a1a2e;
-  border: 1px solid #2a2a3e;
-  border-radius: 14px;
-  color: #fff;
-  font-size: 14px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--bg-1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c9a96e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 14px center;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 11px 40px 11px 16px;
   cursor: pointer;
   outline: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='10' viewBox='0 0 14 10'%3E%3Cpath fill='%23aaa' d='M1 1l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  transition: all 0.3s ease;
+  transition: border-color 0.25s ease, color 0.25s ease;
+  min-width: 170px;
 }
 
+.control-form select:hover,
 .control-form select:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  border-color: var(--gold-border);
+  color: var(--gold);
 }
 
-/* Watch Grid */
+.control-form select option {
+  background: #111;
+  color: var(--text);
+}
+
+/* ── Watch Grid ─────────────────────────────── */
 .watch-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-  margin-bottom: 60px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 28px;
 }
 
+/* ── Watch Card ─────────────────────────────── */
 .watch-card {
-  position: relative;
-  background-color: #1a1a1a;
-  border-radius: 14px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 6px;
   overflow: hidden;
-  transition: all 0.35s ease;
-  cursor: pointer;
-  text-decoration: none;
-  color: inherit;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
 }
 
 .watch-card:hover {
+  border-color: var(--gold-border);
   transform: translateY(-8px);
-  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.25);
-  border-color: rgba(102, 126, 234, 0.2);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
 }
 
-/* Watch Image */
+.watch-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ── Watch Image ────────────────────────────── */
 .watch-image {
   position: relative;
-  height: clamp(250px, 25vw, 350px);
-  background-color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
   overflow: hidden;
+  background: var(--bg-2);
 }
 
 .watch-image img {
-  max-width: 80%;
-  max-height: 80%;
-  object-fit: contain;
-  transition: transform 0.4s ease;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .watch-card:hover .watch-image img {
-  transform: scale(1.05);
+  transform: scale(1.07);
 }
 
 /* Offer Badge */
-.watch-image .offer-badge {
+.offer-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-hv));
+  color: #080808;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 2px;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(201, 169, 110, 0.4);
+}
+
+/* Wishlist / Favorite Button */
+.favorite-btn {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: linear-gradient(135deg, #ff3b30, #ff9500);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: bold;
-  z-index: 10;
-  box-shadow: 0 3px 10px rgba(255, 59, 48, 0.4);
-  animation: pulse-badge 2.5s ease-in-out infinite;
+  width: 36px;
+  height: 36px;
+  background: rgba(8, 8, 8, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  transition: all 0.3s ease;
 }
 
-@keyframes pulse-badge {
-
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.08);
-  }
+.favorite-btn:hover {
+  border-color: #e05252;
+  color: #e05252;
+  background: rgba(224, 82, 82, 0.12);
+  transform: scale(1.1);
 }
 
-/* Watch Info */
+.favorite-btn.active {
+  border-color: #e05252;
+  color: #e05252;
+  background: rgba(224, 82, 82, 0.1);
+}
+
+.favorite-btn.active i {
+  animation: heart-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes heart-pop {
+  0%   { transform: scale(0.7); }
+  60%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+/* ── Watch Info ─────────────────────────────── */
 .watch-info {
-  padding: 20px;
+  padding: 22px 22px 20px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
 .watch-name {
-  font-size: clamp(15px, 1.2vw, 18px);
-  font-weight: 500;
-  color: #fff;
-  line-height: 1.3;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.25;
+  letter-spacing: 0.01em;
 }
 
 /* Price */
 .watch-price-container {
-  margin: 8px 0;
-  line-height: 1.4;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.watch-price,
+.watch-price-discounted {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--gold);
+  line-height: 1;
 }
 
 .watch-price-original {
-  font-size: 14px;
-  color: #999;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
   text-decoration: line-through;
+  letter-spacing: 0.04em;
 }
 
-.watch-price-discounted {
-  font-size: clamp(18px, 1.8vw, 22px);
-  font-weight: bold;
-  color: #2ecc71;
-  margin: 4px 0 0;
-}
-
-.watch-price {
-  font-size: clamp(18px, 1.8vw, 22px);
-  font-weight: bold;
-  color: #667eea;
-  margin: 8px 0;
-}
-
-/* Color Info */
+/* Color info */
 .color-info {
-  color: #888;
-  font-size: 13px;
-  margin: 6px 0;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
-/* Add to Cart Button */
+/* Add to Cart / View Product button */
 .add-to-cart-btn {
+  margin-top: 10px;
   width: 100%;
-  padding: 14px;
-  background-color: #2a2a3e;
-  border: none;
-  border-radius: 10px;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 500;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--gold-border);
+  border-radius: 3px;
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: auto;
-  min-height: 44px;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.add-to-cart-btn:hover {
-  background-color: #667eea;
-  transform: translateY(-1px);
+.add-to-cart-btn:hover:not(:disabled) {
+  background: var(--gold);
+  color: #080808;
+  border-color: var(--gold);
+  transform: translateY(-2px);
 }
 
-.add-to-cart-btn[disabled] {
-  background-color: #444;
-  color: #888;
+.add-to-cart-btn:disabled {
+  border-color: var(--border);
+  color: var(--text-muted);
   cursor: not-allowed;
-  transform: none;
+  opacity: 0.5;
 }
 
-/* Pagination */
+/* ── Empty State ────────────────────────────── */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 100px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state h2 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.empty-state p {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ── Pagination ─────────────────────────────── */
 .pagination {
-  margin: 50px auto;
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
+  margin-top: 64px;
   flex-wrap: wrap;
 }
 
 .page-btn,
 .page-number {
-  padding: 10px 18px;
-  border: 1px solid #444;
-  border-radius: 10px;
-  color: #fff;
-  text-decoration: none;
-  font-size: 15px;
-  transition: all 0.3s ease;
-  min-height: 44px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 14px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.page-btn:hover,
+.page-number:hover {
+  border-color: var(--gold-border);
+  color: var(--gold);
+  background: var(--gold-dim);
 }
 
 .page-number.active {
-  background: #667eea;
-  border-color: #667eea;
-  font-weight: bold;
-}
-
-.page-btn:hover:not(.disabled) {
-  background: #2a2a3e;
-  border-color: #667eea;
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #080808;
+  font-weight: 700;
 }
 
 .page-btn.disabled {
-  opacity: 0.5;
+  opacity: 0.3;
   cursor: not-allowed;
-  color: #666;
+  pointer-events: none;
 }
 
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 80px 20px;
-  color: #888;
-}
-
-.empty-state h2 {
-  font-size: clamp(22px, 3vw, 28px);
-  margin-bottom: 16px;
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 1200px) {
-  .watch-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 768px) {
+  main {
+    padding: 36px 20px 80px;
   }
-}
 
-@media (max-width: 992px) {
   .filters-container {
     flex-direction: column;
     align-items: stretch;
@@ -404,57 +461,30 @@ h1 {
 
   .controls-right {
     width: 100%;
-    justify-content: space-between;
   }
 
   .control-form select {
-    flex: 1;
-    min-width: 0;
+    width: 100%;
   }
-}
 
-@media (max-width: 768px) {
   .watch-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-
-  .watch-info {
-    padding: 14px;
-  }
-
-  .watch-name {
-    font-size: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
   }
 }
 
 @media (max-width: 480px) {
   .watch-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
   }
 
-  .search-input-group {
-    flex-wrap: wrap;
-    height: auto;
-    gap: 8px;
+  .watch-name {
+    font-size: 1rem;
   }
 
-  .search-input-group input[type="text"] {
-    height: 48px;
-    width: 100%;
-  }
-
-  .search-input-group button[type="submit"] {
-    width: 100%;
-    height: 44px;
-  }
-
-  .controls-right {
-    flex-direction: column;
-  }
-
-  .control-form select {
-    width: 100%;
+  .watch-price,
+  .watch-price-discounted {
+    font-size: 1.2rem;
   }
 }

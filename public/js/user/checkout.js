@@ -68,7 +68,7 @@ document.getElementById('addressForm')?.addEventListener('submit', async (e) => 
 
 function attachAddressClickListeners() {
   document.querySelectorAll('.address-option').forEach(label => {
-    label.addEventListener('click', function(e) {
+    label.addEventListener('click', function (e) {
       if (e.target.tagName === 'INPUT') return;
       document.querySelectorAll('.address-option').forEach(l => l.classList.remove('selected'));
       this.classList.add('selected');
@@ -80,7 +80,7 @@ function attachAddressClickListeners() {
 
 function attachPaymentClickListeners() {
   document.querySelectorAll('.payment-option').forEach(label => {
-    label.addEventListener('click', function(e) {
+    label.addEventListener('click', function (e) {
       if (e.target.tagName === 'INPUT') return;
       document.querySelectorAll('.payment-option').forEach(l => l.classList.remove('selected'));
       this.classList.add('selected');
@@ -165,7 +165,7 @@ document.getElementById('applyCouponBtn')?.addEventListener('click', async () =>
   }
 });
 
-document.getElementById('removeCouponBtn')?.addEventListener('click', function() {
+document.getElementById('removeCouponBtn')?.addEventListener('click', function () {
   const codeInput = document.getElementById('couponCode');
   const msgSuccess = document.getElementById('couponSuccess');
   const msgError = document.getElementById('couponMessage');
@@ -208,7 +208,7 @@ document.getElementById('removeCouponBtn')?.addEventListener('click', function()
 
 // ---------------------- WALLET LOGIC ----------------------
 document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
-  radio.addEventListener('change', function() {
+  radio.addEventListener('change', function () {
     const walletRow = document.getElementById('walletPayable');
     const amountEl = document.getElementById('walletPayableAmount');
     const walletBalanceDisplay = document.getElementById('walletBalanceDisplay');
@@ -218,10 +218,10 @@ document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
       if (grandTotalDisplay) {
         const total = parseFloat(grandTotalDisplay.textContent.replace(/,/g, ''));
         const walletBalance = parseFloat(walletBalanceDisplay?.textContent.replace(/[^0-9.]/g, '') || '0');
-        
+
         if (amountEl) amountEl.textContent = total.toLocaleString('en-IN');
         if (walletRow) walletRow.style.display = 'flex';
-        
+
         if (walletBalance < total) {
           toast(`Insufficient wallet balance. Available: ₹${walletBalance.toLocaleString('en-IN')}, Required: ₹${total.toLocaleString('en-IN')}`, "error");
         }
@@ -233,19 +233,19 @@ document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
 });
 
 // ---------------------- COUPONS MODAL ----------------------
-document.getElementById('viewCouponsBtn')?.addEventListener('click', async function() {
+document.getElementById('viewCouponsBtn')?.addEventListener('click', async function () {
   const modal = document.getElementById('couponsModal');
   const container = document.getElementById('couponsContainer');
-  
+
   if (!modal || !container) return;
-  
+
   modal.style.display = 'flex';
   container.innerHTML = '<div class="text-center" style="padding: 40px;"><p>Loading coupons...</p></div>';
 
   try {
     const response = await fetch('/coupons/available');
     const data = await response.json();
-    
+
     if (data.success && data.coupons && data.coupons.length > 0) {
       container.innerHTML = data.coupons.map(coupon => `
         <div class="coupon-card" style="border: 2px dashed #667eea; border-radius: 12px; padding: 16px; margin-bottom: 16px; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);">
@@ -273,11 +273,11 @@ document.getElementById('viewCouponsBtn')?.addEventListener('click', async funct
       `).join('');
 
       document.querySelectorAll('.apply-coupon-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
           const code = this.dataset.code;
           const couponInput = document.getElementById('couponCode');
           const applyBtn = document.getElementById('applyCouponBtn');
-          
+
           if (couponInput) couponInput.value = code;
           if (applyBtn) applyBtn.click();
           modal.style.display = 'none';
@@ -293,7 +293,7 @@ document.getElementById('viewCouponsBtn')?.addEventListener('click', async funct
   }
 });
 
-document.getElementById('closeCouponsModal')?.addEventListener('click', function() {
+document.getElementById('closeCouponsModal')?.addEventListener('click', function () {
   const modal = document.getElementById('couponsModal');
   if (modal) modal.style.display = 'none';
 });
@@ -304,13 +304,13 @@ let stockCheckInterval = null;
 async function checkStockAndTogglePayment(showErrorToast = false) {
   const placeOrderBtn = document.getElementById('placeOrderBtn');
   const soldOutMsg = document.getElementById('soldOutMessage');
-  
+
   // If elements don't exist, silently return
   if (!placeOrderBtn) return;
 
   try {
     const res = await axios.get('/checkout/check-stock');
-    
+
     if (res.data && res.data.stockAvailable !== undefined) {
       if (res.data.stockAvailable) {
         placeOrderBtn.style.display = 'block';
@@ -347,25 +347,25 @@ window.addEventListener('beforeunload', () => {
 });
 
 // ---------------------- PLACE ORDER ----------------------
-document.getElementById('placeOrderBtn')?.addEventListener('click', async function() {
+document.getElementById('placeOrderBtn')?.addEventListener('click', async function () {
   const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked')?.value;
   const paymentMethodInput = document.querySelector('input[name="paymentMethod"]:checked');
   const paymentMethod = paymentMethodInput?.value;
   const appliedDiscount = parseFloat(this.dataset.discount) || 0;
   const appliedCoupon = this.dataset.appliedCoupon || null;
 
-  if (!selectedAddress) { 
-    toast("Please select a delivery address", "error"); 
-    return; 
+  if (!selectedAddress) {
+    toast("Please select a delivery address", "error");
+    return;
   }
-  if (!paymentMethod) { 
-    toast("Please select a payment method", "error"); 
-    return; 
+  if (!paymentMethod) {
+    toast("Please select a payment method", "error");
+    return;
   }
 
   const subtotalDisplay = document.getElementById('subtotalDisplay');
   const grandTotalDisplay = document.getElementById('grandTotalDisplay');
-  
+
   if (!subtotalDisplay || !grandTotalDisplay) {
     toast("Error loading order details. Please refresh the page.", "error");
     return;
@@ -379,7 +379,7 @@ document.getElementById('placeOrderBtn')?.addEventListener('click', async functi
   if (paymentMethod === 'wallet') {
     const walletBalanceDisplay = document.getElementById('walletBalanceDisplay');
     const walletBalance = parseFloat(walletBalanceDisplay?.textContent.replace(/[^0-9.]/g, '') || '0');
-    
+
     if (walletBalance < finalAmount) {
       toast(`Insufficient wallet balance. Available: ₹${walletBalance.toLocaleString('en-IN')}, Required: ₹${finalAmount.toLocaleString('en-IN')}`, "error");
       return;
@@ -387,11 +387,11 @@ document.getElementById('placeOrderBtn')?.addEventListener('click', async functi
   }
 
   // Save checkout summary
-  sessionStorage.setItem('checkoutSummary', JSON.stringify({ 
-    subtotal, 
-    shipping, 
-    discount: appliedDiscount, 
-    totalAmount: finalAmount 
+  sessionStorage.setItem('checkoutSummary', JSON.stringify({
+    subtotal,
+    shipping,
+    discount: appliedDiscount,
+    totalAmount: finalAmount
   }));
 
   this.disabled = true;
@@ -405,13 +405,13 @@ document.getElementById('placeOrderBtn')?.addEventListener('click', async functi
       }
 
       const orderResponse = await axios.post('/create-order', { amount: finalAmount });
-      
+
       if (!orderResponse.data.success) {
         throw new Error(orderResponse.data.message || "Failed to create payment order");
       }
 
       const { order_id, amount, key_id } = orderResponse.data;
-      
+
       const options = {
         key: key_id,
         amount,
@@ -423,9 +423,9 @@ document.getElementById('placeOrderBtn')?.addEventListener('click', async functi
         handler: async function (response) {
           try {
             const placeOrderRes = await axios.post('/checkout/place-order', {
-              selectedAddress, 
-              paymentMethod: 'razorpay', 
-              discount: appliedDiscount, 
+              selectedAddress,
+              paymentMethod: 'razorpay',
+              discount: appliedDiscount,
               appliedCoupon,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_order_id: response.razorpay_order_id,
@@ -447,40 +447,68 @@ document.getElementById('placeOrderBtn')?.addEventListener('click', async functi
             window.location.href = `/checkout/failure?error=${encodeURIComponent("Failed to confirm order with server")}`;
           }
         },
-        prefill: { 
-          name: "<%= user.name %>", 
-          email: "<%= user.email %>", 
-          contact: "<%= user.phone || '' %>" 
+        prefill: {
+          name: "<%= user.name %>",
+          email: "<%= user.email %>",
+          contact: "<%= user.phone || '' %>"
         },
         theme: { color: "#3399cc" },
-        modal: { 
-          ondismiss: () => { 
-            toast("Payment cancelled", "error"); 
-            this.disabled = false; 
-            this.textContent = originalText; 
-          } 
+        modal: {
+          ondismiss: async () => {
+            toast("Payment cancelled", "error");
+
+            // Record failed order in DB
+            try {
+              await axios.post('/checkout/place-order', {
+                selectedAddress,
+                paymentMethod: 'razorpay',
+                discount: appliedDiscount,
+                appliedCoupon,
+                paymentStatus: 'Failed'
+              });
+            } catch (recordErr) {
+              console.error("Failed to record unsuccessful order:", recordErr);
+            }
+
+            this.disabled = false;
+            this.textContent = originalText;
+          }
         }
       };
 
       const rzp = new Razorpay(options);
-      
-      rzp.on('payment.failed', (resp) => {
+
+      rzp.on('payment.failed', async (resp) => {
         const errorMsg = resp.error?.description || 'Payment declined';
         toast(`Payment failed: ${errorMsg}`, 'error');
-        this.disabled = false; 
+
+        // Record failed order in DB
+        try {
+          await axios.post('/checkout/place-order', {
+            selectedAddress,
+            paymentMethod: 'razorpay',
+            discount: appliedDiscount,
+            appliedCoupon,
+            paymentStatus: 'Failed'
+          });
+        } catch (recordErr) {
+          console.error("Failed to record unsuccessful order:", recordErr);
+        }
+
+        this.disabled = false;
         this.textContent = originalText;
         window.location.href = `/checkout/failure?error=${encodeURIComponent(errorMsg)}`;
       });
-      
+
       rzp.open();
 
     } else {
       // COD or Wallet payment
-      const res = await axios.post('/checkout/place-order', { 
-        selectedAddress, 
-        paymentMethod, 
-        discount: appliedDiscount, 
-        appliedCoupon 
+      const res = await axios.post('/checkout/place-order', {
+        selectedAddress,
+        paymentMethod,
+        discount: appliedDiscount,
+        appliedCoupon
       });
 
       if (res.data.success) {
@@ -496,14 +524,14 @@ document.getElementById('placeOrderBtn')?.addEventListener('click', async functi
     }
   } catch (err) {
     const errorMessage = err.response?.data?.message || err.message || "Something went wrong.";
-    
+
     if (err.response?.status === 409) {
       toast("Some items went out of stock", "error");
       window.location.href = `/checkout/failure?error=${encodeURIComponent(errorMessage || 'Stock unavailable')}`;
     } else {
       toast(errorMessage, "error");
     }
-    
+
     console.error('Place order error:', err);
     this.disabled = false;
     this.textContent = originalText;

@@ -65,13 +65,18 @@ export const verifyRazorpayPayment = (req, res) => {
     const isValid = razorpay_signature === expectedSign;
 
     if (isValid) {
-            logger.info(`Razorpay payment verified: ${razorpay_payment_id}`);
+      logger.info(`Razorpay payment verified: ${razorpay_payment_id}`);
       res.json({ success: true, message: "Payment verified successfully" });
     } else {
-            logger.warn(`Razorpay payment verification failed for order: ${razorpay_order_id}`);
+      logger.warn(`Razorpay payment verification failed for order: ${razorpay_order_id}`);
+
+      const summary = req.session.checkoutSummary || {};
       req.session.checkoutFailure = {
-        totalAmount: req.session.checkoutSummary?.totalAmount || 0,
-        errorMessage: "Your payment was declined or cancelled. You can retry below."
+        subtotal: summary.subtotal || 0,
+        shipping: summary.shipping || 0,
+        discount: summary.discount || 0,
+        totalAmount: summary.totalAmount || 0,
+        errorMessage: "Your payment verification failed. Please try again or use another method."
       };
 
       res.status(400).json({ success: false, message: "Invalid payment signature" });

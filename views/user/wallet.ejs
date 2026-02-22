@@ -1,310 +1,300 @@
-<link rel="stylesheet" href="/css/user/wallet.css">
-<div class="wallet-container d-flex">
-  <%- include('../partials/user/sidebar') %>
+<!DOCTYPE html>
+<html lang="en">
 
-  <main class="wallet-main flex-grow-1 p-4 p-md-5 overflow-auto">
-    <div class="container py-4">
-      <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold text-white mb-3">My Wallet</h1>
-        <p class="lead text-white-50">Securely manage your balance, add funds & track transactions</p>
-      </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Wallet | Chronora</title>
+  <link rel="stylesheet" href="/css/user/profile-shared.css">
+  <link rel="stylesheet" href="/css/user/wallet.css">
+</head>
 
-      <div class="row justify-content-center mb-5">
-        <div class="col-lg-8 col-xxl-6">
-          <div class="balance-card rounded-4 shadow-lg overflow-hidden position-relative">
-            <div class="gradient-bg"></div>
-            <div class="card-body text-center py-5 position-relative z-2">
-              <p class="text-uppercase small text-white-70 mb-3 tracking-wider">Current Balance</p>
-              <h2 id="balance" class="display-3 fw-bold text-white mb-3">Loading...</h2>
-              <p id="status" class="fs-5 text-white-80"></p>
-            </div>
-          </div>
-        </div>
-      </div>
+<body>
+  <%- include('../partials/user/header') %>
 
-      <div class="row justify-content-center mb-5">
-        <div class="col-lg-8">
-          <div class="card bg-dark border-0 shadow-lg rounded-4">
-            <div class="card-body p-4 p-md-5">
-              <h4 class="fw-bold text-white mb-4 text-center">
-                <i class="fas fa-wallet text-success me-3"></i> Add Money to Wallet
-              </h4>
+    <div class="profile-layout">
+      <%- include('../partials/user/sidebar') %>
 
-              <form id="addForm" class="row g-3 justify-content-center">
-                <div class="col-auto">
-                  <div class="input-group input-group-lg" style="max-width: 400px;">
-                    <span class="input-group-text bg-transparent text-white border-end-0">₹</span>
-                    <input
-                      type="number"
-                      id="amount"
-                      class="form-control bg-transparent text-white border-start-0 text-center fs-3"
-                      placeholder="Enter"
-                      min="10"
-                      step="1"
-                      required
-                    >
+        <main class="profile-content">
+          <header class="page-title-header">
+            <h1>My Wallet</h1>
+            <p class="subtitle">Securely manage your balance, add funds & track transactions</p>
+          </header>
+
+          <div class="wallet-content-wrapper" style="width: 100%;">
+            <div class="row justify-content-center mb-5">
+              <div class="col-lg-10">
+                <div class="balance-card rounded-4 shadow-lg overflow-hidden position-relative">
+                  <div class="gradient-bg"></div>
+                  <div class="card-body text-center py-5 position-relative z-2">
+                    <p class="text-uppercase small text-white-70 mb-3 tracking-wider">Current Balance</p>
+                    <h2 id="balance" class="display-3 fw-bold text-white mb-3">Loading...</h2>
+                    <p id="status" class="fs-5 text-white-80"></p>
                   </div>
                 </div>
-                <div class="col-auto">
-                  <button type="submit" class="btn btn-success btn-lg px-5 fw-bold shadow">
-                    <i class="fas fa-plus me-2"></i> Add Money
-                  </button>
-                </div>
-
-                <div class="col-12 text-center mt-4">
-                  <span class="text-white-60 small me-3">Quick select:</span>
-                  <button type="button" class="btn btn-outline-light quick mx-2" data-val="100">₹100</button>
-                  <button type="button" class="btn btn-outline-light quick mx-2" data-val="500">₹500</button>
-                  <button type="button" class="btn btn-outline-light quick mx-2" data-val="1000">₹1000</button>
-                  <button type="button" class="btn btn-outline-light quick mx-2" data-val="2000">₹2000</button>
-                </div>
-              </form>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="row justify-content-center mb-5">
-        <div class="col-lg-8">
-          <div class="card bg-dark border-0 shadow-lg rounded-4">
-            <div class="card-body p-4 p-md-5 text-center">
-              <h4 class="fw-bold text-white mb-4">
-                <i class="fas fa-gift text-warning me-3"></i> Refer & Earn
-              </h4>
-              <p class="text-white-70 mb-4 fs-5">
-                Invite friends and earn <strong class="text-success">₹100</strong> wallet credit when they sign up.<br>
-                They get <strong class="text-success">₹50</strong> instantly!
-              </p>
+            <div class="row justify-content-center mb-5">
+              <div class="col-lg-10">
+                <div class="card bg-dark border-0 shadow-lg rounded-4">
+                  <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold text-white mb-4 text-center">
+                      <i class="fas fa-wallet text-success me-3"></i> Add Money to Wallet
+                    </h4>
 
-              <div class="referral-box p-4 bg-black rounded-4 shadow-inner mx-auto" style="max-width: 500px;">
-                <div class="input-group input-group-lg">
-                  <input
-                    type="text"
-                    id="code"
-                    class="form-control bg-transparent text-white text-center fw-bold fs-3 border-0"
-                    value="<%= user.referralCode %>"
-                    readonly
-                  >
-                  <button class="btn btn-primary btn-lg px-5 shadow glow-btn" id="copy">
-                    <i class="fas fa-copy me-2"></i> Copy
-                  </button>
+                    <form id="addForm" class="row g-3 justify-content-center">
+                      <div class="col-auto">
+                        <div class="input-group input-group-lg" style="max-width: 400px;">
+                          <span class="input-group-text bg-transparent text-white border-end-0">₹</span>
+                          <input type="number" id="amount"
+                            class="form-control bg-transparent text-white border-start-0 text-center fs-3"
+                            placeholder="Enter" min="10" step="1" required>
+                        </div>
+                      </div>
+                      <div class="col-auto">
+                        <button type="submit" class="btn btn-success btn-lg px-5 fw-bold shadow">
+                          <i class="fas fa-plus me-2"></i> Add Money
+                        </button>
+                      </div>
+
+                      <div class="col-12 text-center mt-4">
+                        <span class="text-white-60 small me-3">Quick select:</span>
+                        <button type="button" class="btn btn-outline-light quick mx-2" data-val="100">₹100</button>
+                        <button type="button" class="btn btn-outline-light quick mx-2" data-val="500">₹500</button>
+                        <button type="button" class="btn btn-outline-light quick mx-2" data-val="1000">₹1000</button>
+                        <button type="button" class="btn btn-outline-light quick mx-2" data-val="2000">₹2000</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row justify-content-center mb-5">
+              <div class="col-lg-10">
+                <div class="card bg-dark border-0 shadow-lg rounded-4">
+                  <div class="card-body p-4 p-md-5 text-center">
+                    <h4 class="fw-bold text-white mb-4">
+                      <i class="fas fa-gift text-warning me-3"></i> Refer & Earn
+                    </h4>
+                    <p class="text-white-70 mb-4 fs-5">
+                      Invite friends and earn <strong class="text-success">₹100</strong> wallet credit when they sign
+                      up.<br>
+                      They get <strong class="text-success">₹50</strong> instantly!
+                    </p>
+
+                    <div class="referral-box p-4 bg-black rounded-4 shadow-inner mx-auto" style="max-width: 500px;">
+                      <div class="input-group input-group-lg">
+                        <input type="text" id="code"
+                          class="form-control bg-transparent text-white text-center fw-bold fs-3 border-0"
+                          value="<%= user.referralCode %>" readonly>
+                        <button class="btn btn-primary btn-lg px-5 shadow glow-btn" id="copy">
+                          <i class="fas fa-copy me-2"></i> Copy
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-lg-10">
+                <div class="card bg-dark border-0 shadow-lg rounded-4">
+                  <div class="card-header bg-transparent border-0 py-4 text-center">
+                    <h4 class="fw-bold text-white mb-0">
+                      <i class="fas fa-history text-info me-3"></i> Transaction History
+                    </h4>
+                  </div>
+
+                  <div class="card-body p-0">
+                    <div id="loading" class="text-center py-6">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p class="text-white-60 mt-4 fs-5">Loading transactions...</p>
+                    </div>
+
+                    <div id="list" class="d-none"></div>
+
+                    <div id="pagination" class="pagination-container d-none"></div>
+
+                    <div id="empty" class="text-center py-6 d-none">
+                      <i class="fas fa-receipt fa-5x text-white-30 mb-4"></i>
+                      <p class="text-white-60 fs-4">No transactions yet</p>
+                      <small class="text-white-50">Your wallet activity will appear here</small>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-<div class="row justify-content-center">
-  <div class="col-lg-10 col-xxl-8">
-    <div class="card bg-dark border-0 shadow-lg rounded-4">
-      <div class="card-header bg-transparent border-0 py-4 text-center">
-        <h4 class="fw-bold text-white mb-0">
-          <i class="fas fa-history text-info me-3"></i> Transaction History
-        </h4>
-      </div>
-      
-      <div class="card-body p-0">
-        <div id="loading" class="text-center py-6">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
-          <p class="text-white-60 mt-4 fs-5">Loading transactions...</p>
-        </div>
-
-        <div id="list" class="d-none"></div>
-
-        <div id="empty" class="text-center py-6 d-none">
-          <i class="fas fa-receipt fa-5x text-white-30 mb-4"></i>
-          <p class="text-white-60 fs-4">No transactions yet</p>
-          <small class="text-white-50">Your wallet activity will appear here</small>
-        </div>
-      </div>
+        </main>
     </div>
-  </div>
-</div>
-    </div>
-  </main>
-</div>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-<script>
-  const toast = (msg, type = "info") => {
-    Toastify({
-      text: msg,
-      duration: 4000,
-      gravity: "top",
-      position: "right",
-      backgroundColor: type === "success" 
-        ? "linear-gradient(135deg, #28a745, #20c997)" 
-        : "linear-gradient(135deg, #dc3545, #c82333)",
-      stopOnFocus: true,
-    }).showToast();
-  };
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-  document.getElementById("copy").onclick = async () => {
-    try {
-      await navigator.clipboard.writeText(document.getElementById("code").value);
-      toast("Referral code copied!", "success");
-    } catch {
-      toast("Failed to copy", "error");
-    }
-  };
+    <script>
+      const toast = (msg, type = "info") => {
+        Toastify({
+          text: msg,
+          duration: 4000,
+          gravity: "top",
+          position: "right",
+          backgroundColor: type === "success"
+            ? "linear-gradient(135deg, #28a745, #20c997)"
+            : "linear-gradient(135deg, #dc3545, #c82333)",
+          stopOnFocus: true,
+        }).showToast();
+      };
 
-  document.querySelectorAll(".quick").forEach(btn => {
-    btn.onclick = () => document.getElementById("amount").value = btn.dataset.val;
-  });
-
-  document.getElementById("addForm").onsubmit = async (e) => {
-    e.preventDefault();
-    const amountInput = document.getElementById("amount");
-    const amount = parseFloat(amountInput.value);
-
-    if (!amount || amount < 10 || isNaN(amount)) {
-      toast("Minimum amount is ₹10", "error");
-      return;
-    }
-
-    try {
-      const orderRes = await axios.post("/wallet/create-order", { amount });
-
-      if (!orderRes.data.success) {
-        throw new Error(orderRes.data.message || "Failed to create order");
-      }
-
-      const { order_id, amount: razorAmount, key_id } = orderRes.data;
-
-      const options = {
-        key: key_id,
-        amount: razorAmount,
-        currency: "INR",
-        name: "Chronora",
-        description: "Add Money to Wallet",
-        image: "/images/logo.png",
-        order_id: order_id,
-        handler: async function (response) {
-          try {
-            const verifyRes = await axios.post("/wallet/verify-add", {
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-              amount
-            });
-
-            if (verifyRes.data.success) {
-              toast(`₹${amount} added successfully! 🎉`, "success");
-              amountInput.value = "";
-              loadData();
-            } else {
-              toast(verifyRes.data.message || "Failed to add money", "error");
-            }
-          } catch (err) {
-            toast("Server error after payment", "error");
-            console.error(err);
-          }
-        },
-        prefill: {
-          name: "<%= user.fullName || user.name || '' %>",
-          email: "<%= user.email %>",
-          contact: "<%= user.phone || '' %>"
-        },
-        theme: { color: "#3399cc" },
-        modal: {
-          ondismiss: () => toast("Payment cancelled", "error")
+      document.getElementById("copy").onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(document.getElementById("code").value);
+          toast("Referral code copied!", "success");
+        } catch {
+          toast("Failed to copy", "error");
         }
       };
 
-      const rzp = new Razorpay(options);
-      rzp.on("payment.failed", function (response) {
-        toast("Payment failed: " + (response.error.description || "Please try again"), "error");
+      document.querySelectorAll(".quick").forEach(btn => {
+        btn.onclick = () => document.getElementById("amount").value = btn.dataset.val;
       });
-      rzp.open();
 
-    } catch (err) {
-      toast("Failed to initiate payment. Try again.", "error");
-      console.error(err);
-    }
-  };
+      document.getElementById("addForm").onsubmit = async (e) => {
+        e.preventDefault();
+        const amountInput = document.getElementById("amount");
+        const amount = parseFloat(amountInput.value);
 
-document.addEventListener('DOMContentLoaded', function() {
-  
-  async function loadData() {
-    console.log("Starting loadData...");
-    
-    const loadingEl = document.getElementById("loading");
-    const listEl = document.getElementById("list");
-    const emptyEl = document.getElementById("empty");
-    const balanceEl = document.getElementById("balance");
-    const statusEl = document.getElementById("status");
+        if (!amount || amount < 10 || isNaN(amount)) {
+          toast("Minimum amount is ₹10", "error");
+          return;
+        }
 
-    console.log("Elements found:", {
-      loading: !!loadingEl,
-      list: !!listEl,
-      empty: !!emptyEl,
-      balance: !!balanceEl,
-      status: !!statusEl
-    });
+        try {
+          const orderRes = await axios.post("/wallet/create-order", { amount });
 
-    if (!loadingEl || !listEl || !emptyEl || !balanceEl || !statusEl) {
-      console.error("Missing required elements!");
-      return;
-    }
+          if (!orderRes.data.success) {
+            throw new Error(orderRes.data.message || "Failed to create order");
+          }
 
-    try {
-      console.log("Step 1: Showing loading state");
-      loadingEl.style.display = "block";
-      loadingEl.classList.remove("d-none");
-      listEl.style.display = "none";
-      listEl.classList.add("d-none");
-      emptyEl.style.display = "none";
-      emptyEl.classList.add("d-none");
-      
-      balanceEl.innerHTML = '<div class="spinner-border spinner-border-sm"></div>';
+          const { order_id, amount: razorAmount, key_id } = orderRes.data;
 
-      console.log("Step 2: Fetching data");
-      const res = await axios.get("/wallet/data");
-      
-      console.log("API Response:", res.data);
-      
-      if (!res.data.success) {
-        throw new Error("API returned success: false");
-      }
+          const options = {
+            key: key_id,
+            amount: razorAmount,
+            currency: "INR",
+            name: "Chronora",
+            description: "Add Money to Wallet",
+            image: "/images/logo.png",
+            order_id: order_id,
+            handler: async function (response) {
+              try {
+                const verifyRes = await axios.post("/wallet/verify-add", {
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_signature: response.razorpay_signature,
+                  amount
+                });
 
-      const { balance: rawBalance, transactions } = res.data;
+                if (verifyRes.data.success) {
+                  toast(`₹${amount} added successfully! 🎉`, "success");
+                  amountInput.value = "";
+                  loadData(1);
+                } else {
+                  toast(verifyRes.data.message || "Failed to add money", "error");
+                }
+              } catch (err) {
+                toast("Server error after payment", "error");
+                console.error(err);
+              }
+            },
+            prefill: {
+              name: "<%= user.fullName || user.name || '' %>",
+              email: "<%= user.email %>",
+              contact: "<%= user.phone || '' %>"
+            },
+            theme: { color: "#c9a96e" },
+            modal: {
+              ondismiss: () => toast("Payment cancelled", "error")
+            }
+          };
 
-      console.log("Step 3: Updating balance");
-      const balance = Number(rawBalance) || 0;
-      balanceEl.textContent = `₹${balance.toLocaleString('en-IN')}`;
-      statusEl.textContent = balance > 0 
-        ? "Ready to use on your next purchase" 
-        : "Add money or invite friends to earn rewards";
+          const rzp = new Razorpay(options);
+          rzp.on("payment.failed", function (response) {
+            toast("Payment failed: " + (response.error.description || "Please try again"), "error");
+          });
+          rzp.open();
 
-      console.log("Step 4: Hiding loading");
-      loadingEl.style.display = "none";
-      loadingEl.classList.add("d-none");
+        } catch (err) {
+          toast("Failed to initiate payment. Try again.", "error");
+          console.error(err);
+        }
+      };
 
-      console.log("Step 5: Checking transactions", transactions);
-      
-      if (!transactions || transactions.length === 0) {
-        console.log("No transactions - showing empty state");
-        emptyEl.style.display = "block";
-        emptyEl.classList.remove("d-none");
-        listEl.style.display = "none";
-        listEl.classList.add("d-none");
-        return;
-      }
+      document.addEventListener('DOMContentLoaded', function () {
 
-      console.log("Step 6: Building transaction list");
-      listEl.innerHTML = "";
+        async function loadData(page = 1) {
+          const loadingEl = document.getElementById("loading");
+          const listEl = document.getElementById("list");
+          const emptyEl = document.getElementById("empty");
+          const balanceEl = document.getElementById("balance");
+          const statusEl = document.getElementById("status");
+          const paginationEl = document.getElementById("pagination");
 
-      transactions.forEach((t, i) => {
-        const isCredit = t.type === "credit";
-        const item = document.createElement("div");
-        item.className = `transaction-item px-4 px-md-5 py-4 ${i % 2 === 0 ? 'bg-black-10' : ''} border-top border-333`;
-        item.innerHTML = `
+          if (!loadingEl || !listEl || !emptyEl || !balanceEl || !statusEl || !paginationEl) {
+            return;
+          }
+
+          try {
+            loadingEl.style.display = "block";
+            loadingEl.classList.remove("d-none");
+            listEl.style.display = "none";
+            listEl.classList.add("d-none");
+            emptyEl.style.display = "none";
+            emptyEl.classList.add("d-none");
+            paginationEl.style.display = "none";
+            paginationEl.classList.add("d-none");
+
+            if (page === 1) {
+              balanceEl.innerHTML = '<div class="spinner-border spinner-border-sm"></div>';
+            }
+
+            const res = await axios.get(`/wallet/data?page=${page}`);
+
+            if (!res.data.success) {
+              throw new Error("API error");
+            }
+
+            const { balance: rawBalance, transactions, pagination } = res.data;
+
+            const balance = Number(rawBalance) || 0;
+            balanceEl.textContent = `₹${balance.toLocaleString('en-IN')}`;
+            statusEl.textContent = balance > 0
+              ? "Ready to use on your next purchase"
+              : "Add money or invite friends to earn rewards";
+
+            loadingEl.style.display = "none";
+            loadingEl.classList.add("d-none");
+
+            if (!transactions || transactions.length === 0) {
+              emptyEl.style.display = "block";
+              emptyEl.classList.remove("d-none");
+              listEl.style.display = "none";
+              listEl.classList.add("d-none");
+              return;
+            }
+
+            listEl.innerHTML = "";
+            transactions.forEach((t, i) => {
+              const isCredit = t.type === "credit";
+              const item = document.createElement("div");
+              item.className = `transaction-item px-4 px-md-5 py-4 ${i % 2 === 0 ? 'bg-black-10' : ''} border-top border-333`;
+              item.innerHTML = `
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
               <div class="icon-circle me-4 ${isCredit ? 'bg-success' : 'bg-danger'} text-white">
@@ -323,63 +313,86 @@ document.addEventListener('DOMContentLoaded', function() {
             </span>
           </div>
         `;
-        listEl.appendChild(item);
+              listEl.appendChild(item);
+            });
+
+            listEl.style.display = "block";
+            listEl.classList.remove("d-none");
+
+            if (pagination && pagination.totalPages > 1) {
+              paginationEl.innerHTML = `
+          <button class="pagination-btn ${!pagination.hasPrevPage ? 'disabled' : ''}" 
+                  ${!pagination.hasPrevPage ? 'disabled' : ''}
+                  onclick="loadData(${pagination.currentPage - 1})">Previous</button>
+          <div class="page-info">Page ${pagination.currentPage} of ${pagination.totalPages}</div>
+          <button class="pagination-btn ${!pagination.hasNextPage ? 'disabled' : ''}" 
+                  ${!pagination.hasNextPage ? 'disabled' : ''}
+                  onclick="loadData(${pagination.currentPage + 1})">Next</button>
+        `;
+              paginationEl.style.display = "flex";
+              paginationEl.classList.remove("d-none");
+            }
+
+          } catch (err) {
+            console.error("Error in loadData:", err);
+            loadingEl.style.display = "none";
+            loadingEl.classList.add("d-none");
+            emptyEl.style.display = "block";
+            emptyEl.classList.remove("d-none");
+            toast("Failed to load wallet data", "error");
+          }
+        }
+
+        loadData();
+        window.loadData = loadData;
       });
+    </script>
 
-      console.log("Step 7: Showing list");
-      listEl.style.display = "block";
-      listEl.classList.remove("d-none");
-      emptyEl.style.display = "none";
-      emptyEl.classList.add("d-none");
-
-      console.log("loadData completed successfully");
-
-    } catch (err) {
-      console.error("Error in loadData:", err);
-      
-      loadingEl.style.display = "none";
-      loadingEl.classList.add("d-none");
-      
-      emptyEl.style.display = "block";
-      emptyEl.classList.remove("d-none");
-      
-      listEl.style.display = "none";
-      listEl.classList.add("d-none");
-      
-      toast("Failed to load wallet data", "error");
-    }
-  }
-
-  loadData();
-  
-  window.loadData = loadData;
-});
-</script>
-
-<style>
+    <style>
+    
   .gradient-bg {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, #6b46c1, #319795);
-    opacity: 0.9;
+    background: linear-gradient(135deg, #1a1400, #3a2a00, #c9a96e); /* dark black → gold */
+    opacity: 0.85;
   }
-  .balance-card {
-    background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.1);
-  }
-  .icon-circle {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-  }
-  .bg-black-10 { background: rgba(255,255,255,0.03); }
-  .border-333 { border-color: rgba(255,255,255,0.1) !important; }
-  .glow-btn:hover { box-shadow: 0 0 20px rgba(13,110,253,0.6); }
-  .tracking-wider { letter-spacing: 1.5px; }
-  .z-2 { z-index: 2; }
-</style>
+
+      .balance-card {
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .icon-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+      }
+
+      .bg-black-10 {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .border-333 {
+        border-color: rgba(255, 255, 255, 0.1) !important;
+      }
+
+      .glow-btn:hover {
+        box-shadow: 0 0 20px rgba(13, 110, 253, 0.6);
+      }
+
+      .tracking-wider {
+        letter-spacing: 1.5px;
+      }
+
+      .z-2 {
+        z-index: 2;
+      }
+    </style>
+</body>
+
+</html>

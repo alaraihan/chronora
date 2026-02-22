@@ -1,52 +1,59 @@
-<link rel="stylesheet" href="/css/user/profile.css">
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="chronora-profile container">
-  <%- include('../partials/user/sidebar') %>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile Image | Chronora</title>
+  <link rel="stylesheet" href="/css/user/profile-shared.css">
+  <link rel="stylesheet" href="/css/user/profile.css">
+</head>
 
-  <main class="main-area">
-    <header class="main-header">
-      <h1>Edit Profile Image</h1>
-      <p class="subtitle">Upload a new profile picture to personalize your account.</p>
-    </header>
+<body>
+  <%- include('../partials/user/header') %>
 
-    <div class="profile-card card">
-      <form class="edit-form" enctype="multipart/form-data" method="POST" action="/profile/edit/image">
-        <!-- Current / Preview Image -->
-        <div class="profile-field image-preview-field">
-          <span class="field-label">Preview</span>
-          <div class="image-wrapper">
-            <img 
-              src="<%= user.profileImage || '/images/default.png' %>" 
-              alt="Profile Preview" 
-              class="profile-img" 
-              id="preview">
+    <div class="profile-layout">
+      <%- include('../partials/user/sidebar') %>
+
+        <main class="profile-content">
+          <header class="main-header">
+            <h1>Edit Profile Image</h1>
+            <p class="subtitle">Upload a new profile picture to personalize your account.</p>
+          </header>
+
+          <div class="profile-card card">
+            <form class="edit-form" enctype="multipart/form-data" method="POST" action="/profile/edit/image">
+              <!-- Current / Preview Image -->
+              <div class="profile-field image-preview-field">
+                <span class="field-label">Preview</span>
+                <div class="image-wrapper">
+                  <img src="<%= user.profileImage || '/images/default.png' %>" alt="Profile Preview" class="profile-img"
+                    id="preview">
+                </div>
+                <p class="hint">Your new image will appear here instantly</p>
+              </div>
+
+              <!-- File Upload -->
+              <div class="profile-field">
+                <span class="field-label">Upload New Image</span>
+                <label for="fileInput" class="file-upload-label">
+                  <span class="file-upload-text">Choose Image</span>
+                  <span class="file-name" id="fileName">No file selected</span>
+                </label>
+                <input type="file" name="profileImage" accept="image/*" id="fileInput" class="file-input-hidden">
+              </div>
+
+              <!-- Actions -->
+              <div class="form-actions action-buttons">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="/profile" class="btn btn-ghost">Cancel</a>
+              </div>
+            </form>
           </div>
-          <p class="hint">Your new image will appear here instantly</p>
-        </div>
-
-        <!-- File Upload -->
-        <div class="profile-field">
-          <span class="field-label">Upload New Image</span>
-          <label for="fileInput" class="file-upload-label">
-            <span class="file-upload-text">Choose Image</span>
-            <span class="file-name" id="fileName">No file selected</span>
-          </label>
-          <input 
-            type="file" 
-            name="profileImage" 
-            accept="image/*" 
-            id="fileInput" 
-            class="file-input-hidden">
-        </div>
-
-        <!-- Actions -->
-        <div class="form-actions action-buttons">
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-          <a href="/profile" class="btn btn-ghost">Cancel</a>
-        </div>
-      </form>
+        </main>
     </div>
-  </main>
-</div>
 
-<script src="/js/user/profile-image-edit.js"></script>
+    <script src="/js/user/profile-image-edit.js"></script>
+</body>
+
+</html>

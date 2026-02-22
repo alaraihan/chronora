@@ -1,40 +1,56 @@
-<link rel="stylesheet" href="/css/user/profile.css">
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="chronora-profile container">
-  <%- include('../partials/user/sidebar') %>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Email | Chronora</title>
+  <link rel="stylesheet" href="/css/user/profile-shared.css">
+  <link rel="stylesheet" href="/css/user/profile.css">
+</head>
 
-  <main class="main-area">
-    <header class="main-header">
-      <h1>Edit Email</h1>
-    </header>
+<body>
+  <%- include('../partials/user/header') %>
 
-    <div class="edit-card card" style="max-width:600px; padding:1.5rem;">
-      <form id="email-form">
-        <div class="form-group">
-          <label for="newEmail">New Email</label>
-          <input type="email" id="newEmail" name="newEmail" placeholder="Enter your new email" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Send OTP</button>
-      </form>
+    <div class="profile-layout">
+      <%- include('../partials/user/sidebar') %>
 
-      <form id="otp-form" style="display:none; margin-top:1rem;">
-        <div class="form-group">
-          <label for="otp">Enter OTP</label>
-          <input type="text" id="otp" name="otp" placeholder="Enter OTP" maxlength="6" required>
-        </div>
+        <main class="profile-content">
+          <header class="main-header">
+            <h1>Edit Email</h1>
+          </header>
 
-        
+          <div class="edit-card card" style="max-width:600px; padding:1.5rem;">
+            <form id="email-form">
+              <div class="form-group">
+                <label for="newEmail">New Email</label>
+                <input type="email" id="newEmail" name="newEmail" placeholder="Enter your new email" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Send OTP</button>
+            </form>
 
-        <button type="submit" class="btn btn-primary">Verify OTP</button>
-        <button type="button" id="resendOtpBtn" class="btn" style="display:none; margin-left:8px;">Resend OTP</button>
-      </form>
+            <form id="otp-form" style="display:none; margin-top:1rem;">
+              <div class="form-group">
+                <label for="otp">Enter OTP</label>
+                <input type="text" id="otp" name="otp" placeholder="Enter OTP" maxlength="6" required>
+              </div>
+
+
+
+              <button type="submit" class="btn btn-primary">Verify OTP</button>
+              <button type="button" id="resendOtpBtn" class="btn" style="display:none; margin-left:8px;">Resend
+                OTP</button>
+            </form>
+          </div>
+        </main>
     </div>
-  </main>
-</div>
 
-<!-- includes: axios + toastify -->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <!-- includes: axios + toastify -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-<script src="/js/user/profile-email-edit.js"></script>
+    <script src="/js/user/profile-email-edit.js"></script>
+</body>
+
+</html>

@@ -1,100 +1,146 @@
-<link rel="stylesheet" href="/css/user/orders.css">
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="orders-container">
-  <aside class="sidebar">
-    <%- include('../partials/user/sidebar') %>
-  </aside>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders | Chronora</title>
+  <link rel="stylesheet" href="/css/user/profile-shared.css">
+  <link rel="stylesheet" href="/css/user/orders.css">
+</head>
 
-  <main class="orders-content">
-    <h1>My Orders</h1>
-    <p class="subtext">Manage your order history here.</p>
+<body>
+  <%- include('../partials/user/header') %>
 
-    <div class="orders-list" id="ordersList">
-      <% if (!orders || orders.length === 0) { %>
-        <p style="text-align:center; color:#999; padding:60px;">No orders yet.</p>
-      <% } else { %>
-        <% orders.forEach(order => { %>
-          <% 
-            const orderSubtotal = order.products.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-          %>
-          <% order.products.forEach(item => { %>
-            <div class="order-card">
-              <div class="order-header-inline">
-                <div class="order-meta">
-                  <span class="order-date"><%= new Date(order.createdAt).toDateString() %></span>
-                  <span class="order-id-small">Order #<%= order.orderId %></span>
-                </div>
-                <div class="item-status-badge">
-                  <span class="status-label <%= item.itemStatus.toLowerCase().replace(/\s+/g, '-') %>">
-                    <%= item.itemStatus %>
-                  </span>
-                </div>
-              </div>
+    <div class="profile-layout">
+      <%- include('../partials/user/sidebar') %>
 
-              <div class="order-item-main">
-                <div class="item-image-wrapper">
-                  <img 
-                    src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>" 
-                    alt="<%= item.productId?.name || 'Watch' %>"
-                    class="item-image"
-                    onerror="this.src='/images/default-watch.jpg'"
-                  >
-                </div>
+        <main class="profile-content">
+          <header class="page-title-header">
+            <h1>My Orders</h1>
+            <p class="subtitle">Manage your order history here.</p>
+          </header>
 
-                <div class="item-details">
-                  <h3 class="item-name"><%= item.productId?.name || 'Unknown Watch' %></h3>
-                  <p class="item-variant"><%= item.variantId?.colorName || 'Standard' %></p>
-                  <p class="item-quantity">Qty: <%= item.quantity %></p>
-                  <p class="item-price">₹<%= (item.price * item.quantity).toLocaleString('en-IN') %></p>
-                  
-                  <% if (item.reason) { %>
-                    <p class="item-reason"><strong>Reason:</strong> <%= item.reason %></p>
+          <div class="orders-list" id="ordersList" style="width: 100%;">
+            <% if (!orders || orders.length===0) { %>
+              <p class="empty-orders" style="text-align:center; padding:60px;">No orders yet.</p>
+              <% } else { %>
+                <% orders.forEach(order=> { %>
+                  <% const orderSubtotal=order.products.reduce((sum, item)=> sum + (item.price * item.quantity), 0);
+                    %>
+                    <% order.products.forEach(item=> { %>
+                      <div class="order-card">
+                        <div class="order-header-inline">
+                          <div class="order-meta">
+                            <span class="order-date">
+                              <%= new Date(order.createdAt).toDateString() %>
+                            </span>
+                            <span class="order-id-small">Order #<%= order.orderId %></span>
+                          </div>
+                          <div class="item-status-badge">
+                            <% if (order.paymentStatus==='Failed' ) { %>
+                              <span class="status-label failed">Payment Failed</span>
+                              <% } else { %>
+                                <span class="status-label <%= item.itemStatus.toLowerCase().replace(/\s+/g, '-') %>">
+                                  <%= item.itemStatus %>
+                                </span>
+                                <% } %>
+                          </div>
+                        </div>
+
+                        <div class="order-item-main">
+                          <div class="item-image-wrapper">
+                            <img src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>"
+                              alt="<%= item.productId?.name || 'Watch' %>" class="item-image"
+                              onerror="this.src='/images/default-watch.jpg'">
+                          </div>
+
+                          <div class="item-details">
+                            <h3 class="item-name">
+                              <%= item.productId?.name || 'Unknown Watch' %>
+                            </h3>
+                            <p class="item-variant">
+                              <%= item.variantId?.colorName || 'Standard' %>
+                            </p>
+                            <p class="item-quantity">Qty: <%= item.quantity %>
+                            </p>
+                            <p class="item-price">₹<%= (item.price * item.quantity).toLocaleString('en-IN') %>
+                            </p>
+
+                            <% if (item.reason) { %>
+                              <p class="item-reason"><strong>Reason:</strong>
+                                <%= item.reason %>
+                              </p>
+                              <% } %>
+                          </div>
+
+                          <div class="item-actions">
+                            <% if (item.productId && item.variantId) { %>
+                              <a
+                                href="/profile/orders/<%= order.orderId %>?productId=<%= item.productId._id %>&variantId=<%= item.variantId._id %>">
+                                View Details
+                              </a>
+                              <% } else { %>
+                                <a href="/profile/orders/<%= order.orderId %>">
+                                  View Order
+                                </a>
+                                <% } %>
+                          </div>
+                        </div>
+
+                        <div class="order-pricing-summary">
+                          <div class="pricing-row">
+                            <span>Subtotal</span>
+                            <span>₹<%= orderSubtotal.toLocaleString('en-IN') %></span>
+                          </div>
+
+                          <% if (order.discount> 0) { %>
+                            <div class="pricing-row discount-row">
+                              <span>Coupon Discount</span>
+                              <span style="color:#00ff9d;">- ₹<%= order.discount.toLocaleString('en-IN') %></span>
+                            </div>
+                            <% } %>
+                              <div class="pricing-total">
+                                <span>Paid Amount</span>
+                                <strong style="color:#00ff9d; font-size:1.2em;">
+                                  ₹<%= order.totalAmount.toLocaleString('en-IN') %>
+                                </strong>
+                              </div>
+                        </div>
+
+                        <% if (order.expectedDelivery && !['Delivered', 'Cancelled' , 'ReturnRequested' , 'Returned'
+                          , 'Failed' ].includes(item.itemStatus) && order.paymentStatus !=='Failed' ) { %>
+                          <div class="delivery-info">
+                            <span>Expected Delivery: <%= new Date(order.expectedDelivery).toDateString() %></span>
+                          </div>
+                          <% } %>
+                      </div>
+                      <% }) %>
+                        <% }) %>
+                          <% } %>
+          </div>
+
+          <% if (totalPages> 1) { %>
+            <div class="pagination-container">
+              <% if (hasPrevPage) { %>
+                <a href="?page=<%= currentPage - 1 %>" class="pagination-btn">Previous</a>
+                <% } else { %>
+                  <span class="pagination-btn disabled">Previous</span>
                   <% } %>
-                </div>
 
-                <div class="item-actions">
-<% if (item.productId && item.variantId) { %>
-  <a href="/profile/orders/<%= order.orderId %>?productId=<%= item.productId._id %>&variantId=<%= item.variantId._id %>">
-    View Details
-  </a>
-<% } else { %>
-  <a href="/profile/orders/<%= order.orderId %>">
-    View Order
-  </a>
-<% } %>             
-                  </a>
-                </div>
-              </div>
+                    <div class="page-info">
+                      Page <%= currentPage %> of <%= totalPages %>
+                    </div>
 
-              <div class="order-pricing-summary">
-                <div class="pricing-row">
-                  <span>Subtotal</span>
-                  <span>₹<%= orderSubtotal.toLocaleString('en-IN') %></span>
-                </div>
-                
-                <% if (order.discount > 0) { %>
-                  <div class="pricing-row discount-row">
-                    <span>Coupon Discount</span>
-                    <span style="color:#00ff9d;">- ₹<%= order.discount.toLocaleString('en-IN') %></span>
-                  </div>
-                <% } %>
-                <div class="pricing-total">
-                  <span>Paid Amount</span>
-                  <strong style="color:#00ff9d; font-size:1.2em;">
-                    ₹<%= order.totalAmount.toLocaleString('en-IN') %>
-                  </strong>
-                </div>
-              </div>
-
-              <% if (order.expectedDelivery && !['Delivered', 'Cancelled', 'ReturnRequested', 'Returned'].includes(item.itemStatus)) { %>
-                <div class="delivery-info">
-                  <span>Expected Delivery: <%= new Date(order.expectedDelivery).toDateString() %></span>
-                </div>
-              <% } %>
+                    <% if (hasNextPage) { %>
+                      <a href="?page=<%= currentPage + 1 %>" class="pagination-btn">Next</a>
+                      <% } else { %>
+                        <span class="pagination-btn disabled">Next</span>
+                        <% } %>
             </div>
-          <% }) %>
-        <% }) %>
-      <% } %>
+            <% } %>
+        </main>
     </div>
-  </main>
-</div>
+</body>
+
+</html>
