@@ -7,45 +7,46 @@ import logger from "../../helpers/logger.js";
 export const getOrdersPage = async (req, res) => {
   try {
     const userId = req.user?._id;
-    if (!userId) { return res.redirect("/login"); }
+    if (!userId) return res.redirect("/login");
 
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 8;
-    const skip = (page - 1) * limit;
+    const page  = parseInt(req.query.page)  || 1;
+    const limit = parseInt(req.query.limit) || 3;
+    const skip  = (page - 1) * limit;
 
-    const totalOrders = await Order.countDocuments({ userId });
-    const totalPages = Math.ceil(totalOrders / limit);
-
-    const orders = await Order.find({ userId })
-      .populate({
-        path: "products.productId",
-        select: "name images"
-      })
-      .populate({
-        path: "products.variantId",
-        select: "images colorName size"
-      })
+    const allOrders = await Order.find({ userId })
+      .populate({ path: "products.productId", select: "name images" })
+      .populate({ path: "products.variantId", select: "images colorName size" })
       .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
       .lean();
 
-    res.render("user/orders", {
-      orders,
-      active: "Orders",
-      currentPage: page,
-      totalPages,
-      hasNextPage: page < totalPages,
-      hasPrevPage: page > 1,
-      totalOrders
+    const allItems = [];
+    allOrders.forEach(order => {
+      order.products.forEach(item => {
+        allItems.push({ order, item });
+      });
     });
+
+    const totalItems = allItems.length;
+    const totalPages = Math.ceil(totalItems / limit);
+
+    const pageItems = allItems.slice(skip, skip + limit);
+
+    res.render("user/orders", {
+      pageItems,      
+      active:       "Orders",
+      currentPage:  page,
+      totalPages,
+      hasNextPage:  page < totalPages,
+      hasPrevPage:  page > 1,
+      totalItems
+    });
+
     logger.info(`Orders page loaded for user ${userId}, page ${page}`);
   } catch (err) {
     logger.error("getOrdersPage ERROR:", err);
     res.status(500).send("Server error");
   }
 };
-
 export const getOrderDetails = async (req, res) => {
   try {
     const { orderId } = req.params;

@@ -221,3 +221,5 @@ Or, if you meant to create an async function, pass `async: true` as an option.
 If the above error is not helpful, you may want to try EJS-Lint:
 https://github.com/RyanZim/EJS-Lint
 Or, if you meant to create an async function, pass `async: true` as an option.
+2026-02-23 02:02:41 [ERROR]: getOrdersPage ERROR: totalOrders is not defined
+2026-02-23 02:04:30 [ERROR]: getOrdersPage ERROR: allOrders is not defined

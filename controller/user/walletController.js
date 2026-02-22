@@ -52,7 +52,7 @@ export const getWalletData = async (req, res) => {
     }
 
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
+    const limit = parseInt(req.query.limit) || 3;
     const skip = (page - 1) * limit;
 
     const user = await User.findById(userId).select("wallet walletTransactions");

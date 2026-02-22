@@ -329,8 +329,9 @@
                   ${!pagination.hasNextPage ? 'disabled' : ''}
                   onclick="loadData(${pagination.currentPage + 1})">Next</button>
         `;
-              paginationEl.style.display = "flex";
-              paginationEl.classList.remove("d-none");
+           paginationEl.removeAttribute("style");
+paginationEl.classList.remove("d-none");
+paginationEl.style.display = "flex";
             }
 
           } catch (err) {
