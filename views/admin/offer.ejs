@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %> | Admin</title>
+    <title>
+        <%= title %> | Admin
+    </title>
     <link rel="stylesheet" href="/css/admin/offer.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -14,8 +17,17 @@
             font-size: 0.8rem;
             font-weight: bold;
         }
-        .type-product { background: #e3f2fd; color: #1976d2; }
-        .type-category { background: #e8f5e8; color: #388e3c; }
+
+        .type-product {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .type-category {
+            background: #e8f5e8;
+            color: #388e3c;
+        }
+
         .discount-badge {
             background: #ff9800;
             color: white;
@@ -23,99 +35,106 @@
             border-radius: 6px;
             font-weight: bold;
         }
-        .status-badge.status-delivered { background: #d4edda; color: #155724; }
-        .status-badge.status-cancelled { background: #f8d7da; color: #721c24; }
+
+        .status-badge.status-delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
     </style>
 </head>
+
 <body>
 
-<main class="main-content">
-    <header class="content-header">
-        <h1><i class="bi bi-tag-fill"></i> Offers Management</h1>
-    </header>
+    <main class="main-content">
+        <header class="content-header">
+            <h1><i class="bi bi-tag-fill"></i> Offers Management</h1>
+        </header>
 
-    <div class="filters-card">
-        <div class="filter-row" style="justify-content: space-between; align-items: center;">
-            <div class="filter-group">
-                <select id="typeFilter" class="status-select">
-                    <option value="">All Offer Types</option>
-                    <option value="product">Product Offer</option>
-                    <option value="category">Category Offer</option>
-                </select>
+        <div class="filters-card">
+            <div class="filter-row" style="justify-content: space-between; align-items: center;">
+                <div class="filter-group">
+                    <select id="typeFilter" class="status-select">
+                        <option value="">All Offer Types</option>
+                        <option value="product">Product Offer</option>
+                        <option value="category">Category Offer</option>
+                    </select>
+                </div>
+
+                <button onclick="openModal()" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Add New Offer
+                </button>
             </div>
-
-            <button onclick="openModal()" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Add New Offer
-            </button>
         </div>
-    </div>
 
-    <div class="orders-summary">
-        <div class="summary-card">
-            <h3 id="totalOffers">0</h3>
-            <p>Total Active Offers</p>
-        </div>
-        <div class="summary-text">
-            Highest discount wins if multiple offers apply to the same product
-        </div>
-    </div>
-
-    <div class="table-container">
-        <table class="orders-table">
-            <thead>
-                <tr>
-                    <th>Offer Name</th>
-                    <th>Type & Target</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Discount</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="offersTableBody"></tbody>
-        </table>
-    </div>
-</main>
-
-<div id="offerModal" class="modal">
-    <div class="modal-content">
-        <span class="btn-close" onclick="closeModal()">&times;</span>
-        <h2 id="modalTitle">Add New Offer</h2>
-
-        <form id="offerForm">
-            <input type="hidden" id="offerId" />
-
-            <div style="margin-bottom: 15px;">
-                <label><strong>Offer Name</strong></label>
-                <input type="text" id="name" class="search-input" placeholder="e.g. Christmas Sale" required style="width:100%; margin-top:5px;">
+        <div class="orders-summary">
+            <div class="summary-card">
+                <h3 id="totalOffers">0</h3>
+                <p>Total Active Offers</p>
             </div>
-
-            <div style="margin-bottom: 15px;">
-                <label><strong>Offer Type</strong></label>
-                <select id="type" class="status-select" style="width:100%; margin-top:5px;" required>
-                    <option value="product">Product Offer</option>
-                    <option value="category">Category Offer</option>
-                </select>
+            <div class="summary-text">
+                Highest discount wins if multiple offers apply to the same product
             </div>
+        </div>
 
-            <div style="margin-bottom: 15px;">
-                <label><strong>Target</strong></label>
-               <div style="position: relative;">
-    <input 
-        type="text" 
-        id="targetSearch" 
-        class="search-input"
-        placeholder="Search product or category..."
-        autocomplete="off"
-        style="width:100%; margin-top:5px;"
-    />
+        <div class="table-container">
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Offer Name</th>
+                        <th>Type & Target</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Discount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="offersTableBody"></tbody>
+            </table>
+        </div>
+    </main>
 
-    <input type="hidden" id="targetId" />
+    <div id="offerModal" class="modal">
+        <div class="modal-content">
+            <span class="btn-close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Add New Offer</h2>
 
-    <div 
-        id="targetDropdown" 
-        style="
+            <form id="offerForm">
+                <input type="hidden" id="offerId" />
+
+                <div style="margin-bottom: 15px;">
+                    <label><strong>Offer Name</strong></label>
+                    <input type="text" id="name" class="search-input" placeholder="e.g. Christmas Sale" required
+                        style="width:100%; margin-top:5px;">
+                    <div class="error-msg text-danger small mt-1" id="error-name"
+                        style="color: #f87171; font-size: 0.8rem; margin-top: 4px;"></div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label><strong>Offer Type</strong></label>
+                    <select id="type" class="status-select" style="width:100%; margin-top:5px;" required>
+                        <option value="product">Product Offer</option>
+                        <option value="category">Category Offer</option>
+                    </select>
+                    <div class="error-msg text-danger small mt-1" id="error-type"
+                        style="color: #f87171; font-size: 0.8rem; margin-top: 4px;"></div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label><strong>Target</strong></label>
+                    <div style="position: relative;">
+                        <input type="text" id="targetSearch" class="search-input"
+                            placeholder="Search product or category..." autocomplete="off"
+                            style="width:100%; margin-top:5px;" />
+
+                        <input type="hidden" id="targetId" />
+
+                        <div id="targetDropdown" style="
             position:absolute;
             top:100%;
             left:0;
@@ -127,270 +146,346 @@
             z-index:1000;
             display:none;
         ">
-    </div>
-</div>
-
-            </div>
-
-            <div style="margin-bottom: 15px;">
-                <label><strong>Discount Type</strong></label>
-                <select id="discountType" class="status-select" style="width:100%; margin-top:5px;" required>
-                    <option value="percentage">Percentage (%)</option>
-                    <option value="fixed">Fixed Amount (₹)</option>
-                </select>
-            </div>
-
-            <div style="margin-bottom: 15px;">
-                <label><strong>Discount Value</strong></label>
-                <input type="number" id="discountValue" min="1" step="0.01" class="search-input" placeholder="e.g. 25 or 500" required style="width:100%; margin-top:5px;">
-            </div>
-
-            <div style="margin-bottom: 15px; display:flex; gap:15px;">
-                <div style="flex:1;">
-                    <label><strong>Start Date</strong></label>
-                    <input type="date" id="startDate" class="search-input" required style="width:100%; margin-top:5px;">
+                        </div>
+                    </div>
+                    <div class="error-msg text-danger small mt-1" id="error-targetId"
+                        style="color: #f87171; font-size: 0.8rem; margin-top: 4px;"></div>
                 </div>
-                <div style="flex:1;">
-                    <label><strong>End Date</strong></label>
-                    <input type="date" id="endDate" class="search-input" required style="width:100%; margin-top:5px;">
+
+                <div style="margin-bottom: 15px;">
+                    <label><strong>Discount Type</strong></label>
+                    <select id="discountType" class="status-select" style="width:100%; margin-top:5px;" required>
+                        <option value="percentage">Percentage (%)</option>
+                        <option value="fixed">Fixed Amount (₹)</option>
+                    </select>
+                    <div class="error-msg text-danger small mt-1" id="error-discountType"
+                        style="color: #f87171; font-size: 0.8rem; margin-top: 4px;"></div>
                 </div>
-            </div>
 
-            <div style="margin-bottom: 15px;">
-                <label>
-                    <input type="checkbox" id="active" checked>
-                    <strong> Active (Visible to customers)</strong>
-                </label>
-            </div>
+                <div style="margin-bottom: 15px;">
+                    <label><strong>Discount Value</strong></label>
+                    <input type="number" id="discountValue" min="1" step="0.01" class="search-input"
+                        placeholder="e.g. 25 or 500" required style="width:100%; margin-top:5px;">
+                    <div class="error-msg text-danger small mt-1" id="error-discountValue"
+                        style="color: #f87171; font-size: 0.8rem; margin-top: 4px;"></div>
+                </div>
 
-            <div style="text-align: right;">
-                <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save Offer</button>
-            </div>
-        </form>
+                <div style="margin-bottom: 15px; display:flex; gap:15px;">
+                    <div style="flex:1;">
+                        <label><strong>Start Date</strong></label>
+                        <input type="date" id="startDate" class="search-input" required
+                            style="width:100%; margin-top:5px;">
+                        <div class="error-msg text-danger small mt-1" id="error-startDate"
+                            style="color: #f87171; font-size: 0.8rem; margin-top: 4px;"></div>
+                    </div>
+                    <div style="flex:1;">
+                        <label><strong>End Date</strong></label>
+                        <input type="date" id="endDate" class="search-input" required
+                            style="width:100%; margin-top:5px;">
+                        <div class="error-msg text-danger small mt-1" id="error-endDate"
+                            style="color: #f87171; font-size: 0.8rem; margin-top: 4px;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label>
+                        <input type="checkbox" id="active" checked>
+                        <strong> Active (Visible to customers)</strong>
+                    </label>
+                </div>
+
+                <div style="text-align: right;">
+                    <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Offer</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<div id="loadingOverlay" class="loading-overlay">
-    <i class="bi bi-hourglass-split" style="font-size: 2.5rem;"></i>
-    <div>Loading offers...</div>
-</div>
+    <div id="loadingOverlay" class="loading-overlay">
+        <i class="bi bi-hourglass-split" style="font-size: 2.5rem;"></i>
+        <div>Loading offers...</div>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
-let editingOffer = null;
+    <script>
+        let editingOffer = null;
 
-function toast(msg, type = 'error') {
-    Toastify({
-        text: msg,
-        duration: 3000,
-        backgroundColor: type === 'success' ? '#28a745' : '#dc3545'
-    }).showToast();
-}
-
-async function openModal(offer = null) {
-    editingOffer = offer;
-
-    document.getElementById("offerModal").style.display = "flex";
-
-    document.getElementById("modalTitle").textContent = offer ? "Edit Offer" : "Add New Offer";
-    document.getElementById("offerId").value = offer?._id || "";
-    document.getElementById("name").value = offer?.name || "";
-    document.getElementById("type").value = offer?.type || "product";
-    document.getElementById("discountType").value = offer?.discountType || "percentage";
-    document.getElementById("discountValue").value = offer?.discountValue || "";
-    document.getElementById("startDate").value = offer?.startDate
-        ? new Date(offer.startDate).toISOString().split('T')[0]
-        : "";
-    document.getElementById("endDate").value = offer?.endDate
-        ? new Date(offer.endDate).toISOString().split('T')[0]
-        : "";
-    document.getElementById("active").checked = offer ? offer.active : true;
-
-    await loadTargets();
-
-    if (offer) {
-        setTimeout(() => {
-            const target = offer.type === 'product'
-                ? offer.productId
-                : offer.categoryId;
-
-            if (target) {
-                document.getElementById("targetId").value = target._id;
-                document.getElementById("targetSearch").value = target.name;
-            }
-        }, 150);
-    }
-}
-
-
-
-function closeModal() {
-    document.getElementById("offerModal").style.display = "none";
-    document.getElementById("offerForm").reset();
-    editingOffer = null;
-}
-
-let targetsCache = [];
-
-async function loadTargets() {
-    const type = document.getElementById("type").value;
-    const dropdown = document.getElementById("targetDropdown");
-    const searchInput = document.getElementById("targetSearch");
-
-    dropdown.innerHTML = "Loading...";
-    dropdown.style.display = "block";
-
-    try {
-        const res = await axios.get(`/admin/offers/targets?type=${type}`);
-        targetsCache = res.data.targets;
-
-        renderTargetList(targetsCache);
-    } catch (err) {
-        dropdown.innerHTML = "<div style='padding:10px;'>Error loading</div>";
-        toast("Failed to load targets");
-    }
-
-    searchInput.value = "";
-    document.getElementById("targetId").value = "";
-}
-
-function renderTargetList(list) {
-    const dropdown = document.getElementById("targetDropdown");
-    dropdown.innerHTML = "";
-
-    if (list.length === 0) {
-        dropdown.innerHTML = "<div style='padding:10px;'>No results</div>";
-        return;
-    }
-
-    list.forEach(item => {
-        const div = document.createElement("div");
-        div.textContent = item.name;
-        div.style.padding = "10px";
-        div.style.cursor = "pointer";
-
-        div.addEventListener("click", () => {
-            document.getElementById("targetSearch").value = item.name;
-            document.getElementById("targetId").value = item._id;
-            dropdown.style.display = "none";
-        });
-
-        div.addEventListener("mouseover", () => {
-            div.style.background = "#f1f1f1";
-        });
-
-        div.addEventListener("mouseout", () => {
-            div.style.background = "#fff";
-        });
-
-        dropdown.appendChild(div);
-    });
-}
-document.getElementById("targetSearch").addEventListener("input", function () {
-    const value = this.value.toLowerCase();
-    const filtered = targetsCache.filter(t =>
-        t.name.toLowerCase().includes(value)
-    );
-    document.getElementById("targetDropdown").style.display = "block";
-    renderTargetList(filtered);
-});
-document.addEventListener("click", (e) => {
-    if (!e.target.closest("#targetSearch")) {
-        document.getElementById("targetDropdown").style.display = "none";
-    }
-});
-
-document.getElementById("type").addEventListener("change", loadTargets);
-
-document.getElementById("offerForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const data = {
-        name: document.getElementById("name").value.trim(),
-        type: document.getElementById("type").value,
-        targetId: document.getElementById("targetId").value,
-        discountType: document.getElementById("discountType").value,
-        discountValue: parseFloat(document.getElementById("discountValue").value),
-        startDate: document.getElementById("startDate").value,
-        endDate: document.getElementById("endDate").value,
-        active: document.getElementById("active").checked
-    };
-
-    if (!data.targetId) return toast("Please select a target");
-    if (data.discountValue <= 0) return toast("Discount must be greater than 0");
-    if (new Date(data.endDate) <= new Date(data.startDate)) return toast("End date must be after start date");
-
-    try {
-        if (editingOffer) {
-            await axios.put(`/admin/offers/${editingOffer._id}`, data);
-            toast("Offer updated successfully", "success");
-        } else {
-            await axios.post(`/admin/offers`, data);
-            toast("Offer created successfully", "success");
+        function toast(msg, type = 'error') {
+            Toastify({
+                text: msg,
+                duration: 3000,
+                backgroundColor: type === 'success' ? '#28a745' : '#dc3545'
+            }).showToast();
         }
-        closeModal();
-        loadOffers();
-    } catch (err) {
-        toast(err.response?.data?.message || "Error saving offer");
-    }
-});
 
-async function toggleActive(id) {
-    try {
-        const res = await axios.patch(`/admin/offers/${id}/toggle`);
-        toast(`Offer ${res.data.active ? 'activated' : 'deactivated'}`, "success");
-        loadOffers();
-    } catch (err) {
-        console.error("Toggle error:", err.response || err);
-        toast("Failed to update status");
-    }
-}
+        async function openModal(offer = null) {
+            editingOffer = offer;
 
-async function deleteOffer(id) {
-    const result = await Swal.fire({
-        title: "Are you sure?",
-        text: "Delete this offer permanently?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#dc3545",
-        cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, delete it!"
-    });
+            document.getElementById("offerModal").style.display = "flex";
 
-    if (!result.isConfirmed) return;
+            document.getElementById("modalTitle").textContent = offer ? "Edit Offer" : "Add New Offer";
+            document.getElementById("offerId").value = offer?._id || "";
+            document.getElementById("name").value = offer?.name || "";
+            document.getElementById("type").value = offer?.type || "product";
+            document.getElementById("discountType").value = offer?.discountType || "percentage";
+            document.getElementById("discountValue").value = offer?.discountValue || "";
+            document.getElementById("startDate").value = offer?.startDate
+                ? new Date(offer.startDate).toISOString().split('T')[0]
+                : "";
+            document.getElementById("endDate").value = offer?.endDate
+                ? new Date(offer.endDate).toISOString().split('T')[0]
+                : "";
+            document.getElementById("active").checked = offer ? offer.active : true;
 
-    try {
-        await axios.delete(`/admin/offers/${id}`);
-        toast("Offer deleted", "success");
-        loadOffers();
-    } catch (err) {
-        toast("Error deleting offer");
-    }
-}
+            await loadTargets();
+
+            if (offer) {
+                setTimeout(() => {
+                    const target = offer.type === 'product'
+                        ? offer.productId
+                        : offer.categoryId;
+
+                    if (target) {
+                        document.getElementById("targetId").value = target._id;
+                        document.getElementById("targetSearch").value = target.name;
+                    }
+                }, 150);
+            }
+        }
 
 
-function renderOffers(offers) {
-    const tbody = document.getElementById("offersTableBody");
-    tbody.innerHTML = offers.length === 0 
-        ? `<tr><td colspan="7" style="text-align:center; padding:50px; color:#888;">No offers found</td></tr>`
-        : "";
 
-    offers.forEach(offer => {
-        const discountStr = offer.discountType === 'percentage' 
-            ? `${offer.discountValue}% OFF` 
-            : `₹${offer.discountValue} OFF`;
+        function closeModal() {
+            document.getElementById("offerModal").style.display = "none";
+            document.getElementById("offerForm").reset();
+            editingOffer = null;
+        }
 
-        const targetName = offer.productId?.name || offer.categoryId?.name || "N/A";
+        let targetsCache = [];
 
-        const row = document.createElement("tr");
-        row.innerHTML = `
+        async function loadTargets() {
+            const type = document.getElementById("type").value;
+            const dropdown = document.getElementById("targetDropdown");
+            const searchInput = document.getElementById("targetSearch");
+
+            dropdown.innerHTML = "Loading...";
+            dropdown.style.display = "block";
+
+            try {
+                const res = await axios.get(`/admin/offers/targets?type=${type}`);
+                targetsCache = res.data.targets;
+
+                renderTargetList(targetsCache);
+            } catch (err) {
+                dropdown.innerHTML = "<div style='padding:10px;'>Error loading</div>";
+                toast("Failed to load targets");
+            }
+
+            searchInput.value = "";
+            document.getElementById("targetId").value = "";
+        }
+
+        function renderTargetList(list) {
+            const dropdown = document.getElementById("targetDropdown");
+            dropdown.innerHTML = "";
+
+            if (list.length === 0) {
+                dropdown.innerHTML = "<div style='padding:10px;'>No results</div>";
+                return;
+            }
+
+            list.forEach(item => {
+                const div = document.createElement("div");
+                div.textContent = item.name;
+                div.style.padding = "10px";
+                div.style.cursor = "pointer";
+
+                div.addEventListener("click", () => {
+                    document.getElementById("targetSearch").value = item.name;
+                    document.getElementById("targetId").value = item._id;
+                    dropdown.style.display = "none";
+                });
+
+                div.addEventListener("mouseover", () => {
+                    div.style.background = "#f1f1f1";
+                });
+
+                div.addEventListener("mouseout", () => {
+                    div.style.background = "#fff";
+                });
+
+                dropdown.appendChild(div);
+            });
+        }
+        document.getElementById("targetSearch").addEventListener("input", function () {
+            const value = this.value.toLowerCase();
+            const filtered = targetsCache.filter(t =>
+                t.name.toLowerCase().includes(value)
+            );
+            document.getElementById("targetDropdown").style.display = "block";
+            renderTargetList(filtered);
+        });
+        document.addEventListener("click", (e) => {
+            if (e.target.classList.contains('edit-btn')) {
+                try {
+                    const offer = JSON.parse(e.target.getAttribute('data-offer'));
+                    openModal(offer);
+                } catch (err) {
+                    console.error("Parse error:", err);
+                }
+            }
+            if (!e.target.closest("#targetSearch")) {
+                document.getElementById("targetDropdown").style.display = "none";
+            }
+        });
+
+        // Real-time Validation
+        function validateOfferField(id, value) {
+            const errorEl = document.getElementById(`error-${id}`);
+            if (!errorEl) return '';
+            let errorMessage = '';
+
+            switch (id) {
+                case 'name':
+                    if (!value.trim()) errorMessage = "Offer name is required";
+                    break;
+                case 'discountValue':
+                    const val = parseFloat(value);
+                    if (isNaN(val) || val <= 0) errorMessage = "Discount must be greater than 0";
+                    else {
+                        const type = document.getElementById('discountType').value;
+                        if (type === 'percentage' && val > 100) errorMessage = "Percentage cannot exceed 100%";
+                    }
+                    break;
+                case 'endDate':
+                    const start = document.getElementById('startDate').value;
+                    if (start && value && new Date(value) <= new Date(start)) {
+                        errorMessage = "End date must be after start date";
+                    }
+                    break;
+                case 'targetId':
+                case 'targetSearch':
+                    if (!document.getElementById('targetId').value) {
+                        errorMessage = "Please select a valid target from the list";
+                    }
+                    break;
+            }
+            errorEl.innerText = errorMessage;
+            return errorMessage;
+        }
+
+        document.querySelectorAll('#offerForm input, #offerForm select').forEach(el => {
+            el.addEventListener('input', (e) => {
+                validateOfferField(e.target.id, e.target.value);
+            });
+        });
+
+        document.getElementById("type").addEventListener("change", () => {
+            loadTargets();
+            document.getElementById('targetId').value = ''; // Reset target ID when type changes
+            document.getElementById('targetSearch').value = ''; // Reset search field
+            validateOfferField('targetId', ''); // Re-validate
+        });
+
+        document.getElementById("offerForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // Clear previous errors
+            document.querySelectorAll('.error-msg').forEach(el => el.innerText = '');
+
+            const data = {
+                name: document.getElementById("name").value.trim(),
+                type: document.getElementById("type").value,
+                targetId: document.getElementById("targetId").value,
+                discountType: document.getElementById("discountType").value,
+                discountValue: parseFloat(document.getElementById("discountValue").value),
+                startDate: document.getElementById("startDate").value,
+                endDate: document.getElementById("endDate").value,
+                active: document.getElementById("active").checked
+            };
+
+            // Unified Validation
+            let hasError = false;
+            ['name', 'discountValue', 'endDate', 'targetId'].forEach(field => {
+                const val = (field === 'targetId') ? document.getElementById('targetId').value :
+                    (field === 'discountValue') ? document.getElementById('discountValue').value :
+                        document.getElementById(field).value;
+                if (validateOfferField(field, val)) hasError = true;
+            });
+
+            if (hasError) return;
+
+            try {
+                if (editingOffer) {
+                    await axios.put(`/admin/offers/${editingOffer._id}`, data);
+                    toast("Offer updated successfully", "success");
+                } else {
+                    await axios.post(`/admin/offers`, data);
+                    toast("Offer created successfully", "success");
+                }
+                closeModal();
+                loadOffers();
+            } catch (err) {
+                toast(err.response?.data?.message || "Error saving offer");
+            }
+        });
+
+        async function toggleActive(id) {
+            try {
+                const res = await axios.patch(`/admin/offers/${id}/toggle`);
+                toast(`Offer ${res.data.active ? 'activated' : 'deactivated'}`, "success");
+                loadOffers();
+            } catch (err) {
+                console.error("Toggle error:", err.response || err);
+                toast("Failed to update status");
+            }
+        }
+
+        async function deleteOffer(id) {
+            const result = await Swal.fire({
+                title: "Are you sure?",
+                text: "Delete this offer permanently?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#dc3545",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Yes, delete it!"
+            });
+
+            if (!result.isConfirmed) return;
+
+            try {
+                await axios.delete(`/admin/offers/${id}`);
+                toast("Offer deleted", "success");
+                loadOffers();
+            } catch (err) {
+                toast("Error deleting offer");
+            }
+        }
+
+
+        function renderOffers(offers) {
+            const tbody = document.getElementById("offersTableBody");
+            tbody.innerHTML = offers.length === 0
+                ? `<tr><td colspan="7" style="text-align:center; padding:50px; color:#888;">No offers found</td></tr>`
+                : "";
+
+            offers.forEach(offer => {
+                const discountStr = offer.discountType === 'percentage'
+                    ? `${offer.discountValue}% OFF`
+                    : `₹${offer.discountValue} OFF`;
+
+                const targetName = offer.productId?.name || offer.categoryId?.name || "N/A";
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
             <td><strong>${offer.name}</strong></td>
             <td>
                 <span class="offer-type-badge type-${offer.type}">
@@ -407,7 +502,9 @@ function renderOffers(offers) {
                 </span>
             </td>
             <td>
-                <button onclick='openModal(${JSON.stringify(offer)})' class="btn-small btn-primary" style="margin-right:5px;">Edit</button>
+                <button class="btn-small btn-primary edit-btn" 
+                        data-offer='${JSON.stringify(offer).replace(/'/g, "&apos;")}' 
+                        style="margin-right:5px;">Edit</button>
                 <button onclick="toggleActive('${offer._id}')" 
                         class="btn-small" 
                         style="background:${offer.active ? '#dc3545' : '#28a745'}; color:white; margin-right:5px;">
@@ -416,33 +513,34 @@ function renderOffers(offers) {
                 <button onclick="deleteOffer('${offer._id}')" class="btn-small" style="background:#6c757d;color:white;">Delete</button>
             </td>
         `;
-        tbody.appendChild(row);
-    });
+                tbody.appendChild(row);
+            });
 
-    document.getElementById("totalOffers").textContent = offers.filter(o => o.active).length;
-}
+            document.getElementById("totalOffers").textContent = offers.filter(o => o.active).length;
+        }
 
-async function loadOffers() {
-    document.getElementById("loadingOverlay").style.display = "flex";
-    try {
-        const type = document.getElementById("typeFilter").value;
-        const url = type ? `/admin/offers/data?type=${type}` : `/admin/offers/data`;
-        const res = await axios.get(url);
-        renderOffers(res.data.offers);
-    } catch (err) {
-        toast("Failed to load offers");
-    } finally {
-        document.getElementById("loadingOverlay").style.display = "none";
-    }
-}
+        async function loadOffers() {
+            document.getElementById("loadingOverlay").style.display = "flex";
+            try {
+                const type = document.getElementById("typeFilter").value;
+                const url = type ? `/admin/offers/data?type=${type}` : `/admin/offers/data`;
+                const res = await axios.get(url);
+                renderOffers(res.data.offers);
+            } catch (err) {
+                toast("Failed to load offers");
+            } finally {
+                document.getElementById("loadingOverlay").style.display = "none";
+            }
+        }
 
-document.getElementById("typeFilter").addEventListener("change", loadOffers);
+        document.getElementById("typeFilter").addEventListener("change", loadOffers);
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadOffers();
-    loadTargets();
-});
-</script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOffers();
+            loadTargets();
+        });
+    </script>
 
 </body>
+
 </html>

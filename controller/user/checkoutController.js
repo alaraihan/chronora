@@ -8,6 +8,7 @@ import Coupon from "../../models/couponSchema.js";
 import User from "../../models/userSchema.js";
 import getBestOfferForProduct from "../../utils/offerHelper.js";
 import logger from "../../helpers/logger.js";
+import { ORDER_STATUS, ITEM_STATUS, PAYMENT_STATUS, PAYMENT_METHOD, DISCOUNT_TYPE, MESSAGES } from "../../utils/constants.js";
 
 function calculateTotals(items) {
   let subtotal = 0;
@@ -127,7 +128,7 @@ export const applyCoupon = async (req, res) => {
     }).populate("usedBy.user");
 
     if (!coupon) {
-      return res.json({ success: false, message: "Invalid coupon code" });
+      return res.json({ success: false, message: MESSAGES.COUPON_INVALID });
     }
 
     const today = new Date();
@@ -146,7 +147,7 @@ export const applyCoupon = async (req, res) => {
     if (subtotal < coupon.minPurchase) {
       return res.json({
         success: false,
-        message: `Minimum purchase of ₹${coupon.minPurchase} required (current: ₹${subtotal})`
+        message: MESSAGES.COUPON_MIN_PURCHASE(coupon.minPurchase)
       });
     }
 
@@ -163,12 +164,12 @@ export const applyCoupon = async (req, res) => {
     if (coupon.totalUsageLimit && coupon.usedCount >= coupon.totalUsageLimit) {
       return res.json({
         success: false,
-        message: "This coupon has reached its usage limit"
+        message: MESSAGES.COUPON_LIMIT_REACHED
       });
     }
 
     let discount = 0;
-    if (coupon.discountType === "percentage") {
+    if (coupon.discountType === DISCOUNT_TYPE.PERCENTAGE) {
       discount = (subtotal * coupon.discountValue) / 100;
       if (coupon.maxDiscountLimit) {
         discount = Math.min(discount, coupon.maxDiscountLimit);
@@ -323,7 +324,7 @@ export const placeOrder = async (req, res) => {
       };
       return res.status(400).json({ success: false, message: "Invalid order amount" });
     }
-    if (paymentMethod === "cod" && finalAmount > 1000) {
+    if (paymentMethod === PAYMENT_METHOD.COD && finalAmount > 1000) {
       req.session.checkoutFailure = {
         subtotal,
         shipping,
@@ -345,7 +346,7 @@ export const placeOrder = async (req, res) => {
         quantity: Number(ci.quantity || 1),
         price: finalPrice,
         originalPrice,
-        itemStatus: "Pending",
+        itemStatus: ITEM_STATUS.PENDING,
         offerData: ci.productId?.offerData || null
       };
     });
@@ -353,7 +354,7 @@ export const placeOrder = async (req, res) => {
     session.startTransaction();
 
     const updatedVariants = [];
-    if (paymentStatus !== "Failed") {
+    if (paymentStatus !== PAYMENT_STATUS.FAILED) {
       for (const item of orderedItems) {
         if (!item.variantId) { continue; }
 
@@ -374,11 +375,11 @@ export const placeOrder = async (req, res) => {
             shipping,
             discount: Number(discount),
             totalAmount: finalAmount,
-            errorMessage: "Some items in your cart are out of stock."
+            errorMessage: MESSAGES.STOCK_OUT
           };
           return res.status(409).json({
             success: false,
-            message: "Some items are out of stock. Please update your cart."
+            message: MESSAGES.STOCK_OUT
           });
         }
         updatedVariants.push({ _id: item.variantId, quantity: item.quantity });
@@ -386,7 +387,7 @@ export const placeOrder = async (req, res) => {
     }
 
     let walletTransactionId = null;
-    if (paymentMethod === "wallet") {
+    if (paymentMethod === PAYMENT_METHOD.WALLET) {
       const user = await User.findById(userId).select("wallet walletTransactions").session(session);
       if (!user) { throw new Error("User not found"); }
       if ((user.wallet || 0) < finalAmount) {
@@ -396,7 +397,7 @@ export const placeOrder = async (req, res) => {
           shipping,
           discount: Number(discount),
           totalAmount: finalAmount,
-          errorMessage: `Insufficient wallet balance. Available: ₹${(user.wallet || 0).toLocaleString("en-IN")}`
+          errorMessage: `${MESSAGES.INSUFFICIENT_WALLET} Available: ₹${(user.wallet || 0).toLocaleString("en-IN")}`
         };
         return res.status(400).json({
           success: false,
@@ -418,7 +419,7 @@ export const placeOrder = async (req, res) => {
       await user.save({ session });
     }
 
-    if (paymentMethod === "razorpay" && paymentStatus !== "Failed") {
+    if (paymentMethod === PAYMENT_METHOD.RAZORPAY && paymentStatus !== PAYMENT_STATUS.FAILED) {
       if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
         await session.abortTransaction();
         return res.status(400).json({ success: false, message: "Payment details are missing" });
@@ -448,8 +449,8 @@ export const placeOrder = async (req, res) => {
       userId,
       products: orderedItems,
       orderDate: new Date(),
-      status: paymentStatus === "Failed" ? "Pending" : (["razorpay", "wallet"].includes(paymentMethod) ? "Confirmed" : "Pending"),
-      paymentStatus: paymentStatus === "Failed" ? "Failed" : (["razorpay", "wallet"].includes(paymentMethod) ? "Paid" : "Pending"),
+      status: paymentStatus === PAYMENT_STATUS.FAILED ? ORDER_STATUS.PENDING : ([PAYMENT_METHOD.RAZORPAY, PAYMENT_METHOD.WALLET].includes(paymentMethod) ? ORDER_STATUS.CONFIRMED : ORDER_STATUS.PENDING),
+      paymentStatus: paymentStatus === PAYMENT_STATUS.FAILED ? PAYMENT_STATUS.FAILED : ([PAYMENT_METHOD.RAZORPAY, PAYMENT_METHOD.WALLET].includes(paymentMethod) ? PAYMENT_STATUS.PAID : PAYMENT_STATUS.PENDING),
       paymentMethod,
       address: addressSnapshot,
       addressId: typeof selectedAddress === "string" ? selectedAddress : null,
@@ -462,7 +463,7 @@ export const placeOrder = async (req, res) => {
 
     await orderDoc.save({ session });
 
-    if (appliedCouponCode && paymentStatus !== "Failed") {
+    if (appliedCouponCode && paymentStatus !== PAYMENT_STATUS.FAILED) {
       await Coupon.findOneAndUpdate(
         { code: appliedCouponCode, "usedBy.user": { $ne: userId } },
         { $inc: { usedCount: 1 }, $push: { usedBy: { user: userId, count: 1 } } },
@@ -476,8 +477,18 @@ export const placeOrder = async (req, res) => {
       );
     }
 
-    if (paymentStatus !== "Failed") {
+    if (paymentStatus !== PAYMENT_STATUS.FAILED) {
       await Cart.deleteMany({ userId }, { session });
+    } else {
+      // If payment failed, but order was created, store order ID for retry
+      req.session.checkoutFailure = {
+        subtotal,
+        shipping,
+        discount: Number(discount),
+        totalAmount: finalAmount,
+        errorMessage: paymentStatus === PAYMENT_STATUS.FAILED ? "Razorpay payment failed or was pending." : "Order placed but payment status is unverified.",
+        orderRecId: orderDoc._id // Pass the DB ID for retry
+      };
     }
 
     await session.commitTransaction();
@@ -592,7 +603,8 @@ export const failurePage = async (req, res) => {
       shipping = 0,
       discount = 0,
       totalAmount = 0,
-      errorMessage = "Your payment was declined or cancelled. No amount was deducted."
+      errorMessage = "Your payment was declined or cancelled. No amount was deducted.",
+      orderRecId = null
     } = sessionData;
 
     delete req.session.checkoutFailure;
@@ -602,7 +614,9 @@ export const failurePage = async (req, res) => {
       shipping,
       discount,
       totalAmount,
-      errorMessage
+      errorMessage,
+      orderRecId,
+      active: ""
     });
     logger.info("Order failure page loaded");
   } catch (e) {

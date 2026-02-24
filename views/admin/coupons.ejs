@@ -1,10 +1,22 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="/css/admin/coupons.css">
 <style>
-  .select2-container { width: 100% !important; }
-  .select2-search__field { width: 100% !important; }
-  .modal-xl { max-width: 1100px; }
-  .usage-info { font-size: 0.85em; color: #6c757d; }
+  .select2-container {
+    width: 100% !important;
+  }
+
+  .select2-search__field {
+    width: 100% !important;
+  }
+
+  .modal-xl {
+    max-width: 1100px;
+  }
+
+  .usage-info {
+    font-size: 0.85em;
+    color: #6c757d;
+  }
 
   .select2-container--default .select2-selection--multiple {
     min-height: 56px !important;
@@ -56,20 +68,20 @@
     max-height: 200px !important;
     overflow-y: auto !important;
   }
+
   .action-text span {
-  cursor: pointer;
-  font-weight: 500;
-  margin: 0 4px;
-}
+    cursor: pointer;
+    font-weight: 500;
+    margin: 0 4px;
+  }
 
-.action-text span:hover {
-  text-decoration: underline;
-}
+  .action-text span:hover {
+    text-decoration: underline;
+  }
 
-.action-text .text-danger:hover {
-  color: #dc3545;
-}
-
+  .action-text .text-danger:hover {
+    color: #dc3545;
+  }
 </style>
 <div class="container-fluid py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
@@ -77,7 +89,8 @@
       <h2>Coupon Management</h2>
       <p class="text-muted">Create and manage promotional coupons with advanced restrictions.</p>
     </div>
-    <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#couponModal" onclick="openCreateModal()">
+    <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#couponModal"
+      onclick="openCreateModal()">
       + Add New Coupon
     </button>
   </div>
@@ -100,45 +113,60 @@
             </tr>
           </thead>
           <tbody>
-            <% coupons.forEach(coupon => { %>
+            <% coupons.forEach(coupon=> { %>
               <tr>
-                <td><strong><%= coupon.code %></strong></td>
-                <td><%= coupon.name %></td>
+                <td><strong>
+                    <%= coupon.code %>
+                  </strong></td>
                 <td>
-                  <% if (coupon.discountType === 'percentage') { %>
-                    <%= coupon.discountValue %>% OFF <%= coupon.maxDiscountLimit ? `(Max ₹${coupon.maxDiscountLimit})` : '' %>
-                  <% } else { %>
-                    ₹<%= coupon.discountValue %> OFF
-                  <% } %>
+                  <%= coupon.name %>
                 </td>
-                <td>₹<%= coupon.minPurchase.toFixed(2) %></td>
                 <td>
-                  <div><strong><%= coupon.usedCount %> used</strong></div>
+                  <% if (coupon.discountType==='percentage' ) { %>
+                    <%= coupon.discountValue %>% OFF <%= coupon.maxDiscountLimit ? `(Max ₹${coupon.maxDiscountLimit})`
+                        : '' %>
+                        <% } else { %>
+                          ₹<%= coupon.discountValue %> OFF
+                            <% } %>
+                </td>
+                <td>₹<%= coupon.minPurchase.toFixed(2) %>
+                </td>
+                <td>
+                  <div><strong>
+                      <%= coupon.usedCount %> used
+                    </strong></div>
                   <div class="usage-info">
-                    <%= coupon.perUserLimit %> per user | 
-                    <%= coupon.totalUsageLimit ? coupon.totalUsageLimit + ' total' : 'Unlimited' %>
+                    <%= coupon.perUserLimit %> per user |
+                      <%= coupon.totalUsageLimit ? coupon.totalUsageLimit + ' total' : 'Unlimited' %>
                   </div>
                 </td>
                 <td>
                   <%= coupon.startDate.toISOString().split('T')[0] %> →<br>
-                  <small><%= coupon.expiryDate.toISOString().split('T')[0] %></small>
+                    <small>
+                      <%= coupon.expiryDate.toISOString().split('T')[0] %>
+                    </small>
                 </td>
                 <td>
                   <span class="badge <%= coupon.status === 'Active' ? 'bg-success' : 'bg-secondary' %>">
                     <%= coupon.status %>
                   </span>
                 </td>
-                <td><%= coupon.specificUsers.length > 0 ? coupon.specificUsers.length + ' users' : 'All Users' %></td>
-               <td class="action-text">
-  <span onclick='viewCoupon(<%- JSON.stringify(coupon) %>)'>View</span>
-  |
-  <span onclick='editCoupon(<%- JSON.stringify(coupon) %>)'>Edit</span>
-  |
-  <span onclick="deleteCoupon('<%= coupon._id %>')" class="text-danger">Delete</span>
-</td>
+                <td>
+                  <%= coupon.specificUsers.length> 0 ? coupon.specificUsers.length + ' users' : 'All Users' %>
+                </td>
+                <td class="action-text">
+                  <span class="view-btn" data-coupon='<%- JSON.stringify(coupon).replace(/' /g, "&apos;" ) %>'
+                    style="cursor:pointer; color: var(--gold);">View</span>
+                  |
+                  <span class="edit-btn" data-coupon='<%- JSON.stringify(coupon).replace(/' /g, "&apos;" ) %>'
+                    style="cursor:pointer; color: var(--gold);">Edit</span>
+                  |
+                  <span onclick="deleteCoupon('<%= coupon._id %>')" class="text-danger"
+                    style="cursor:pointer;">Delete</span>
+                </td>
 
               </tr>
-            <% }) %>
+              <% }) %>
           </tbody>
         </table>
       </div>
@@ -160,16 +188,19 @@
             <div class="col-md-4">
               <label class="form-label">Coupon Code <span class="text-danger">*</span></label>
               <input type="text" name="code" class="form-control" required>
+              <div class="error-msg text-danger small mt-1" id="error-code"></div>
             </div>
             <div class="col-md-8">
               <label class="form-label">Coupon Name <span class="text-danger">*</span></label>
               <input type="text" name="name" class="form-control" required>
+              <div class="error-msg text-danger small mt-1" id="error-name"></div>
             </div>
           </div>
 
           <div class="mt-3">
             <label class="form-label">Description</label>
             <textarea name="description" class="form-control" rows="2"></textarea>
+            <div class="error-msg text-danger small mt-1" id="error-description"></div>
           </div>
 
           <div class="row g-3 mt-3">
@@ -177,32 +208,38 @@
               <label class="form-label">Discount Type <span class="text-danger">*</span></label>
               <select name="discountType" class="form-select" required>
                 <option value="percentage">Percentage (%)</option>
-                <option value="fixed">Fixed Amount ($)</option>
+                <option value="fixed">Fixed Amount (₹)</option>
               </select>
+              <div class="error-msg text-danger small mt-1" id="error-discountType"></div>
             </div>
             <div class="col-md-4">
               <label class="form-label">Discount Value <span class="text-danger">*</span></label>
               <input type="number" name="discountValue" class="form-control" min="0" step="0.01" required>
+              <div class="error-msg text-danger small mt-1" id="error-discountValue"></div>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Max Discount Cap ($) <small>(for % only)</small></label>
+              <label class="form-label">Max Discount Cap (₹) <small>(for % only)</small></label>
               <input type="number" name="maxDiscountLimit" class="form-control" min="0" step="0.01">
+              <div class="error-msg text-danger small mt-1" id="error-maxDiscountLimit"></div>
             </div>
           </div>
 
           <div class="row g-3 mt-3">
             <div class="col-md-4">
-              <label class="form-label">Min Purchase Amount ($)</label>
+              <label class="form-label">Min Purchase Amount (₹)</label>
               <input type="number" name="minPurchase" class="form-control" min="0" step="0.01" value="0">
+              <div class="error-msg text-danger small mt-1" id="error-minPurchase"></div>
             </div>
             <div class="col-md-4">
               <label class="form-label">Per User Limit</label>
               <input type="number" name="perUserLimit" class="form-control" min="1" value="1">
+              <div class="error-msg text-danger small mt-1" id="error-perUserLimit"></div>
             </div>
             <div class="col-md-4">
               <label class="form-label">Total Usage Limit</label>
               <input type="number" name="totalUsageLimit" class="form-control" min="1">
               <small class="text-muted">Leave blank for unlimited</small>
+              <div class="error-msg text-danger small mt-1" id="error-totalUsageLimit"></div>
             </div>
           </div>
 
@@ -210,10 +247,12 @@
             <div class="col-md-6">
               <label class="form-label">Start Date <span class="text-danger">*</span></label>
               <input type="date" name="startDate" class="form-control" required>
+              <div class="error-msg text-danger small mt-1" id="error-startDate"></div>
             </div>
             <div class="col-md-6">
               <label class="form-label">Expiry Date <span class="text-danger">*</span></label>
               <input type="date" name="expiryDate" class="form-control" required>
+              <div class="error-msg text-danger small mt-1" id="error-expiryDate"></div>
             </div>
           </div>
 
@@ -228,9 +267,11 @@
             <div class="col-md-6">
               <label class="form-label">Restrict to Specific Users</label>
               <select name="specificUsers" id="specificUsersSelect" class="form-select" multiple>
-                <% users.forEach(user => { %>
-                  <option value="<%= user._id %>"><%= user.name %> (<%= user.email %>)</option>
-                <% }) %>
+                <% users.forEach(user=> { %>
+                  <option value="<%= user._id %>">
+                    <%= user.name %> (<%= user.email %>)
+                  </option>
+                  <% }) %>
               </select>
               <small class="text-muted d-block mt-2">Search and select multiple users. Leave empty for all.</small>
             </div>
@@ -269,6 +310,26 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+  $(document).ready(function () {
+    $(document).on('click', '.view-btn', function () {
+      try {
+        const coupon = JSON.parse($(this).attr('data-coupon'));
+        viewCoupon(coupon);
+      } catch (err) {
+        console.error("Parse error:", err);
+      }
+    });
+
+    $(document).on('click', '.edit-btn', function () {
+      try {
+        const coupon = JSON.parse($(this).attr('data-coupon'));
+        editCoupon(coupon);
+      } catch (err) {
+        console.error("Parse error:", err);
+      }
+    });
+  });
+
   function showSuccess(message) {
     Toastify({
       text: message || "Operation successful!",
@@ -297,28 +358,28 @@
     }
   });
 
-$('#couponModal').on('hidden.bs.modal', function () {
-  if ($('#specificUsersSelect').hasClass('select2-hidden-accessible')) {
-    $('#specificUsersSelect').select2('destroy');
-  }
-});
-
-$('#couponModal').on('shown.bs.modal', function () {
-  $('#specificUsersSelect').select2({
-    placeholder: "Search and select users...",
-    allowClear: true,
-    width: '100%',
-    dropdownParent: $('#couponModal')
+  $('#couponModal').on('hidden.bs.modal', function () {
+    if ($('#specificUsersSelect').hasClass('select2-hidden-accessible')) {
+      $('#specificUsersSelect').select2('destroy');
+    }
   });
 
-  $('#specificUsersSelect').off('select2:opening').on('select2:opening', function () {
-    setTimeout(() => {
-      $('.select2-dropdown')
-        .removeClass('select2-dropdown--above')
-        .addClass('select2-dropdown--below');
-    }, 1);
+  $('#couponModal').on('shown.bs.modal', function () {
+    $('#specificUsersSelect').select2({
+      placeholder: "Search and select users...",
+      allowClear: true,
+      width: '100%',
+      dropdownParent: $('#couponModal')
+    });
+
+    $('#specificUsersSelect').off('select2:opening').on('select2:opening', function () {
+      setTimeout(() => {
+        $('.select2-dropdown')
+          .removeClass('select2-dropdown--above')
+          .addClass('select2-dropdown--below');
+      }, 1);
+    });
   });
-});
 
   function openCreateModal() {
     $('#modalTitle').text('Add New Coupon');
@@ -328,9 +389,9 @@ $('#couponModal').on('shown.bs.modal', function () {
     $('#couponModal').modal('show');
   }
 
- function viewCoupon(coupon) {
-    const usersList = coupon.specificUsers.length 
-      ? coupon.specificUsers.map(u => u.name || u.email || 'User').join(', ') 
+  function viewCoupon(coupon) {
+    const usersList = coupon.specificUsers.length
+      ? coupon.specificUsers.map(u => u.name || u.email || 'User').join(', ')
       : 'All Users';
 
     document.getElementById('viewBody').innerHTML = `
@@ -379,30 +440,72 @@ $('#couponModal').on('shown.bs.modal', function () {
     $('#couponModal').modal('show');
   }
 
-  document.getElementById('couponForm').addEventListener('submit', async function(e) {
+  // Real-time Validation
+  // Real-time Validation
+  function validateField(name, value, data) {
+    const errorEl = document.getElementById(`error-${name}`);
+    if (!errorEl) return '';
+    let errorMessage = '';
+
+    switch (name) {
+      case 'code':
+        if (!value.trim()) errorMessage = 'Coupon code is required.';
+        else if (/\s/.test(value)) errorMessage = 'Code cannot contain spaces.';
+        break;
+      case 'name':
+        if (!value.trim()) errorMessage = 'Coupon name is required.';
+        break;
+      case 'discountValue':
+        const val = parseFloat(value);
+        if (isNaN(val) || val <= 0) errorMessage = 'Discount must be greater than 0.';
+        else {
+          const type = data.discountType || document.querySelector('[name="discountType"]').value;
+          if (type === 'percentage' && val > 100) errorMessage = 'Percentage cannot exceed 100%.';
+        }
+        break;
+      case 'minPurchase':
+        if (parseFloat(value) < 0) errorMessage = 'Min purchase cannot be negative.';
+        break;
+      case 'expiryDate':
+        const start = data.startDate || document.querySelector('[name="startDate"]').value;
+        if (start && value && new Date(value) <= new Date(start)) {
+          errorMessage = 'Expiry must be after start date.';
+        }
+        break;
+    }
+    errorEl.innerText = errorMessage;
+    return errorMessage;
+  }
+
+  document.querySelectorAll('#couponForm input, #couponForm select').forEach(el => {
+    el.addEventListener('input', (e) => {
+      const formData = new FormData(document.getElementById('couponForm'));
+      const data = Object.fromEntries(formData);
+      validateField(e.target.name, e.target.value, data);
+    });
+  });
+
+  document.getElementById('couponForm').addEventListener('submit', async function (e) {
     e.preventDefault();
+
+    // Clear previous errors
+    document.querySelectorAll('.error-msg').forEach(el => el.innerText = '');
+
     const formData = new FormData(this);
     const data = Object.fromEntries(formData);
     const couponId = this.getAttribute('data-id');
 
+    // Unified Validation
+    let hasError = false;
+    ['code', 'name', 'discountValue', 'minPurchase', 'expiryDate'].forEach(field => {
+      if (validateField(field, data[field], data)) hasError = true;
+    });
+
+    if (hasError) return;
+
     data.maxDiscountLimit = data.maxDiscountLimit.trim() === '' ? null : parseFloat(data.maxDiscountLimit);
     data.totalUsageLimit = data.totalUsageLimit.trim() === '' ? null : parseInt(data.totalUsageLimit);
     data.specificUsers = $('#specificUsersSelect').val() || [];
-  if (!data.code || !data.name) {
-    return Swal.fire({
-      icon: "error",
-      title: "Validation Error",
-      text: "Code and name are required!"
-    });
-  }
-
-  if (new Date(data.expiryDate) <= new Date(data.startDate)) {
-    return Swal.fire({
-      icon: "error",
-      title: "Invalid Dates",
-      text: "Expiry date must be after start date."
-    });
-  }
     try {
       let response;
       if (couponId) {
@@ -422,29 +525,29 @@ $('#couponModal').on('shown.bs.modal', function () {
     }
   });
 
- async function deleteCoupon(id) {
-  const result = await Swal.fire({
-    title: "Delete Coupon?",
-    text: "This action cannot be undone!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#d33",
-    cancelButtonColor: "#6c757d",
-    confirmButtonText: "Yes, delete it"
-  });
+  async function deleteCoupon(id) {
+    const result = await Swal.fire({
+      title: "Delete Coupon?",
+      text: "This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Yes, delete it"
+    });
 
-  if (!result.isConfirmed) return;
+    if (!result.isConfirmed) return;
 
-  try {
-    const response = await axios.delete(`/admin/coupons/delete/${id}`);
+    try {
+      const response = await axios.delete(`/admin/coupons/delete/${id}`);
 
-    if (response.data.success) {
-      showSuccess(response.data.message);
-      setTimeout(() => location.reload(), 1200);
+      if (response.data.success) {
+        showSuccess(response.data.message);
+        setTimeout(() => location.reload(), 1200);
+      }
+    } catch (error) {
+      showError(error.response?.data?.message || "Failed to delete coupon.");
     }
-  } catch (error) {
-    showError(error.response?.data?.message || "Failed to delete coupon.");
   }
-}
 
 </script>

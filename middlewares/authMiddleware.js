@@ -1,5 +1,6 @@
 import User from "../models/userSchema.js";
 import Admin from "../models/adminSchema.js";
+import HttpStatus from "../utils/httpStatus.js";
 
 export const setUser = (req, res, next) => {
   res.locals.user = req.session?.userId || null;
@@ -23,7 +24,7 @@ export const isLoggedIn = async (req, res, next) => {
       .select("_id isBlocked");
 
     if (!user || user.isBlocked) {
-      req.session.destroy(() => {});
+      req.session.destroy(() => { });
       return handleUnauthorized(req, res);
     }
 
@@ -38,7 +39,7 @@ export const isLoggedIn = async (req, res, next) => {
 
 const handleUnauthorized = (req, res) => {
   if (req.xhr || req.headers.accept?.includes("json")) {
-    return res.status(401).json({
+    return res.status(HttpStatus.UNAUTHORIZED).json({
       success: false,
       message: "Please login first"
     });
@@ -95,7 +96,7 @@ export const checkBlockedUser = async (req, res, next) => {
 
     if (!user || user.isBlocked) {
       req.session.destroy();
-      return res.status(403).render("user/pageNotfound", {
+      return res.status(HttpStatus.FORBIDDEN).render("user/pageNotfound", {
         user: null,
         title: "Not found"
       });

@@ -12,144 +12,140 @@
 <body>
   <%- include('../partials/user/header') %>
 
-  <div class="profile-layout">
-    <%- include('../partials/user/sidebar') %>
+    <div class="profile-layout">
+      <%- include('../partials/user/sidebar') %>
 
-    <main class="profile-content">
-      <header class="page-title-header">
-        <h1>My Orders</h1>
-        <p class="subtitle">Manage your order history here.</p>
-      </header>
+        <main class="profile-content">
+          <header class="page-title-header">
+            <h1>My Orders</h1>
+            <p class="subtitle">Manage your order history here.</p>
+          </header>
 
-      <div class="orders-list" id="ordersList" style="width: 100%;">
-        <% if (!pageItems || pageItems.length === 0) { %>
-          <p class="empty-orders" style="text-align:center; padding:60px;">No orders yet.</p>
-        <% } else { %>
+          <div class="orders-list" id="ordersList" style="width: 100%;">
+            <% if (!orders || orders.length===0) { %>
+              <p class="empty-orders" style="text-align:center; padding:60px;">No orders yet.</p>
+              <% } else { %>
 
-          <% pageItems.forEach(({ order, item }) => { %>
-            <% const orderSubtotal = order.products.reduce((sum, p) => sum + (p.price * p.quantity), 0); %>
+                <% orders.forEach(order=> { %>
+                  <% const orderSubtotal=order.products.reduce((sum, p)=> sum + (p.price * p.quantity), 0); %>
 
-            <div class="order-card">
+                    <div class="order-card">
+                      <!-- Order Info Header -->
+                      <div class="order-header">
+                        <div class="order-id-section">
+                          <span class="order-id">Order #<%= order.orderId %></span>
+                          <span class="order-date">
+                            <%= new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric' , month: 'short'
+                              , year: 'numeric' }) %>
+                          </span>
+                        </div>
+                        <div class="order-status-section">
+                          <span class="status-badge status-<%= order.status.toLowerCase().replace(/\s+/g, '-') %>">
+                            <%= order.status %>
+                          </span>
+                          <span
+                            class="payment-badge payment-<%= order.paymentStatus.toLowerCase().replace(/\s+/g, '-') %>">
+                            <%= order.paymentStatus %>
+                          </span>
+                        </div>
+                      </div>
 
-              <!-- Order Header -->
-              <div class="order-header-inline">
-                <div class="order-meta">
-                  <span class="order-date"><%= new Date(order.createdAt).toDateString() %></span>
-                  <span class="order-id-small">Order #<%= order.orderId %></span>
-                </div>
-                <div class="item-status-badge">
-                  <% if (order.paymentStatus === 'Failed') { %>
-                    <span class="status-label failed">Payment Failed</span>
-                  <% } else { %>
-                    <span class="status-label <%= item.itemStatus.toLowerCase().replace(/\s+/g, '-') %>">
-                      <%= item.itemStatus %>
-                    </span>
-                  <% } %>
-                </div>
-              </div>
+                      <!-- Order Items List -->
+                      <div class="order-items">
+                        <% order.products.forEach(item=> { %>
+                          <div class="order-item-row">
+                            <div class="item-img">
+                              <img src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>"
+                                alt="<%= item.productId?.name || 'Watch' %>"
+                                onerror="this.src='/images/default-watch.jpg'">
+                            </div>
+                            <div class="item-info">
+                              <h4 class="product-name">
+                                <%= item.productId?.name || 'Unknown Product' %>
+                              </h4>
+                              <p class="item-meta">
+                                <span>
+                                  <%= item.variantId?.colorName || 'Default' %>
+                                </span> |
+                                <span>Qty: <%= item.quantity %></span>
+                              </p>
+                              <p class="item-price">
+                                <span class="unit-price">₹<%= item.price.toLocaleString('en-IN') %> per unit</span>
+                                <span class="total-price">₹<%= (item.price * item.quantity).toLocaleString('en-IN') %>
+                                </span>
+                              </p>
+                            </div>
+                            <div class="item-actions">
+                              <a href="/profile/orders/<%= order.orderId %>?productId=<%= item.productId?._id %>&variantId=<%= item.variantId?._id %>"
+                                class="btn-detail">Details</a>
+                            </div>
+                          </div>
+                          <% }) %>
+                      </div>
 
-              <!-- Item Main -->
-              <div class="order-item-main">
-                <div class="item-image-wrapper">
-                  <img
-                    src="<%= item.variantId?.images?.[0] || '/images/default-watch.jpg' %>"
-                    alt="<%= item.productId?.name || 'Watch' %>"
-                    class="item-image"
-                    onerror="this.src='/images/default-watch.jpg'"
-                  >
-                </div>
+                      <!-- Order Footer -->
+                      <div class="order-footer">
+                        <div class="order-summary-details">
+                          <div class="summary-line">
+                            <span>Subtotal:</span>
+                            <span>₹<%= orderSubtotal.toLocaleString('en-IN') %></span>
+                          </div>
+                          <% if (order.discount> 0) { %>
+                            <div class="summary-line discount">
+                              <span>Discount:</span>
+                              <span>-₹<%= order.discount.toLocaleString('en-IN') %></span>
+                            </div>
+                            <% } %>
+                              <div class="summary-line total">
+                                <span>Order Total:</span>
+                                <span class="grand-total-val">₹<%= order.totalAmount.toLocaleString('en-IN') %></span>
+                              </div>
+                        </div>
 
-                <div class="item-details">
-                  <h3 class="item-name"><%= item.productId?.name || 'Unknown Watch' %></h3>
-                  <p class="item-variant"><%= item.variantId?.colorName || 'Standard' %></p>
-                  <p class="item-quantity">Qty: <%= item.quantity %></p>
-                  <p class="item-price">₹<%= (item.price * item.quantity).toLocaleString('en-IN') %></p>
-                  <% if (item.reason) { %>
-                    <p class="item-reason"><strong>Reason:</strong> <%= item.reason %></p>
-                  <% } %>
-                </div>
+                        <div class="order-main-actions">
+                          <% if (order.paymentStatus==='Failed' || order.paymentStatus==='Pending' ) { %>
+                            <button class="btn-retry"
+                              onclick="retryPayment('<%= order._id %>', <%= order.totalAmount %>)">
+                              <i class="retry-icon">↺</i> Retry Payment
+                            </button>
+                            <% } %>
+                              <a href="/profile/orders/<%= order.orderId %>" class="btn-view-order">Manage Order</a>
+                        </div>
+                      </div>
 
-                <div class="item-actions">
-                  <% if (item.productId && item.variantId) { %>
-                    <a href="/profile/orders/<%= order.orderId %>?productId=<%= item.productId._id %>&variantId=<%= item.variantId._id %>">
-                      View Details
-                    </a>
-                  <% } else { %>
-                    <a href="/profile/orders/<%= order.orderId %>">View Order</a>
-                  <% } %>
-                </div>
-              </div>
-
-              <!-- Pricing Summary -->
-              <div class="order-pricing-summary">
-                <div class="pricing-row">
-                  <span>Subtotal</span>
-                  <span>₹<%= orderSubtotal.toLocaleString('en-IN') %></span>
-                </div>
-
-                <% if (order.discount > 0) { %>
-                  <div class="pricing-row discount-row">
-                    <span>Coupon Discount</span>
-                    <span style="color:#00ff9d;">- ₹<%= order.discount.toLocaleString('en-IN') %></span>
-                  </div>
-                <% } %>
-
-                <div class="price-row total-row">
-                  <% if (order.paymentStatus === 'Failed' || order.paymentStatus === 'Pending') { %>
-                    <span class="pr-label total-label">Order Total</span>
-                    <span class="pr-value total-value">₹<%= order.totalAmount.toLocaleString('en-IN') %></span>
-                    <div style="margin-top: 6px;">
-                      <span style="color: #ef4444; font-size: 12px;">
-                        ⚠ Payment <%= order.paymentStatus === 'Failed' ? 'failed' : 'not completed' %> — amount not charged
-                      </span>
                     </div>
-                  <% } else { %>
-                    <span class="pr-label total-label">Amount Paid</span>
-                    <span class="pr-value total-value">₹<%= order.totalAmount.toLocaleString('en-IN') %></span>
-                  <% } %>
-                </div>
-              </div>
+                    <% }) %>
 
-              <!-- Expected Delivery -->
-              <% if (
-                order.expectedDelivery &&
-                !['Delivered', 'Cancelled', 'ReturnRequested', 'Returned', 'Failed'].includes(item.itemStatus) &&
-                order.paymentStatus !== 'Failed'
-              ) { %>
-                <div class="delivery-info">
-                  <span>Expected Delivery: <%= new Date(order.expectedDelivery).toDateString() %></span>
-                </div>
-              <% } %>
+                      <% } %>
+          </div>
+
+          <!-- Pagination -->
+          <% if (totalPages> 1) { %>
+            <div class="pagination-container">
+
+              <% if (hasPrevPage) { %>
+                <a href="?page=<%= currentPage - 1 %>" class="pagination-btn">← Previous</a>
+                <% } else { %>
+                  <span class="pagination-btn disabled">← Previous</span>
+                  <% } %>
+
+                    <div class="page-info">Page <%= currentPage %> of <%= totalPages %>
+                    </div>
+
+                    <% if (hasNextPage) { %>
+                      <a href="?page=<%= currentPage + 1 %>" class="pagination-btn">Next →</a>
+                      <% } else { %>
+                        <span class="pagination-btn disabled">Next →</span>
+                        <% } %>
 
             </div>
-          <% }) %>
+            <% } %>
 
-        <% } %>
-      </div>
+        </main>
+    </div>
 
-      <!-- Pagination -->
-      <% if (totalPages > 1) { %>
-        <div class="pagination-container">
-
-          <% if (hasPrevPage) { %>
-            <a href="?page=<%= currentPage - 1 %>" class="pagination-btn">← Previous</a>
-          <% } else { %>
-            <span class="pagination-btn disabled">← Previous</span>
-          <% } %>
-
-          <div class="page-info">Page <%= currentPage %> of <%= totalPages %></div>
-
-          <% if (hasNextPage) { %>
-            <a href="?page=<%= currentPage + 1 %>" class="pagination-btn">Next →</a>
-          <% } else { %>
-            <span class="pagination-btn disabled">Next →</span>
-          <% } %>
-
-        </div>
-      <% } %>
-
-    </main>
-  </div>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="/js/user/orders.js"></script>
 </body>
 
 </html>

@@ -53,7 +53,7 @@ import {
 } from "../controller/user/orderController.js";
 
 import {
-  loadWishlist,addToWishlist,moveToCart,removeFromWishlist
+  loadWishlist, addToWishlist, moveToCart, removeFromWishlist
 } from "../controller/user/wishlistController.js";
 
 import {
@@ -65,7 +65,9 @@ import {
 
 import {
   createRazorpayOrder,
-  verifyRazorpayPayment
+  verifyRazorpayPayment,
+  retryPayment,
+  verifyRetryPayment
 } from "../controller/user/paymentController.js";
 
 router.get("/pageNotfound", userController.pageNotfound);
@@ -79,7 +81,7 @@ router.get("/watch", userController.loadWatchPage);
 router.get("/login", checkLogin, authController.loadLogin);
 router.get("/signup", checkLogin, authController.loadSignUp);
 router.post("/login", authController.login);
-router.get("/check-email", checkLogin,authController.checkEmailExists);
+router.get("/check-email", checkLogin, authController.checkEmailExists);
 
 router.post("/signup", authController.signUp);
 
@@ -172,12 +174,16 @@ router.post("/remove-wishlist", isLoggedIn, removeFromWishlist);
 router.post("/move-to-cart", isLoggedIn, moveToCart);
 
 router.get("/wallet", isLoggedIn, loadWallet);
-router.get("/wallet/data",isLoggedIn, getWalletData);
+router.get("/wallet/data", isLoggedIn, getWalletData);
 router.post("/wallet/create-order", isLoggedIn, createWalletOrder);
 router.post("/wallet/verify-add", isLoggedIn, verifyAndAddMoney);
 
 router.post("/create-order", isLoggedIn, createRazorpayOrder);
-router.post("/verify", isLoggedIn, verifyRazorpayPayment);
+router.post("/verify-payment", isLoggedIn, verifyRazorpayPayment);
+
+// Payment Retry
+router.get("/profile/retry-payment/:orderId", isLoggedIn, retryPayment);
+router.post("/profile/verify-retry-payment", isLoggedIn, verifyRetryPayment);
 
 
 export default router;

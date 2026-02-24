@@ -2,8 +2,8 @@ import Offer from "../../models/offerSchema.js";
 import Product from "../../models/productSchema.js";
 import Category from "../../models/categorySchema.js";
 import logger from "../../helpers/logger.js";
+import { OFFER_TYPE, DISCOUNT_TYPE, MESSAGES } from "../../utils/constants.js";
 
-/* ================= LOAD PAGE ================= */
 
 export const loadOfferPage = async (req, res) => {
   try {
@@ -18,7 +18,6 @@ export const loadOfferPage = async (req, res) => {
   }
 };
 
-/* ================= GET OFFERS ================= */
 
 export const getOffersData = async (req, res) => {
   try {
@@ -43,7 +42,6 @@ export const getOffersData = async (req, res) => {
   }
 };
 
-/* ================= GET TARGETS ================= */
 
 export const getOfferTargets = async (req, res) => {
   try {
@@ -66,7 +64,6 @@ export const getOfferTargets = async (req, res) => {
   }
 };
 
-/* ================= CREATE OFFER ================= */
 
 export const createOffer = async (req, res) => {
   try {
@@ -80,7 +77,6 @@ export const createOffer = async (req, res) => {
       endDate
     } = req.body;
 
-    /* ===== BASIC FIELD VALIDATION ===== */
 
     if (!name || !type || !targetId || !discountType || discountValue === undefined || !startDate || !endDate) {
       return res.status(400).json({
@@ -112,11 +108,10 @@ export const createOffer = async (req, res) => {
     if (existing) {
       return res.status(400).json({
         success: false,
-        message: "Offer already exists!"
+        message: MESSAGES.OFFER_EXISTS
       });
     }
 
-    /* ===== DISCOUNT VALIDATION ===== */
 
     const discount = parseFloat(discountValue);
 
@@ -134,7 +129,6 @@ export const createOffer = async (req, res) => {
       });
     }
 
-    /* ===== DATE VALIDATION ===== */
 
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -154,7 +148,6 @@ export const createOffer = async (req, res) => {
       });
     }
 
-    /* ===== GET ORIGINAL PRICE ===== */
 
     let originalPrice = 0;
 
@@ -184,7 +177,6 @@ export const createOffer = async (req, res) => {
       });
     }
 
-    /* ===== DISCOUNT LOGIC ===== */
 
     if (discountType === "percentage") {
       if (discount > 89) {
@@ -216,7 +208,6 @@ export const createOffer = async (req, res) => {
       });
     }
 
-    /* ===== SAVE OFFER ===== */
 
     const offerData = {
       name: normalizedName,
@@ -237,7 +228,7 @@ export const createOffer = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Offer created successfully"
+      message: MESSAGES.OFFER_CREATED
     });
 
   } catch (error) {
@@ -246,7 +237,6 @@ export const createOffer = async (req, res) => {
   }
 };
 
-/* ================= UPDATE OFFER ================= */
 
 export const updateOffer = async (req, res) => {
   try {
@@ -328,7 +318,7 @@ export const updateOffer = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Offer updated successfully"
+      message: MESSAGES.OFFER_UPDATED
     });
 
   } catch (error) {
@@ -337,7 +327,6 @@ export const updateOffer = async (req, res) => {
   }
 };
 
-/* ================= DELETE OFFER ================= */
 
 export const deleteOffer = async (req, res) => {
   try {
@@ -349,7 +338,7 @@ export const deleteOffer = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Offer deleted successfully"
+      message: MESSAGES.OFFER_DELETED
     });
 
   } catch (error) {
@@ -358,7 +347,6 @@ export const deleteOffer = async (req, res) => {
   }
 };
 
-/* ================= TOGGLE STATUS ================= */
 
 export const toggleOfferActive = async (req, res) => {
   try {

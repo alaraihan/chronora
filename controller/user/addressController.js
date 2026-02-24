@@ -1,6 +1,6 @@
 import Address from "../../models/addressSchema.js";
-import logger from "../../helpers/logger.js"; 
-
+import logger from "../../helpers/logger.js";
+import HttpStatus from "../../utils/httpStatus.js";
 export const loadAddresses = async (req, res) => {
   try {
     const addresses = await Address.find({ user: req.session.userId }).sort({
@@ -12,7 +12,7 @@ export const loadAddresses = async (req, res) => {
     logger.info(`Loaded addresses for user: ${req.session.userId}`);
   } catch (error) {
     logger.error(`loadAddresses error for user ${req.session.userId}:`, error);
-    res.status(404).send("Server error");
+    res.status(HttpStatus.NOT_FOUND).send("Server error");
   }
 };
 
@@ -33,12 +33,12 @@ export const addAddress = async (req, res) => {
     logger.debug(`Received address data: ${JSON.stringify(req.body)}`);
 
     if (!name || !phone || !street || !city || !state || !zip || !country) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+      return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "All fields are required" });
     }
 
     const userId = req.user?._id || req.session?.userId;
     if (!userId) {
-      return res.status(401).json({ success: false, message: "Not authenticated" });
+      return res.status(HttpStatus.UNAUTHORIZED).json({ success: false, message: "Not authenticated" });
     }
 
     if (isDefaultShipping) {
@@ -67,7 +67,7 @@ export const addAddress = async (req, res) => {
     res.json({ success: true, message: "Address added!", newAddress: saved });
   } catch (err) {
     logger.error("addAddress error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
 };
 
@@ -76,14 +76,14 @@ export const loadEditAddress = async (req, res) => {
     const address = await Address.findOne({ _id: req.params.id, user: req.session.userId });
     if (!address) {
       logger.warn(`Address not found for edit: ${req.params.id}, user: ${req.session.userId}`);
-      return res.status(404).json({ success: false, message: "Address not found" });
+      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: "Address not found" });
     }
 
     logger.info(`Loaded address for edit: ${address._id}, user: ${req.session.userId}`);
     res.json({ success: true, address });
   } catch (error) {
     logger.error(`loadEditAddress error for user ${req.session.userId}:`, error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
 };
 
@@ -114,14 +114,14 @@ export const updateAddress = async (req, res) => {
 
     if (!address) {
       logger.warn(`Address not found for update: ${req.params.id}, user: ${req.session.userId}`);
-      return res.status(404).json({ success: false, message: "Address not found" });
+      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: "Address not found" });
     }
 
     logger.info(`Address updated: ${address._id}, user: ${req.session.userId}`);
     res.json({ success: true, message: "Address updated!", address });
   } catch (err) {
     logger.error(`updateAddress error for user ${req.session.userId}:`, err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
 };
 
@@ -130,13 +130,13 @@ export const deleteAddress = async (req, res) => {
     const deleted = await Address.findOneAndDelete({ _id: req.params.id, user: req.session.userId });
     if (!deleted) {
       logger.warn(`Address not found for delete: ${req.params.id}, user: ${req.session.userId}`);
-      return res.status(404).json({ success: false, message: "Address not found" });
+      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: "Address not found" });
     }
 
     logger.info(`Address deleted: ${deleted._id}, user: ${req.session.userId}`);
     res.json({ success: true, message: "Address deleted!" });
   } catch (err) {
     logger.error(`deleteAddress error for user ${req.session.userId}:`, err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
 };

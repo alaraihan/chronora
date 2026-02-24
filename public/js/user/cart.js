@@ -224,7 +224,6 @@ if (confirmRemoveBtn) {
   });
 }
 
-/* ── Close triggers ── */
 document.querySelectorAll('.close-modal, .btn-cancel-modal, [data-close]').forEach(el => {
   el.addEventListener('click', () => {
     const id = el.dataset.close;
@@ -236,7 +235,6 @@ document.querySelectorAll('.close-modal, .btn-cancel-modal, [data-close]').forEa
   });
 });
 
-/* Esc key */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && confirmModal.classList.contains('active')) {
     confirmModal.classList.remove('active');
@@ -245,7 +243,6 @@ document.addEventListener('keydown', e => {
   }
 });
 
-/* Backdrop click */
 confirmModal?.addEventListener('click', (e) => {
   if (e.target === confirmModal) {
     confirmModal.classList.remove('active');

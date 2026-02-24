@@ -3,17 +3,18 @@ const app = express();
 import dotenv from "dotenv";
 import Razorpay from "razorpay";
 dotenv.config();
-import {sessions} from "./middlewares/session.js";
+import { sessions } from "./middlewares/session.js";
 import passport from "./config/passport.js";
 import expressLayouts from "express-ejs-layouts";
 import userRouter from "./routes/userRouter.js";
 import adminRouter from "./routes/adminRouter.js";
 import { message } from "./middlewares/message.js";
-import {setUser} from "./middlewares/authMiddleware.js";
+import { setUser } from "./middlewares/authMiddleware.js";
 import { Cache } from "./middlewares/cache.js";
 import { layouts } from "./middlewares/layouts.js";
 import connectDB from "./config/db.js";
 import path from "path";
+import HttpStatus from "./utils/httpStatus.js";
 import { fileURLToPath } from "url";
 import { checkBlockedUser } from "./middlewares/authMiddleware.js";
 import logger from './helpers/logger.js';
@@ -32,8 +33,8 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json({limit:"50mb"}));
-app.use(express.urlencoded({ extended: true,limit:"50mb" }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 app.use(sessions);
 
@@ -65,9 +66,9 @@ app.use("/", userRouter);
 app.use("/admin", adminRouter);
 app.use((req, res) => {
   if (req.originalUrl.startsWith("/admin")) {
-    res.status(404).render("admin/pageNotfound", { title: "Page Not Found" });
+    res.status(HttpStatus.NOT_FOUND).render("admin/pageNotfound", { title: "Page Not Found" });
   } else {
-    res.status(404).render("user/pageNotfound", { title: "Page Not Found" });
+    res.status(HttpStatus.NOT_FOUND).render("user/pageNotfound", { title: "Page Not Found" });
   }
 });
 

@@ -3,48 +3,42 @@ import Variant from "../../models/variantSchema.js";
 import PDFDocument from "pdfkit";
 import User from "../../models/userSchema.js";
 import logger from "../../helpers/logger.js";
+import { ORDER_STATUS, ITEM_STATUS, PAYMENT_STATUS, PAYMENT_METHOD, MESSAGES } from "../../utils/constants.js";
 
 export const getOrdersPage = async (req, res) => {
   try {
     const userId = req.user?._id;
     if (!userId) return res.redirect("/login");
 
-    const page  = parseInt(req.query.page)  || 1;
-    const limit = parseInt(req.query.limit) || 3;
-    const skip  = (page - 1) * limit;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
 
-    const allOrders = await Order.find({ userId })
+    const totalOrders = await Order.countDocuments({ userId });
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    const orders = await Order.find({ userId })
       .populate({ path: "products.productId", select: "name images" })
       .populate({ path: "products.variantId", select: "images colorName size" })
       .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .lean();
 
-    const allItems = [];
-    allOrders.forEach(order => {
-      order.products.forEach(item => {
-        allItems.push({ order, item });
-      });
-    });
-
-    const totalItems = allItems.length;
-    const totalPages = Math.ceil(totalItems / limit);
-
-    const pageItems = allItems.slice(skip, skip + limit);
-
     res.render("user/orders", {
-      pageItems,      
-      active:       "Orders",
-      currentPage:  page,
+      orders,
+      active: "Orders",
+      currentPage: page,
       totalPages,
-      hasNextPage:  page < totalPages,
-      hasPrevPage:  page > 1,
-      totalItems
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+      totalOrders
     });
 
     logger.info(`Orders page loaded for user ${userId}, page ${page}`);
   } catch (err) {
     logger.error("getOrdersPage ERROR:", err);
-    res.status(500).send("Server error");
+    res.status(500).send(MESSAGES.SERVER_ERROR);
   }
 };
 export const getOrderDetails = async (req, res) => {
@@ -59,7 +53,7 @@ export const getOrderDetails = async (req, res) => {
 
     if (!order || order.userId.toString() !== req.user._id.toString()) {
       logger.warn(`Unauthorized order details access attempt by user ${req.user._id}`);
-      return res.status(404).render("user/error", { message: "Order not found or access denied" });
+      return res.status(404).render("user/error", { message: MESSAGES.NOT_FOUND });
     }
 
     res.render("user/orderDetail", {
@@ -93,8 +87,8 @@ export const checkCancellableStatus = async (req, res) => {
       return res.json({ success: false });
     }
 
-    const isCancellable = ["Pending", "Confirmed", "Processing"].includes(item.itemStatus);
-    const isAlreadyCancelled = item.itemStatus === "Cancelled";
+    const isCancellable = [ITEM_STATUS.PENDING, ITEM_STATUS.CONFIRMED, ITEM_STATUS.PROCESSING].includes(item.itemStatus);
+    const isAlreadyCancelled = item.itemStatus === ITEM_STATUS.CANCELLED;
 
     res.json({
       success: true,
@@ -138,15 +132,14 @@ export const cancelOrderItem = async (req, res) => {
       return res.status(404).json({ success: false, message: "Item not found in order" });
     }
 
-    // **FIX: Check if item is already cancelled**
-    if (item.itemStatus === "Cancelled") {
+    if (item.itemStatus === ITEM_STATUS.CANCELLED) {
       return res.status(400).json({
         success: false,
         message: "This item has already been cancelled"
       });
     }
 
-    const allowedStatuses = ["Pending", "Confirmed", "Processing"];
+    const allowedStatuses = [ITEM_STATUS.PENDING, ITEM_STATUS.CONFIRMED, ITEM_STATUS.PROCESSING];
     if (!allowedStatuses.includes(item.itemStatus)) {
       return res.status(400).json({
         success: false,
@@ -157,7 +150,7 @@ export const cancelOrderItem = async (req, res) => {
     let refundableAmount = 0;
     let refundMessage = "";
 
-    if (order.paymentMethod === "razorpay") {
+    if (order.paymentMethod === PAYMENT_METHOD.RAZORPAY) {
       const itemsTotalBeforeDiscount = order.products.reduce(
         (sum, p) => sum + p.price * p.quantity,
         0
@@ -212,23 +205,23 @@ export const cancelOrderItem = async (req, res) => {
 
     order.markModified("products");
 
-    const allCancelled = order.products.every(p => p.itemStatus === "Cancelled");
+    const allCancelled = order.products.every(p => p.itemStatus === ITEM_STATUS.CANCELLED);
     if (allCancelled) {
-      order.status = "Cancelled";
+      order.status = ORDER_STATUS.CANCELLED;
 
-      if (order.paymentMethod === "razorpay") {
-        order.paymentStatus = "Refunded";
+      if (order.paymentMethod === PAYMENT_METHOD.RAZORPAY) {
+        order.paymentStatus = PAYMENT_STATUS.REFUNDED;
       } else {
-        order.paymentStatus = "Pending";
+        order.paymentStatus = PAYMENT_STATUS.PENDING;
       }
     }
-    else if (order.products.some(p => p.itemStatus === "Cancelled")) {
-      order.status = "Partially Cancelled";
+    else if (order.products.some(p => p.itemStatus === ITEM_STATUS.CANCELLED)) {
+      order.status = ORDER_STATUS.PARTIALLY_CANCELLED;
 
-      if (order.paymentMethod === "razorpay") {
-        order.paymentStatus = "Partially Refunded";
+      if (order.paymentMethod === PAYMENT_METHOD.RAZORPAY) {
+        order.paymentStatus = PAYMENT_STATUS.PARTIALLY_REFUNDED;
       } else {
-        order.paymentStatus = "Pending";
+        order.paymentStatus = PAYMENT_STATUS.PENDING;
       }
     }
 
@@ -272,11 +265,11 @@ export const returnOrderItem = async (req, res) => {
     const item = order.products[index];
     if (!item) { return res.json({ success: false, message: "Item not found" }); }
 
-    if (item.itemStatus !== "Delivered") {
+    if (item.itemStatus !== ITEM_STATUS.DELIVERED) {
       return res.json({ success: false, message: "Only delivered items can be returned" });
     }
 
-    item.itemStatus = "ReturnRequested";
+    item.itemStatus = ITEM_STATUS.RETURN_REQUESTED;
     item.reason = reason.trim();
     item.itemTimeline ||= {};
     item.itemTimeline.returnRequestedAt = new Date();
@@ -329,7 +322,7 @@ export const reviewOrderItem = async (req, res) => {
       return res.json({ success: false, message: "Item not found in this order" });
     }
 
-    if (item.itemStatus !== "Delivered") {
+    if (item.itemStatus !== ITEM_STATUS.DELIVERED) {
       return res.json({
         success: false,
         message: `Cannot review item with status: ${item.itemStatus}. Only Delivered items can be reviewed.`

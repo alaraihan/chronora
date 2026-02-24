@@ -7,6 +7,7 @@ import fs from "fs";
 import { setFlash, getFlash } from "../../utils/flash.js";
 import offerSchema from "../../models/offerSchema.js";
 import logger from "../../helpers/logger.js";
+import HttpStatus from "../../utils/httpStatus.js";
 const render = (req, res, view, options = {}) => {
   const flash = getFlash(req);
   return res.render(view, { flash, ...options });
@@ -49,8 +50,8 @@ export const listCategories = async (req, res) => {
       pageCss: "categories"
     });
   } catch (err) {
-logger.error("listCategories error", err);
-    return res.status(500).json({ success: false, message: "Failed to load categories" });
+    logger.error("listCategories error", err);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to load categories" });
   }
 };
 
@@ -61,14 +62,14 @@ export const addCategory = async (req, res) => {
     const trimmedDescription = description?.trim();
 
     if (!trimmedName || !trimmedDescription) {
-      return res.status(400).json({
+      return res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
         message: "Please fill all required fields."
       });
     }
 
     if (!req.file) {
-      return res.status(400).json({
+      return res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
         message: "Please upload a category image."
       });
@@ -79,7 +80,7 @@ export const addCategory = async (req, res) => {
     });
 
     if (exists) {
-      return res.status(409).json({
+      return res.status(HttpStatus.CONFLICT).json({
         success: false,
         message: "Category already exists!"
       });
@@ -103,17 +104,17 @@ export const addCategory = async (req, res) => {
       }
     });
     logger.info(`Category created: ${category.name}`);
-    
 
-    return res.status(201).json({
+
+    return res.status(HttpStatus.CREATED).json({
       success: true,
       message: "Category created successfully",
       category
     });
 
   } catch (err) {
-logger.error("addCategory error", err);
-    return res.status(500).json({
+    logger.error("addCategory error", err);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Internal server error: Failed to add Category"
     });
@@ -128,7 +129,7 @@ export const editCategory = async (req, res) => {
     const trimmedDescription = description?.trim();
 
     if (!trimmedName || !trimmedDescription) {
-      return res.status(400).json({
+      return res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
         message: "Please fill all required fields."
       });
@@ -136,13 +137,13 @@ export const editCategory = async (req, res) => {
 
     const category = await Category.findById(id);
     if (!category) {
-      return res.status(404).json({
+      return res.status(HttpStatus.NOT_FOUND).json({
         success: false,
         message: "Category not found"
       });
     }
 
-    
+
 
     const updateData = {
       name: trimmedName,
@@ -150,14 +151,14 @@ export const editCategory = async (req, res) => {
       isListed: isListed === "true"
     };
 
-   const exists = await Category.findOne({
-  _id: { $ne: id }, 
-  name: { $regex: `^${name}$`, $options: "i" }
-});
+    const exists = await Category.findOne({
+      _id: { $ne: id },
+      name: { $regex: `^${name}$`, $options: "i" }
+    });
 
 
     if (exists) {
-      return res.status(409).json({
+      return res.status(HttpStatus.CONFLICT).json({
         success: false,
         message: "Category already exists!"
       });
@@ -184,8 +185,8 @@ export const editCategory = async (req, res) => {
     const updated = await Category.findByIdAndUpdate(id, updateData, {
       new: true
     });
-logger.info(`Category updated: ${updated.name}`);
-    return res.status(200).json({
+    logger.info(`Category updated: ${updated.name}`);
+    return res.status(HttpStatus.OK).json({
       success: true,
       message: "Category updated successfully!",
       category: updated
@@ -193,14 +194,14 @@ logger.info(`Category updated: ${updated.name}`);
 
   } catch (err) {
     if (err.code === 11000) {
-      return res.status(409).json({
+      return res.status(HttpStatus.CONFLICT).json({
         success: false,
         message: "Category name already taken."
       });
     }
 
-logger.error("editCategory error", err);
-    return res.status(500).json({
+    logger.error("editCategory error", err);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Failed to update Category"
     });
@@ -215,38 +216,38 @@ export const getCategory = async (req, res) => {
 
     if (!category) {
       logger.warn(`Category not found: ${id}`);
-      return res.status(404).json({ success: false, message: "Category not found" });
+      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: "Category not found" });
     }
 
-    return res.status(200).json({ category });
+    return res.status(HttpStatus.OK).json({ category });
 
   } catch (err) {
-logger.error("getCategory error", err);
-    return res.status(500).json({ success: false, message: "Failed to fetch category" });
+    logger.error("getCategory error", err);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to fetch category" });
   }
 };
 
-export const toggleListCategory=async (req,res)=>{
+export const toggleListCategory = async (req, res) => {
   try {
-    const {id}=req.params;
-    const category=await Category.findById(id).select("isListed");
+    const { id } = req.params;
+    const category = await Category.findById(id).select("isListed");
     if (!category) {
       logger.warn(`Category not found for toggle: ${id}`);
-      return res.status(404).json({success:false,message:"Category not found!"});
+      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: "Category not found!" });
     }
- 
-    const newStatus=!category.isListed;
-    await Category.updateOne({_id:id},{isListed:newStatus});
+
+    const newStatus = !category.isListed;
+    await Category.updateOne({ _id: id }, { isListed: newStatus });
     const action = newStatus ? "listed" : "unlisted ";
     logger.info(`Category ${action}: ${category.name}`);
-    return res.status(200).json({
+    return res.status(HttpStatus.OK).json({
       success: true,
       message: `Category successfully ${action}.`,
-      isListed:newStatus
+      isListed: newStatus
     });
   } catch (error) {
-logger.error("toggleListCategory error", error);
-    return res.status(500).json({ success: false, message: "Failed to toggle category status." });
+    logger.error("toggleListCategory error", error);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to toggle category status." });
   }
 };
 

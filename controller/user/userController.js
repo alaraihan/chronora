@@ -7,6 +7,7 @@ import Wishlist from "../../models/wishlistSchema.js";
 import { setFlash, getFlash } from "../../utils/flash.js";
 import Category from "../../models/categorySchema.js";
 import logger from "../../helpers/logger.js";
+import HttpStatus from "../../utils/httpStatus.js";
 export const render = (req, res, view, options = {}) => {
   const flash = getFlash(req);
   return res.render(view, { flash, ...options });
@@ -18,14 +19,14 @@ export const pageNotfound = async (req, res) => {
       title: "Chronora - 404 Page"
     });
   } catch (error) {
-logger.error("Page not found error", error);
-    res.status(404).send();
+    logger.error("Page not found error", error);
+    res.status(HttpStatus.NOT_FOUND).send();
   }
 };
 
 export const googleCallback = (req, res) => {
   try {
-logger.info("Google login successful", { user: req.user });
+    logger.info("Google login successful", { user: req.user });
     req.session.userId = req.user._id;
     req.session.user = {
       id: req.user._id,
@@ -36,7 +37,7 @@ logger.info("Google login successful", { user: req.user });
     setFlash(req, "success", "Login successful!");
     return res.redirect("/home");
   } catch (err) {
-logger.error("googleCallback error", err);
+    logger.error("googleCallback error", err);
     setFlash(req, "error", "Google login failed. Try again.");
     return res.redirect("/login");
   }
@@ -48,8 +49,8 @@ export const loadAboutpage = async (req, res) => {
       title: "Chronora - About"
     });
   } catch (error) {
-logger.error("About page load error", error);
-    res.status(404).send(error);
+    logger.error("About page load error", error);
+    res.status(HttpStatus.NOT_FOUND).send(error);
   }
 };
 
@@ -59,27 +60,27 @@ export const loadContactpage = async (req, res) => {
       title: "Chronora - Contact"
     });
   } catch (error) {
-logger.error("Contact page load error", error);
-    res.status(404).send(error);
+    logger.error("Contact page load error", error);
+    res.status(HttpStatus.NOT_FOUND).send(error);
   }
 };
 
 export const loadHomepage = async (req, res) => {
   try {
-    const categories=await Category.find({isListed:true})
+    const categories = await Category.find({ isListed: true })
       .select("name image")
-      .sort({createdAt:-1})
+      .sort({ createdAt: -1 })
       .limit(4)
       .lean();
 
     return render(req, res, "user/home", {
-      user: req.session.user||null,
+      user: req.session.user || null,
       title: "Chronora - Home",
       categories
     });
   } catch (error) {
-logger.error("Home page load error", error);
-    res.status(500).send("server error");
+    logger.error("Home page load error", error);
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("server error");
   }
 };
 
@@ -129,18 +130,18 @@ export const loadWatchPage = async (req, res) => {
 
     let sortOption = { createdAt: -1 };
     switch (sortQuery) {
-    case "price-low":
-      sortOption = { price: 1 };
-      break;
-    case "price-high":
-      sortOption = { price: -1 };
-      break;
-    case "a-z":
-      sortOption = { name: 1 };
-      break;
-    case "z-a":
-      sortOption = { name: -1 };
-      break;
+      case "price-low":
+        sortOption = { price: 1 };
+        break;
+      case "price-high":
+        sortOption = { price: -1 };
+        break;
+      case "a-z":
+        sortOption = { name: 1 };
+        break;
+      case "z-a":
+        sortOption = { name: -1 };
+        break;
     }
 
     const totalProducts = await Product.countDocuments(productQuery);
@@ -181,13 +182,13 @@ export const loadWatchPage = async (req, res) => {
       .select("name")
       .sort({ name: 1 })
       .lean();
-let wishlist = [];
+    let wishlist = [];
 
-if (req.session.user?._id) {
-  wishlist = await Wishlist.find({ userId: req.session.user._id })
-    .select("productId variantId")
-    .lean();
-}
+    if (req.session.user?._id) {
+      wishlist = await Wishlist.find({ userId: req.session.user._id })
+        .select("productId variantId")
+        .lean();
+    }
 
     res.render("user/watch", {
       user: req.session.user || null,
@@ -199,12 +200,12 @@ if (req.session.user?._id) {
       categoryFilter,
       currentPage: page,
       totalPages,
-       wishlist,
+      wishlist,
     });
 
   } catch (error) {
-logger.error("Error in loadWatchPage", error);
-    res.status(500).send("Something went wrong");
+    logger.error("Error in loadWatchPage", error);
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Something went wrong");
   }
 };
 
@@ -220,11 +221,11 @@ export const productDetails = async (req, res) => {
     }).populate("category");
 
     if (!product) {
-      return res.status(404).render("user/pageNotfound");
+      return res.status(HttpStatus.NOT_FOUND).render("user/pageNotfound");
     }
     if (!product.category || !product.category.isListed) {
       logger.warn(`Product not found or category not listed: ${productId}`);
-      return res.status(404).render("user/pageNotfound");
+      return res.status(HttpStatus.NOT_FOUND).render("user/pageNotfound");
     }
 
     const categoryId = product.category._id;
@@ -285,8 +286,8 @@ export const productDetails = async (req, res) => {
     });
 
   } catch (error) {
-logger.error("Error loading product details", error);
-    return res.status(500).render("user/serverError");
+    logger.error("Error loading product details", error);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).render("user/serverError");
   }
 };
 export default {

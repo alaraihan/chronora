@@ -3,7 +3,8 @@ import { sendOtp, generateOtp } from "../../utils/mail.js";
 import bcrypt from "bcrypt";
 import { setFlash, getFlash } from "../../utils/flash.js";
 import { generateReferralCode } from "../../helpers/referralHelper.js";
-import logger from "../../helpers/logger.js"; 
+import logger from "../../helpers/logger.js";
+import HttpStatus from "../../utils/httpStatus.js";
 
 const render = (req, res, view, options = {}) => {
   const flash = getFlash(req);
@@ -14,7 +15,7 @@ const loadSignUp = (req, res) => {
   if (req.session?.userId) return res.redirect("/");
 
   const flash = req.session.flash || {};
-  delete req.session.flash; // clear after reading
+  delete req.session.flash;
 
   return render(req, res, "user/signup", {
     title: "Chronora - Signup",
@@ -221,66 +222,64 @@ const loadLogin = (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    
-    // Validation checks with JSON responses
+
     if (!email || !password) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Please provide both email and password" 
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        success: false,
+        message: "Please provide both email and password"
       });
     }
 
     const user = await User.findOne({ email: email.toLowerCase().trim() });
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Account not found" 
+      return res.status(HttpStatus.NOT_FOUND).json({
+        success: false,
+        message: "Account not found"
       });
     }
 
     if (!user.isVerified) {
-      return res.status(403).json({ 
-        success: false, 
-        message: "Please verify your email first" 
+      return res.status(HttpStatus.FORBIDDEN).json({
+        success: false,
+        message: "Please verify your email first"
       });
     }
-    
+
     if (user.isBlocked) {
-      return res.status(403).json({ 
-        success: false, 
-        message: "User is blocked" 
+      return res.status(HttpStatus.FORBIDDEN).json({
+        success: false,
+        message: "User is blocked"
       });
     }
 
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
-      return res.status(401).json({ 
-        success: false, 
-        message: "Invalid email or password" 
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        success: false,
+        message: "Invalid email or password"
       });
     }
 
-    // Successful login
     req.session.userId = user._id.toString();
-    req.session.user = { 
-      id: user._id.toString(), 
-      fullName: user.fullName, 
-      email: user.email 
+    req.session.user = {
+      id: user._id.toString(),
+      fullName: user.fullName,
+      email: user.email
     };
 
     logger.info(`User logged in: ${user.email}`);
-    
-    return res.status(200).json({ 
-      success: true, 
+
+    return res.status(HttpStatus.OK).json({
+      success: true,
       message: "Logged in successfully!",
-      redirect: "/" 
+      redirect: "/"
     });
-    
+
   } catch (error) {
     logger.error("login error:", error);
-    return res.status(500).json({ 
-      success: false, 
-      message: "Something went wrong" 
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Something went wrong"
     });
   }
 };
@@ -493,7 +492,7 @@ const loadLogout = async (req, res) => {
     });
   } catch (error) {
     logger.error("loadLogout error:", error);
-    res.status(500).render("user/pageNotfound", {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).render("user/pageNotfound", {
       title: "Error - Chronora",
       message: "Something went wrong. Please try again later.",
     });

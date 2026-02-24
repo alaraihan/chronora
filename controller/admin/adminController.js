@@ -1,10 +1,13 @@
 import Admin from "../../models/adminSchema.js";
 import User from "../../models/userSchema.js";
 import Order from "../../models/orderSchema.js";
+import Variant from "../../models/variantSchema.js";
 import Product from "../../models/productSchema.js";
 import bcrypt from "bcrypt";
 import { setFlash, getFlash } from "../../utils/flash.js";
 import logger from "../../helpers/logger.js";
+import mongoose from "mongoose";
+import HttpStatus from "../../utils/httpStatus.js";
 const render = (req, res, view, options = {}) => {
   const flash = getFlash(req);
   return res.render(view, { flash, ...options });
@@ -12,7 +15,8 @@ const render = (req, res, view, options = {}) => {
 const loadLogin = (req, res) => {
   if (req.session.admin) {
     logger.info(`Admin already logged in: ${req.session.admin.email}`);
-    return res.redirect("/admin/dashboard");}
+    return res.redirect("/admin/dashboard");
+  }
 
   return render(req, res, "admin/adminLogin", {
     title: "Admin Login - Chronora",
@@ -29,7 +33,7 @@ const login = async (req, res) => {
     if (!email || !password) {
       logger.warn("Admin login attempt with missing fields");
       return res
-        .status(400)
+        .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: "Please fill all fields" });
     }
 
@@ -37,7 +41,7 @@ const login = async (req, res) => {
     if (!admin || !(await bcrypt.compare(password, admin.password))) {
       logger.warn(`Invalid admin login attempt: ${email}`);
       return res
-        .status(401)
+        .status(HttpStatus.UNAUTHORIZED)
         .json({ success: false, message: "Invalid email or password" });
     }
 
@@ -47,12 +51,12 @@ const login = async (req, res) => {
       email: admin.email,
       name: admin.fullName || "Admin"
     };
-logger.info(`Admin logged in successfully: ${admin.email}`);
-    res.status(200).json({ success: true, message: "Welcome back, Admin!" });
+    logger.info(`Admin logged in successfully: ${admin.email}`);
+    res.status(HttpStatus.OK).json({ success: true, message: "Welcome back, Admin!" });
   } catch (err) {
-logger.error("Admin login error", err);
+    logger.error("Admin login error", err);
     return res
-      .status(500)
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
       .json({ success: false, message: "Server error. Try again later." });
   }
 };
@@ -62,11 +66,13 @@ export const getDashboardPage = async (req, res) => {
   try {
     res.render("admin/dashboard", {
       title: "Dashboard",
-      page: "dashboard"
+      page: "dashboard",
+
+
     });
   } catch (error) {
-logger.error("Dashboard page error", error);
-    res.status(500).send("Server Error");
+    logger.error("Dashboard page error", error);
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Server Error");
   }
 };
 export const getDashboardData = async (req, res) => {
@@ -79,13 +85,13 @@ export const getDashboardData = async (req, res) => {
     switch (filter) {
       case "today":
         startDate = new Date();
-        startDate.setHours(0,0,0,0);
+        startDate.setHours(0, 0, 0, 0);
         break;
 
       case "7days":
         startDate = new Date();
         startDate.setDate(startDate.getDate() - 6);
-        startDate.setHours(0,0,0,0);
+        startDate.setHours(0, 0, 0, 0);
         break;
 
       case "month":
@@ -99,7 +105,7 @@ export const getDashboardData = async (req, res) => {
       case "custom":
         startDate = new Date(fromDate);
         endDate = new Date(toDate);
-        endDate.setHours(23,59,59,999);
+        endDate.setHours(23, 59, 59, 999);
         break;
 
       case "all":
@@ -116,7 +122,7 @@ export const getDashboardData = async (req, res) => {
     const totalOrders = await Order.countDocuments(dateFilter);
     const totalUsers = await User.countDocuments();
     const totalProducts = await Product.countDocuments();
-    
+
     const revenueResult = await Order.aggregate([
       { $match: dateFilter },
       { $unwind: "$products" },
@@ -142,7 +148,7 @@ export const getDashboardData = async (req, res) => {
     ]);
 
     let dateRange = [];
-    
+
     if (filter === "today") {
       for (let i = 0; i < 24; i++) {
         const hour = new Date(startDate);
@@ -170,7 +176,7 @@ export const getDashboardData = async (req, res) => {
     } else if (filter === "custom") {
       const diffTime = Math.abs(endDate - startDate);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
+
       if (diffDays <= 1) {
         const hours = Math.ceil(diffTime / (1000 * 60 * 60));
         for (let i = 0; i <= hours; i++) {
@@ -198,8 +204,8 @@ export const getDashboardData = async (req, res) => {
           }
         }
       } else {
-        const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
-                      (endDate.getMonth() - startDate.getMonth());
+        const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+          (endDate.getMonth() - startDate.getMonth());
         for (let i = 0; i <= months; i++) {
           const month = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
           if (month <= endDate) {
@@ -210,9 +216,9 @@ export const getDashboardData = async (req, res) => {
     } else {
       const earliestOrder = await Order.findOne().sort({ createdAt: 1 }).select('createdAt');
       const earliestDate = earliestOrder ? earliestOrder.createdAt : new Date();
-      const totalMonths = (new Date().getFullYear() - earliestDate.getFullYear()) * 12 + 
-                         (new Date().getMonth() - earliestDate.getMonth());
-      
+      const totalMonths = (new Date().getFullYear() - earliestDate.getFullYear()) * 12 +
+        (new Date().getMonth() - earliestDate.getMonth());
+
       for (let i = 0; i <= totalMonths; i++) {
         const month = new Date(earliestDate.getFullYear(), earliestDate.getMonth() + i, 1);
         dateRange.push(month);
@@ -222,7 +228,7 @@ export const getDashboardData = async (req, res) => {
     const salesChartData = await Promise.all(
       dateRange.map(async (date, index) => {
         let nextDate;
-        
+
         if (filter === "today" || (filter === "custom" && dateRange.length > 24)) {
           nextDate = new Date(date);
           nextDate.setHours(date.getHours() + 1);
@@ -321,6 +327,8 @@ export const getDashboardData = async (req, res) => {
       }
     ]);
 
+
+
     res.json({
       success: true,
       overview: {
@@ -328,6 +336,7 @@ export const getDashboardData = async (req, res) => {
         totalUsers,
         totalProducts,
         totalRevenue,
+
       },
       recentOrders: recentOrders.map(order => ({
         orderId: order.orderId,
@@ -340,12 +349,11 @@ export const getDashboardData = async (req, res) => {
       statusDistribution,
       salesChartData,
       topProducts,
-      paymentDistribution,
     });
 
   } catch (error) {
     logger.error("Dashboard data error", error);
-    res.status(500).json({
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Error loading dashboard data"
     });
@@ -385,7 +393,7 @@ const loadCustomers = async (req, res) => {
       .lean();
 
     for (const customer of customers) {
-      customer.orderCount = await Order.countDocuments({userId: customer._id});
+      customer.orderCount = await Order.countDocuments({ userId: customer._id });
     }
     logger.info(`Loaded customers page ${page}`, { count: customers.length, search });
 
@@ -400,7 +408,7 @@ const loadCustomers = async (req, res) => {
       totalCustomers
     });
   } catch (error) {
-logger.error("Load customers error", error);
+    logger.error("Load customers error", error);
     req.session.flash = { type: "error", message: "Failed to load customers" };
     return res.redirect("/admin/dashboard");
   }
@@ -411,13 +419,13 @@ const toggleBlockCustomer = async (req, res) => {
 
     if (!user) {
       logger.warn(`Attempted to block/unblock non-existent user: ${req.params.id}`);
-      return res.status(404).json({
+      return res.status(HttpStatus.NOT_FOUND).json({
         success: false,
         message: "User not found"
       });
     }
-user.isBlocked = !user.isBlocked;
-      await user.save();
+    user.isBlocked = !user.isBlocked;
+    await user.save();
     const msg = user.isBlocked
       ? "User blocked successfully"
       : "User unblocked successfully";
@@ -432,7 +440,7 @@ user.isBlocked = !user.isBlocked;
 
   } catch (error) {
     logger.error("Toggle block error", error);
-    res.status(500).json({
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Server error"
     });
