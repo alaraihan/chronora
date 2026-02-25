@@ -24,7 +24,9 @@ export const isLoggedIn = async (req, res, next) => {
       .select("_id isBlocked");
 
     if (!user || user.isBlocked) {
-      req.session.destroy(() => { });
+delete req.session.userId;
+delete req.session.user;
+delete req.session.passport;
       return handleUnauthorized(req, res);
     }
 
@@ -95,7 +97,9 @@ export const checkBlockedUser = async (req, res, next) => {
     const user = await User.findById(req.session.userId).select("isBlocked");
 
     if (!user || user.isBlocked) {
-      req.session.destroy();
+delete req.session.userId;
+delete req.session.user;
+delete req.session.passport;
       return res.status(HttpStatus.FORBIDDEN).render("user/pageNotfound", {
         user: null,
         title: "Not found"
