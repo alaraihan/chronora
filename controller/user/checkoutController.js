@@ -43,6 +43,8 @@ export const loadCheckout = async (req, res) => {
           item.productId.offerData = offerData;
           if (offerData) {
             item.price = offerData.offerPrice;
+          }else{
+            item.price=item.productId.price;
           }
         }
         return item;

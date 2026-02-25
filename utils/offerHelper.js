@@ -1,21 +1,22 @@
 import Offer from "../models/offerSchema.js";
 
 const getBestOfferForProduct = async (product) => {
-  const now = new Date();
+const today = new Date();
+today.setHours(0, 0, 0, 0);
   const price = product.price;
 
   const categoryId =
     product.category?._id || product.category || product.categoryId;
 
-  const offers = await Offer.find({
-    active: true,
-    startDate: { $lte: now },
-    endDate: { $gte: now },
-    $or: [
-      { type: "product", productId: product._id },
-      ...(categoryId ? [{ type: "category", categoryId }] : [])
-    ]
-  }).lean();
+ const offers = await Offer.find({
+  active: true,
+  startDate: { $lte: today },
+  endDate: { $gte: today },
+  $or: [
+    { type: "product", productId: product._id },
+    ...(categoryId ? [{ type: "category", categoryId }] : [])
+  ]
+}).lean();
 
   if (!offers.length) {return null;}
 

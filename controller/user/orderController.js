@@ -70,7 +70,6 @@ export const getOrderDetails = async (req, res) => {
     res.status(500).render("user/error", { message: "Server error" });
   }
 };
-// Add this to your order controller
 export const checkCancellableStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -279,14 +278,12 @@ export const cancelOrder = async (req, res) => {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
-    // Check if entire order is already cancelled or partially cancelled/shipped
     if ([ORDER_STATUS.CANCELLED, ORDER_STATUS.RETURNED].includes(order.status)) {
       await session.abortTransaction();
       session.endSession();
       return res.status(400).json({ success: false, message: `Order is already ${order.status}` });
     }
 
-    // Check if any item is shipped/delivered
     const nonCancellable = order.products.some(p =>
       [ITEM_STATUS.SHIPPED, ITEM_STATUS.DELIVERING, ITEM_STATUS.DELIVERED].includes(p.itemStatus)
     );
@@ -312,10 +309,8 @@ export const cancelOrder = async (req, res) => {
     for (let i = 0; i < order.products.length; i++) {
       const item = order.products[i];
 
-      // Skip already cancelled items
       if (item.itemStatus === ITEM_STATUS.CANCELLED) continue;
 
-      // Calculate refund share for this item if paid via online methods
       if (order.paymentMethod === PAYMENT_METHOD.RAZORPAY || order.paymentMethod === PAYMENT_METHOD.WALLET) {
         const itemSubtotal = item.price * item.quantity;
         const itemShareOfDiscount = itemsTotalBeforeDiscount > 0
@@ -325,7 +320,6 @@ export const cancelOrder = async (req, res) => {
         totalRefundable += (itemSubtotal - itemShareOfDiscount);
       }
 
-      // Restore stock
       if (item.variantId?._id || item.variantId) {
         await Variant.findByIdAndUpdate(
           item.variantId._id || item.variantId,
@@ -334,17 +328,14 @@ export const cancelOrder = async (req, res) => {
         );
       }
 
-      // Update item status
       item.itemStatus = ITEM_STATUS.CANCELLED;
       item.reason = reason.trim();
       item.itemTimeline ||= {};
       item.itemTimeline.cancelledAt = now;
     }
 
-    // Round refund
     totalRefundable = Math.round(totalRefundable * 100) / 100;
 
-    // Process refund to wallet
     if (totalRefundable > 0) {
       await User.updateOne(
         { _id: order.userId._id },

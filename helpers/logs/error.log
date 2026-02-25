@@ -245,3 +245,21 @@ totalStockPerCategory is not defined
 totalStockPerCategory is not defined
 2026-02-23 17:00:49 [ERROR]: Dashboard page error totalStockPerCategory is not defined
 2026-02-23 23:51:20 [ERROR]: Sales report data error
+2026-02-25 15:20:16 [ERROR]: GET /checkout/failure?error=Your%20payment%20didn%27t%20go%20through%20as%20it%20was%20declined%20by%20the%20bank.%20Try%20another%20payment%20method%20or%20contact%20your%20bank. - C:\Users\DELL\Desktop\CHRONORA\views\user\order-failure.ejs:28
+    26|           <div class="summary-row">
+    27|             <span>Subtotal</span>
+ >> 28|             <span>₹<%= subtotal.toLocaleString('en-IN') %></span>
+    29|           </div>
+    30|           <div class="summary-row">
+    31|             <span>Shipping</span>
+
+Cannot read properties of undefined (reading 'toLocaleString')
+2026-02-25 15:21:33 [ERROR]: GET /checkout/failure?error=Your%20payment%20didn%27t%20go%20through%20as%20it%20was%20declined%20by%20the%20bank.%20Try%20another%20payment%20method%20or%20contact%20your%20bank. - C:\Users\DELL\Desktop\CHRONORA\views\user\order-failure.ejs:28
+    26|           <div class="summary-row">
+    27|             <span>Subtotal</span>
+ >> 28|             <span>₹<%= subtotal.toLocaleString('en-IN') %></span>
+    29|           </div>
+    30|           <div class="summary-row">
+    31|             <span>Shipping</span>
+
+Cannot read properties of undefined (reading 'toLocaleString')

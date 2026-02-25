@@ -55,8 +55,10 @@ export const loadCart = async (req, res) => {
           if (offerData) {
             item.price = offerData.offerPrice;
             item.originalPrice = item.productId.price;
+          }else{
+             item.price = item.productId.price;   
+}
           }
-        }
         return item;
       })
     );
