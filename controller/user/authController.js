@@ -48,28 +48,38 @@ const signUp = async (req, res) => {
     }
 
     let referredBy = null;
-    if (referralCode) {
-      const enteredCode = referralCode.trim().toUpperCase();
+   if (referralCode) {
+  const enteredCode = referralCode.trim().toUpperCase();
 
-      if (enteredCode.length < 6 || enteredCode.length > 12) {
-        setFlash(req, "error", "Referral code must be between 6-12 characters");
-        return res.redirect("/signup");
-      }
+  if (!enteredCode) {
+    setFlash(req, "error", "Referral code cannot be empty or spaces only");
+    return res.redirect("/signup");
+  }
 
-      const referrer = await User.findOne({ referralCode: enteredCode });
-      if (!referrer) {
-        setFlash(req, "error", "Invalid referral code. Please check and try again.");
-        return res.redirect("/signup");
-      }
+  const referralRegex = /^[A-Z0-9]{6,12}$/;
 
-      if (referrer.email === trimmedEmail) {
-        setFlash(req, "error", "You cannot use your own referral code!");
-        return res.redirect("/signup");
-      }
+  if (!referralRegex.test(enteredCode)) {
+    setFlash(
+      req,
+      "error",
+      "Referral code must be 6-12 characters and contain only letters and numbers"
+    );
+    return res.redirect("/signup");
+  }
 
-      referredBy = enteredCode;
-      logger.info(`Valid referral: ${referrer.fullName} invited ${fullName} (Code: ${enteredCode})`);
-    }
+  const referrer = await User.findOne({ referralCode: enteredCode });
+  if (!referrer) {
+    setFlash(req, "error", "Invalid referral code. Please check and try again.");
+    return res.redirect("/signup");
+  }
+
+  if (referrer.email === trimmedEmail) {
+    setFlash(req, "error", "You cannot use your own referral code!");
+    return res.redirect("/signup");
+  }
+
+  referredBy = enteredCode;
+}
 
     const otp = generateOtp(6);
     logger.debug(`Signup OTP (dev): ${otp}`);

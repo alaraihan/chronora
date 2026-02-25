@@ -110,22 +110,38 @@ const successMsg = document.getElementById('successMsg');
 form.addEventListener('submit', async function (e) {
   e.preventDefault();
 
-  const valid =
-    validateName() &&
-    await validateEmail() &&
-    validatePassword() &&
-    validateConfirm() &&
-    validateAgree();
-
-  if (!valid) return;
+  const nameValid = validateName();
+  const emailValid = await validateEmail();
+  const passValid = validatePassword();
+  const confirmValid = validateConfirm();
+  const agreeValid = validateAgree();
+const referralValid = validateReferral();
+if (!referralValid) return;
+  if (!nameValid || !emailValid || !passValid || !confirmValid || !agreeValid) {
+    return;
+  }
 
   successMsg.style.display = 'block';
   form.submit();
 });
 
-
 elements.name?.addEventListener('input', validateName);
-elements.email?.addEventListener('input', validateEmail);
+elements.email?.addEventListener('blur', validateEmail);
 elements.password?.addEventListener('input', () => { validatePassword(); validateConfirm(); });
 elements.confirm?.addEventListener('input', validateConfirm);
 elements.agree?.addEventListener('change', validateAgree);
+const referralInput = document.getElementById('referralCode');
+const referralError = document.getElementById('referralError');
+
+function validateReferral() {
+  if (!referralInput.value) return true;
+
+  const code = referralInput.value.trim().toUpperCase();
+  const regex = /^[A-Z0-9]{6,12}$/;
+
+  const valid = regex.test(code);
+
+  referralError.style.display = valid ? 'none' : 'block';
+
+  return valid;
+}
