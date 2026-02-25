@@ -349,6 +349,7 @@ export const getDashboardData = async (req, res) => {
       statusDistribution,
       salesChartData,
       topProducts,
+      paymentDistribution,
     });
 
   } catch (error) {
