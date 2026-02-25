@@ -610,15 +610,21 @@ a {
   border-color: var(--gold);
 }
 
-.btn-view {
-  background: var(--bg-3);
-  border-color: var(--border-hi);
-  color: var(--text-muted);
-}
-
 .btn-view:hover {
   color: var(--text);
   border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-cancel-entire {
+  background: var(--red-dim);
+  border-color: rgba(248, 113, 113, 0.22);
+  color: var(--red);
+}
+
+.btn-cancel-entire:hover {
+  background: rgba(248, 113, 113, 0.18);
+  border-color: var(--red);
+  transform: translateY(-1px);
 }
 
 .reviewed-badge {

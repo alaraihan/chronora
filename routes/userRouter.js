@@ -49,7 +49,8 @@ import {
   cancelOrderItem,
   returnOrderItem,
   downloadInvoice,
-  reviewOrderItem
+  reviewOrderItem,
+  cancelOrder
 } from "../controller/user/orderController.js";
 
 import {
@@ -156,6 +157,7 @@ router.get("/coupons/available", isLoggedIn, getAvailableCoupons);
 router.get("/profile/orders", isLoggedIn, getOrdersPage);
 
 router.get("/profile/orders/:orderId", isLoggedIn, getOrderDetails);
+router.post("/profile/orders/:orderId/cancel", isLoggedIn, cancelOrder);
 
 router.get("/profile/orders/:orderId/invoice", isLoggedIn, downloadInvoice);
 

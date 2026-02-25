@@ -105,11 +105,20 @@
                         <div class="order-main-actions">
                           <% if (order.paymentStatus==='Failed' || order.paymentStatus==='Pending' ) { %>
                             <button class="btn-retry"
-                              onclick="retryPayment('<%= order._id %>', <%= order.totalAmount %>)">
+                              onclick="retryPayment('<%= order._id %>', Number('<%= order.totalAmount %>'))">
                               <i class="retry-icon">↺</i> Retry Payment
                             </button>
                             <% } %>
-                              <a href="/profile/orders/<%= order.orderId %>" class="btn-view-order">Manage Order</a>
+                   
+                              <% const isOrderCancellable=order.products.every(p=>
+                                ["Pending", "Confirmed", "Processing"].includes(p.itemStatus)
+                                ) && !["Cancelled", "Returned", "Delivered", "ReturnRequested"].includes(order.status);
+                                %>
+                                <% if (isOrderCancellable) { %>
+                                  <button class="btn-cancel-global" onclick="cancelEntireOrder('<%= order._id %>')">
+                                    Cancel Order
+                                  </button>
+                                  <% } %>
                         </div>
                       </div>
 

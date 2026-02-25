@@ -165,6 +165,7 @@ const orderSchema = new mongoose.Schema(
     totalAmount: { type: Number, required: true },
     deliveryCharge: { type: Number, default: 0 },
     discount: { type: Number, default: 0 },
+    couponApplied: { type: String, default: null },
 
     expectedDelivery: Date
   },

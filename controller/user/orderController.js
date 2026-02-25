@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Order from "../../models/orderSchema.js";
 import Variant from "../../models/variantSchema.js";
 import PDFDocument from "pdfkit";
@@ -245,6 +246,150 @@ export const cancelOrderItem = async (req, res) => {
       success: false,
       message: "Server error while cancelling item"
     });
+  }
+};
+
+export const cancelOrder = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { orderId } = req.params;
+    const { reason } = req.body;
+
+    if (!reason?.trim()) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ success: false, message: "Cancellation reason is required" });
+    }
+
+    const order = await Order.findById(orderId)
+      .populate("userId", "wallet")
+      .populate("products.variantId");
+
+    if (!order) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    if (order.userId._id.toString() !== req.user._id.toString()) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(403).json({ success: false, message: "Unauthorized" });
+    }
+
+    // Check if entire order is already cancelled or partially cancelled/shipped
+    if ([ORDER_STATUS.CANCELLED, ORDER_STATUS.RETURNED].includes(order.status)) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ success: false, message: `Order is already ${order.status}` });
+    }
+
+    // Check if any item is shipped/delivered
+    const nonCancellable = order.products.some(p =>
+      [ITEM_STATUS.SHIPPED, ITEM_STATUS.DELIVERING, ITEM_STATUS.DELIVERED].includes(p.itemStatus)
+    );
+
+    if (nonCancellable) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({
+        success: false,
+        message: "Order cannot be cancelled as some items are already shipped or delivered."
+      });
+    }
+
+    let totalRefundable = 0;
+    const now = new Date();
+
+    const itemsTotalBeforeDiscount = order.products.reduce(
+      (sum, p) => sum + p.price * p.quantity,
+      0
+    );
+    const couponDiscount = order.discount || 0;
+
+    for (let i = 0; i < order.products.length; i++) {
+      const item = order.products[i];
+
+      // Skip already cancelled items
+      if (item.itemStatus === ITEM_STATUS.CANCELLED) continue;
+
+      // Calculate refund share for this item if paid via online methods
+      if (order.paymentMethod === PAYMENT_METHOD.RAZORPAY || order.paymentMethod === PAYMENT_METHOD.WALLET) {
+        const itemSubtotal = item.price * item.quantity;
+        const itemShareOfDiscount = itemsTotalBeforeDiscount > 0
+          ? (itemSubtotal / itemsTotalBeforeDiscount) * couponDiscount
+          : 0;
+
+        totalRefundable += (itemSubtotal - itemShareOfDiscount);
+      }
+
+      // Restore stock
+      if (item.variantId?._id || item.variantId) {
+        await Variant.findByIdAndUpdate(
+          item.variantId._id || item.variantId,
+          { $inc: { stock: item.quantity } },
+          { session }
+        );
+      }
+
+      // Update item status
+      item.itemStatus = ITEM_STATUS.CANCELLED;
+      item.reason = reason.trim();
+      item.itemTimeline ||= {};
+      item.itemTimeline.cancelledAt = now;
+    }
+
+    // Round refund
+    totalRefundable = Math.round(totalRefundable * 100) / 100;
+
+    // Process refund to wallet
+    if (totalRefundable > 0) {
+      await User.updateOne(
+        { _id: order.userId._id },
+        {
+          $inc: { wallet: totalRefundable },
+          $push: {
+            walletTransactions: {
+              amount: totalRefundable,
+              type: "credit",
+              description: `Total Refund - Order #${order.orderId} (Full Cancellation)`,
+              date: now
+            }
+          }
+        },
+        { session }
+      );
+    }
+
+    order.status = ORDER_STATUS.CANCELLED;
+    order.cancelReason = reason.trim();
+    if (order.paymentMethod === PAYMENT_METHOD.RAZORPAY || order.paymentMethod === PAYMENT_METHOD.WALLET) {
+      order.paymentStatus = PAYMENT_STATUS.REFUNDED;
+    }
+
+    order.markModified("products");
+    await order.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    logger.info(`Entire order ${orderId} cancelled by user ${req.user._id}`);
+
+    return res.json({
+      success: true,
+      message: "Order cancelled successfully",
+      refund: totalRefundable > 0 ? totalRefundable.toFixed(2) : null
+    });
+
+  } catch (error) {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+    session.endSession();
+    logger.error("cancelOrder ERROR:", error);
+    return res.status(500).json({ success: false, message: "Server error while cancelling order" });
   }
 };
 export const returnOrderItem = async (req, res) => {

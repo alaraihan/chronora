@@ -2,7 +2,11 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 import dotenv from "dotenv";
 import logger from "../../helpers/logger.js";
+import mongoose from "mongoose";
 import Order from "../../models/orderSchema.js";
+import Variant from "../../models/variantSchema.js";
+import Cart from "../../models/cartSchema.js";
+import Coupon from "../../models/couponSchema.js";
 import { ORDER_STATUS, ITEM_STATUS, PAYMENT_STATUS, PAYMENT_METHOD, MESSAGES } from "../../utils/constants.js";
 
 dotenv.config();
@@ -124,6 +128,8 @@ export const retryPayment = async (req, res) => {
 };
 
 export const verifyRetryPayment = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const { orderId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
@@ -134,27 +140,80 @@ export const verifyRetryPayment = async (req, res) => {
       .digest("hex");
 
     if (expectedSign === razorpay_signature) {
-      const order = await Order.findById(orderId);
-      if (order) {
-        order.paymentStatus = PAYMENT_STATUS.PAID;
-        order.status = ORDER_STATUS.CONFIRMED;
-        order.paymentId = razorpay_payment_id;
-
-        // Also update individual items if needed
-        order.products.forEach(item => {
-          if (item.itemStatus === ITEM_STATUS.PENDING) {
-            item.itemStatus = ITEM_STATUS.CONFIRMED;
-          }
-        });
-
-        await order.save();
-        logger.info(`Retry payment verified for order: ${orderId}`);
-        return res.json({ success: true, message: MESSAGES.PAYMENT_VERIFIED });
+      const order = await Order.findById(orderId).session(session);
+      if (!order) {
+        await session.abortTransaction();
+        session.endSession();
+        return res.status(404).json({ success: false, message: "Order not found" });
       }
+
+      // 1. Stock Reduction
+      for (const item of order.products) {
+        if (!item.variantId) continue;
+
+        const updated = await Variant.findOneAndUpdate(
+          { _id: item.variantId, stock: { $gte: item.quantity } },
+          { $inc: { stock: -item.quantity } },
+          { new: true, session }
+        );
+
+        if (!updated) {
+          await session.abortTransaction();
+          session.endSession();
+          logger.warn(`Retry payment failed for order ${orderId}: insufficient stock`);
+          return res.status(409).json({
+            success: false,
+            message: MESSAGES.STOCK_OUT
+          });
+        }
+      }
+
+      // 2. Clear Cart
+      await Cart.deleteMany({ userId: order.userId }, { session });
+
+      // 3. Update Coupon Usage if applicable
+      if (order.couponApplied) {
+        const couponCode = order.couponApplied.trim().toUpperCase();
+        await Coupon.findOneAndUpdate(
+          { code: couponCode, "usedBy.user": { $ne: order.userId } },
+          { $inc: { usedCount: 1 }, $push: { usedBy: { user: order.userId, count: 1 } } },
+          { session }
+        );
+
+        await Coupon.findOneAndUpdate(
+          { code: couponCode, "usedBy.user": order.userId },
+          { $inc: { usedCount: 1, "usedBy.$.count": 1 } },
+          { session }
+        );
+      }
+
+      // 4. Update Order Status
+      order.paymentStatus = PAYMENT_STATUS.PAID;
+      order.status = ORDER_STATUS.CONFIRMED;
+      order.paymentId = razorpay_payment_id;
+
+      order.products.forEach(item => {
+        if (item.itemStatus === ITEM_STATUS.PENDING) {
+          item.itemStatus = ITEM_STATUS.CONFIRMED;
+        }
+      });
+
+      await order.save({ session });
+      await session.commitTransaction();
+      session.endSession();
+
+      logger.info(`Retry payment verified for order: ${orderId}`);
+      return res.json({ success: true, message: MESSAGES.PAYMENT_VERIFIED });
     }
 
+    await session.abortTransaction();
+    session.endSession();
     res.status(400).json({ success: false, message: "Payment verification failed" });
   } catch (error) {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+    session.endSession();
     logger.error("Verify retry payment error:", error);
     res.status(500).json({ success: false, message: "Verification failed" });
   }

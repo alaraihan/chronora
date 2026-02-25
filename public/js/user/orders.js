@@ -91,3 +91,67 @@ async function retryPayment(orderId, amount) {
         });
     }
 }
+
+/**
+ * Cancels an entire order.
+ * @param {string} orderId - The MongoDB ID of the order.
+ */
+async function cancelEntireOrder(orderId) {
+    try {
+        const { value: reason } = await Swal.fire({
+            title: 'Cancel Entire Order?',
+            text: 'Please provide a reason for cancellation:',
+            input: 'textarea',
+            inputPlaceholder: 'Reason for cancellation...',
+            inputAttributes: {
+                'aria-label': 'Reason for cancellation'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Cancel Order',
+            confirmButtonColor: '#dc2626',
+            cancelButtonText: 'No, Keep It',
+            inputValidator: (value) => {
+                if (!value || !value.trim()) {
+                    return 'You need to provide a reason!';
+                }
+            }
+        });
+
+        if (reason) {
+            Swal.fire({
+                title: 'Cancelling...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const response = await axios.post(`/profile/orders/${orderId}/cancel`, { reason });
+
+            if (response.data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Order Cancelled',
+                    text: response.data.message || 'The entire order has been cancelled.',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed',
+                    text: response.data.message || 'Could not cancel the order.'
+                });
+            }
+        }
+    } catch (error) {
+        console.error("Cancel order error:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.response?.data?.message || 'Something went wrong while cancelling the order.'
+        });
+    }
+}
